@@ -6,20 +6,21 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 import re
+from typing import Any, Dict
 
-import incode
+import qwikstart
 
 
 # -- Project information -----------------------------------------------------
 
-project = "incode"
+project = "qwikstart"
 copyright = "2019, Tony S. Yu"
 author = "Tony S. Yu"
 
 # The short X.Y version
-version = re.sub("-.*", "", incode.__version__)
+version = re.sub("-.*", "", qwikstart.__version__)
 # The full version, including alpha/beta/rc tags
-release = incode.__version__
+release = qwikstart.__version__
 
 
 # -- General configuration ---------------------------------------------------
@@ -103,12 +104,12 @@ html_static_path = ["_static"]
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "incodedoc"
+htmlhelp_basename = "qwikstartdoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
 
-latex_elements = {
+latex_elements: Dict[str, Any] = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
@@ -129,8 +130,8 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        "incode.tex",
-        "incode Documentation",
+        "qwikstart.tex",
+        "qwikstart Documentation",
         "Tony S. Yu",
         "manual",
     )
@@ -141,7 +142,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "incode", "incode Documentation", [author], 1)]
+man_pages = [(master_doc, "qwikstart", "qwikstart Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -152,10 +153,10 @@ man_pages = [(master_doc, "incode", "incode Documentation", [author], 1)]
 texinfo_documents = [
     (
         master_doc,
-        "incode",
-        "incode Documentation",
+        "qwikstart",
+        "qwikstart Documentation",
         author,
-        "incode",
+        "qwikstart",
         "One line description of project.",
         "Miscellaneous",
     )
@@ -169,7 +170,7 @@ texinfo_documents = [
 
 
 def run_apidoc(_):
-    """Run sphinx-apidoc to generate API docs for incode
+    """Run sphinx-apidoc to generate API docs for qwikstart
 
     See https://github.com/rtfd/readthedocs.org/issues/1139
     """
@@ -181,7 +182,7 @@ def run_apidoc(_):
     sys.path.append(os.path.join(here, ".."))
 
     api_docs_dir = os.path.join(here, "api")
-    package_dir = os.path.join(here, "..", "incode")
+    package_dir = os.path.join(here, "..", "qwikstart")
     exclude_dirs = [
         os.path.join(package_dir, "tests", "*"),
         os.path.join(package_dir, "**", "tests", "*"),

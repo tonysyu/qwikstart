@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=incode
+set SPHINXPROJ=qwikstart
 
 if "%1" == "" goto help
 

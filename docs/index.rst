@@ -3,7 +3,7 @@ Overview
 ========
 
 
-`incode` is a code injector for automating configuration, setup, and yak
+`qwikstart` is a code injector for automating configuration, setup, and yak
 shaving.
 
 .. toctree::

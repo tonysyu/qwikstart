@@ -5,7 +5,7 @@ Developer's Guide
 Prerequisites
 =============
 
-The `incode` package uses `poetry <https://github.com/sdispater/poetry>`_ for
+The `qwikstart` package uses `poetry <https://github.com/sdispater/poetry>`_ for
 dependency management and distribution. You call install `poetry` using::
 
     curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
@@ -16,11 +16,11 @@ Setup
 
 Clone from github::
 
-    git clone https://github.com/tonysyu/incode.git
+    git clone https://github.com/tonysyu/qwikstart.git
 
 Install development requirements::
 
-    cd incode
+    cd qwikstart
     poetry install
 
 For building the documentation locally, you'll also need to run::

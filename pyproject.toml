@@ -2,12 +2,12 @@
 line-length = 79
 
 [tool.poetry]
-name = "incode"
+name = "qwikstart"
 version = "0.4.0"
 description = "Code injector for automating configuration, setup, and yak shaving."
 readme = "README.rst"
-repository = "https://github.com/tonysyu/incode"
-documentation = "https://incode.readthedocs.io/"
+repository = "https://github.com/tonysyu/qwikstart"
+documentation = "https://qwikstart.readthedocs.io/"
 authors = ["Tony S. Yu <tsyu80@gmail.com>"]
 license = "BSD-3-Clause"
 classifiers = [
@@ -18,7 +18,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
 
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
 ]
 keywords = ["console", "terminal"]
@@ -28,6 +27,7 @@ keywords = ["console", "terminal"]
 sphinx = { version = "<2", optional = true }
 sphinx-autobuild = { version = "*", optional = true }
 sphinxcontrib-napoleon = { version = "*", optional = true }
+rope = "^0.14.0"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
@@ -46,7 +46,7 @@ pre-commit = "^1.17"
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
 
 [tool.poetry.scripts]
-incode = "incode.cli:main"
+qwikstart = "qwikstart.cli:main"
 
 [build-system]
 requires = ["poetry>=0.12"]
