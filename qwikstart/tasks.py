@@ -1,26 +1,16 @@
 from dataclasses import dataclass
 from typing import Any, List
 
-from .actions import Action
+from .operations import Operation
 
 
-__all__ = ["Step", "Task"]
-
-
-@dataclass
-class Step:
-    """A step within an qwikstart `Task`"""
-
-    name: str
-    actions: List[Action]
-    pre_conditions: List[Any] = []
-    post_conditions: List[Any] = []
+__all__ = ["Task"]
 
 
 @dataclass
 class Task:
-    """A series of steps to complete an qwikstart task."""
+    """A series of operations to complete an qwikstart task."""
 
     name: str
-    steps: List[Step]
+    operations: List[Operation]
     variables: List[Any] = []
