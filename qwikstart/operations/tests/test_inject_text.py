@@ -36,7 +36,7 @@ class TestTextInject:
             ),
         }
         inject_action = inject_text.InjectText()
-        inject_action.run(context)
+        inject_action.execute(context)
         with context["file_path"].open() as f:
             assert f.read() == dedent(
                 """
