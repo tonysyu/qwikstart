@@ -4,11 +4,7 @@ from pathlib import Path
 from textwrap import dedent
 from unittest.mock import Mock
 
-from qwikstart import operations
-
-
-class MockContext:
-    pass
+from qwikstart.operations import inject_text
 
 
 def create_mock_file_path(string_data):
@@ -26,7 +22,9 @@ def create_mock_file_path(string_data):
 
 class TestTextInject:
     def test_inject_line(self):
-        task_data = {
+        context: inject_text.InjectTextContext = {
+            "text": "New Line\n",
+            "line": 2,
             "file_path": create_mock_file_path(
                 dedent(
                     """
@@ -35,11 +33,11 @@ class TestTextInject:
                         C
                     """
                 )
-            )
+            ),
         }
-        inject_action = operations.InjectText(text="New Line\n", line=2)
-        inject_action.do(MockContext(), task_data)
-        with task_data["file_path"].open() as f:
+        inject_action = inject_text.InjectText()
+        inject_action.run(context)
+        with context["file_path"].open() as f:
             assert f.read() == dedent(
                 """
                     A

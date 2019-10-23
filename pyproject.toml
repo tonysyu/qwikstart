@@ -28,6 +28,7 @@ sphinx = { version = "<2", optional = true }
 sphinx-autobuild = { version = "*", optional = true }
 sphinxcontrib-napoleon = { version = "*", optional = true }
 rope = "^0.14.0"
+typing-extensions = "^3.7"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
