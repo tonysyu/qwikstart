@@ -29,7 +29,7 @@ sphinx-autobuild = { version = "*", optional = true }
 sphinxcontrib-napoleon = { version = "*", optional = true }
 rope = "^0.14.0"
 typing-extensions = "^3.7"
-
+ipdb = {version = "^0.12.2", extras = ["debug"]}
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
 coverage = "*"
@@ -42,6 +42,7 @@ pytest-sugar = "*"
 twine = "*"
 wheel = "*"
 pre-commit = "^1.17"
+pytest-mypy = "^0.4.1"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]

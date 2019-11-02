@@ -38,6 +38,7 @@ class BaseOperation(abc.ABC):
     def pre_run(self, context):
         if not context:
             return {}
+
         return {
             self.input_mapping.get(key, key): value
             for key, value in context.items()
