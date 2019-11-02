@@ -2,7 +2,7 @@ from pathlib import Path
 
 from typing_extensions import TypedDict
 
-from .base import Operation, OperationError
+from .base import BaseOperation, OperationError
 
 
 __all__ = ["Context", "FindTaggedLine", "Output"]
@@ -17,7 +17,7 @@ class Output(TypedDict):
     line: int
 
 
-class FindTaggedLine(Operation):
+class FindTaggedLine(BaseOperation):
     """Operation injecting text on a given line"""
 
     name: str = "find-tagged-line"

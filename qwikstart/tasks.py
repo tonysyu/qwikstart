@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, List
 
-from .operations import Operation
+from .operations import BaseOperation
 
 
 __all__ = ["Task"]
@@ -12,5 +12,5 @@ class Task:
     """A series of operations to complete an qwikstart task."""
 
     name: str
-    operations: List[Operation]
+    operations: List[BaseOperation]
     variables: List[Any] = []

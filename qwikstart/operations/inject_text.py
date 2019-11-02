@@ -2,7 +2,7 @@ from pathlib import Path
 
 from typing_extensions import TypedDict
 
-from .base import Operation
+from .base import BaseOperation
 
 
 __all__ = ["InjectText"]
@@ -14,7 +14,7 @@ class Context(TypedDict):
     file_path: Path
 
 
-class InjectText(Operation):
+class InjectText(BaseOperation):
     """Operation injecting text on a given line"""
 
     name: str = "inject"

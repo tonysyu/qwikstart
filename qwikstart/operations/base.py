@@ -1,7 +1,7 @@
 import abc
 from typing import Any, Mapping, Optional
 
-__all__ = ["Operation", "OperationError"]
+__all__ = ["BaseOperation", "OperationError"]
 
 
 ContextMapping = Optional[Mapping[str, Any]]
@@ -11,7 +11,7 @@ class OperationError(RuntimeError):
     pass
 
 
-class Operation(abc.ABC):
+class BaseOperation(abc.ABC):
     """An operation within an qwikstart `Task`"""
 
     name: str
