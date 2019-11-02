@@ -46,3 +46,30 @@ class TestTextInject:
                     C
                 """
             )
+
+    def test_inject_line_with_mapped_data(self):
+        context = {
+            "text": "New Line\n",
+            "line_number": 2,
+            "file_path": create_mock_file_path(
+                dedent(
+                    """
+                        A
+                        B
+                        C
+                    """
+                )
+            ),
+        }
+        inject_action = inject_text.InjectText(mapping={"line_number": "line"})
+        output_context = inject_action.execute(context)
+        with context["file_path"].open() as f:
+            assert f.read() == dedent(
+                """
+                    A
+                    New Line
+                    B
+                    C
+                """
+            )
+        assert output_context == context
