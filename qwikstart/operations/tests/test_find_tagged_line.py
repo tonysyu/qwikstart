@@ -35,6 +35,6 @@ class TestFindTaggedLine:
                 )
             ),
         }
-        find_tagged_line_action = find_tagged_line.FindTaggedLine()
+        find_tagged_line_action = find_tagged_line.Operation()
         context = find_tagged_line_action.execute(context)
         assert context["line"] == 4

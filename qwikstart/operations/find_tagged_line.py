@@ -5,7 +5,7 @@ from typing_extensions import TypedDict
 from .base import BaseOperation, OperationError
 
 
-__all__ = ["Context", "FindTaggedLine", "Output"]
+__all__ = ["Context", "Operation", "Output"]
 
 
 class Context(TypedDict):
@@ -17,7 +17,7 @@ class Output(TypedDict):
     line: int
 
 
-class FindTaggedLine(BaseOperation):
+class Operation(BaseOperation):
     """Operation injecting text on a given line"""
 
     name: str = "find-tagged-line"

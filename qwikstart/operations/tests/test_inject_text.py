@@ -35,7 +35,7 @@ class TestTextInject:
                 )
             ),
         }
-        inject_action = inject_text.InjectText()
+        inject_action = inject_text.Operation()
         inject_action.execute(context)
         with context["file_path"].open() as f:
             assert f.read() == dedent(
@@ -61,7 +61,7 @@ class TestTextInject:
                 )
             ),
         }
-        inject_action = inject_text.InjectText(mapping={"line_number": "line"})
+        inject_action = inject_text.Operation(mapping={"line_number": "line"})
         output_context = inject_action.execute(context)
         with context["file_path"].open() as f:
             assert f.read() == dedent(
