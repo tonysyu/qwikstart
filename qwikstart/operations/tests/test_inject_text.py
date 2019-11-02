@@ -22,7 +22,7 @@ def create_mock_file_path(string_data):
 
 class TestTextInject:
     def test_inject_line(self):
-        context: inject_text.InjectTextContext = {
+        context: inject_text.Context = {
             "text": "New Line\n",
             "line": 2,
             "file_path": create_mock_file_path(

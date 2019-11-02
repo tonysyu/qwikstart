@@ -1,10 +1,14 @@
 import abc
 from typing import Any, Mapping, Optional
 
-__all__ = ["Operation"]
+__all__ = ["Operation", "OperationError"]
 
 
 ContextMapping = Optional[Mapping[str, Any]]
+
+
+class OperationError(RuntimeError):
+    pass
 
 
 class Operation(abc.ABC):

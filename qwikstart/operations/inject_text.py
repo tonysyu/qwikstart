@@ -8,7 +8,7 @@ from .base import Operation
 __all__ = ["InjectText"]
 
 
-class InjectTextContext(TypedDict):
+class Context(TypedDict):
     text: str
     line: int
     file_path: Path
@@ -19,7 +19,7 @@ class InjectText(Operation):
 
     name: str = "inject"
 
-    def run(self, context: InjectTextContext) -> None:
+    def run(self, context: Context) -> None:
         file_path = context["file_path"]
 
         with file_path.open() as f:
