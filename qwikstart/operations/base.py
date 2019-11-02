@@ -1,6 +1,9 @@
 import abc
 from typing import Any, Mapping, Optional
 
+from qwikstart import utils
+
+
 __all__ = ["BaseOperation", "OperationError"]
 
 
@@ -39,18 +42,13 @@ class BaseOperation(abc.ABC):
         if not context:
             return {}
 
-        return {
-            self.input_mapping.get(key, key): value
-            for key, value in context.items()
-        }
+        return utils.remap_dict(context, self.input_mapping)
 
     def post_run(self, context):
         if not context:
             return {}
-        return {
-            self.output_mapping.get(key, key): value
-            for key, value in context.items()
-        }
+
+        return utils.remap_dict(context, self.output_mapping)
 
     def execute(self, original_context):
         context = self.pre_run(original_context)
