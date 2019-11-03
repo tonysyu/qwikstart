@@ -24,7 +24,7 @@ class Context(RequiredContext, total=False):
 class Operation(BaseOperation):
     """Operation injecting text on a given line"""
 
-    name: str = "inject"
+    name: str = "inject_text"
 
     def run(self, context: Context) -> None:
         file_path = context["file_path"]

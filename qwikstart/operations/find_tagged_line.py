@@ -21,7 +21,7 @@ class Output(TypedDict):
 class Operation(BaseOperation):
     """Operation injecting text on a given line"""
 
-    name: str = "find-tagged-line"
+    name: str = "find_tagged_line"
 
     def run(self, context: Context) -> Output:
         tag = context["tag"]
