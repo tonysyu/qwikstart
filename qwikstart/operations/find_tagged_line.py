@@ -15,6 +15,7 @@ class Context(TypedDict):
 
 class Output(TypedDict):
     line: int
+    column: int
 
 
 class Operation(BaseOperation):
@@ -27,6 +28,7 @@ class Operation(BaseOperation):
         with context["file_path"].open() as f:
             for line_number, line in enumerate(f, 1):
                 if tag in line:
-                    return {"line": line_number}
+                    column = line.find(tag)
+                    return {"line": line_number, "column": column}
             else:
                 raise OperationError("Failed to find line tagged with {}")

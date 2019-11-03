@@ -23,7 +23,7 @@ class TestFindAndInject:
         find_tagged_line_action = find_tagged_line.Operation()
         context = find_tagged_line_action.execute(context)
 
-        context["text"] = '"my.app",\n'
+        context["text"] = '"my.app",'
         inject_action = inject_text.Operation()
         context = inject_action.execute(context)
 
@@ -33,7 +33,7 @@ class TestFindAndInject:
                     INSTALLED_APPS = [
                         "django.contrib.admin",
                         # qwikstart-INSTALLED_APPS
-                    "my.app",
+                        "my.app",
                     ]
                 """
             )
