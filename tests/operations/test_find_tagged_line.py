@@ -4,7 +4,7 @@ from textwrap import dedent
 import pytest  # type: ignore
 
 from qwikstart.operations import OperationError, find_tagged_line
-from qwikstart.testing import create_mock_file_path
+from ..helpers import create_mock_file_path
 
 
 class TestFindTaggedLine:

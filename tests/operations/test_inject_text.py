@@ -1,7 +1,7 @@
 from textwrap import dedent
 
 from qwikstart.operations import inject_text
-from qwikstart.testing import create_mock_file_path
+from ..helpers import create_mock_file_path
 
 
 class TestTextInject:
