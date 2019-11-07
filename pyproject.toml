@@ -30,6 +30,7 @@ sphinxcontrib-napoleon = { version = "*", optional = true }
 rope = "^0.14.0"
 typing-extensions = "^3.7"
 ipdb = {version = "^0.12.2", extras = ["debug"]}
+jinja2 = "^2.10"
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
 coverage = "*"
