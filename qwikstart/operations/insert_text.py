@@ -4,6 +4,7 @@ from pathlib import Path
 from typing_extensions import TypedDict
 
 from .base import BaseOperation
+from ..utils import indent
 
 
 __all__ = ["Operation"]
@@ -40,7 +41,7 @@ class Operation(BaseOperation):
     def get_text(self, context):
         text = context["text"]
         if context.get("match_indent", True):
-            text = " " * context["column"] + text
+            text = indent(text, context["column"])
 
         line_ending = context.get("line_ending", os.linesep)
         text += line_ending

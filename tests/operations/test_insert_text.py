@@ -80,6 +80,29 @@ class TestTextInject:
             """
         )
 
+    def test_insert_multiline_indent(self):
+        context = {
+            "text": "One\nTwo",
+            "line": 3,
+            "column": 4,
+            "file_path": create_mock_file_path(
+                """
+                    A
+                        B
+                        C
+                """
+            ),
+        }
+        assert insert_text_and_return_file_text(context) == dedent(
+            """
+                A
+                    B
+                    One
+                    Two
+                    C
+            """
+        )
+
     def test_insert_line_ignoring_indent(self):
         context = {
             "text": "New Line",

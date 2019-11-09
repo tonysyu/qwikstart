@@ -1,6 +1,10 @@
+import textwrap
 from typing import Any, Dict
 
 from typing_extensions import TypedDict
+
+
+__all__ = ["indent", "merge_typed_dicts", "remap_dict"]
 
 
 def remap_dict(
@@ -25,3 +29,8 @@ def merge_typed_dicts(*typed_dicts, name: str = "MergedTypeDict"):
     for tdict in typed_dicts:
         key_types.update(tdict.__annotations__)
     return TypedDict(name, key_types)  # type: ignore
+
+
+def indent(text, space_count, predicate=None):
+    """Return `text` indented by `space_count` spaces."""
+    return textwrap.indent(text, " " * space_count)
