@@ -8,7 +8,7 @@ def build_parser():
         description=__doc__, formatter_class=formatter
     )
 
-    parser.add_argument("task", help="Code injection task")
+    parser.add_argument("task", help="Code insertion task")
     return parser
 
 

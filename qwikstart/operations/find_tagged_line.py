@@ -19,7 +19,7 @@ class Output(TypedDict):
 
 
 class Operation(BaseOperation):
-    """Operation injecting text on a given line"""
+    """Operation inserting text on a given line"""
 
     name: str = "find_tagged_line"
 

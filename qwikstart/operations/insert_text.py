@@ -22,9 +22,9 @@ class Context(RequiredContext, total=False):
 
 
 class Operation(BaseOperation):
-    """Operation injecting text on a given line"""
+    """Operation inserting text on a given line"""
 
-    name: str = "inject_text"
+    name: str = "insert_text"
 
     def run(self, context: Context) -> None:
         file_path = context["file_path"]

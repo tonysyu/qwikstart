@@ -1,11 +1,11 @@
 from textwrap import dedent
 
-from qwikstart.operations import find_tagged_line, inject_text
+from qwikstart.operations import find_tagged_line, insert_text
 from ..helpers import create_mock_file_path, read_file_path
 
 
-class TestFindAndInject:
-    def test_inject_line_at_tag(self):
+class TestFindAndInsert:
+    def test_insert_line_at_tag(self):
         context: find_tagged_line.Context = {
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": create_mock_file_path(
@@ -24,8 +24,8 @@ class TestFindAndInject:
         context = find_tagged_line_action.execute(context)
 
         context["text"] = '"my.app",'
-        inject_action = inject_text.Operation()
-        context = inject_action.execute(context)
+        insert_action = insert_text.Operation()
+        context = insert_action.execute(context)
 
         assert read_file_path(context["file_path"]) == dedent(
             """
