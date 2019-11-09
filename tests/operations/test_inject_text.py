@@ -57,7 +57,7 @@ class TestTextInject:
     def test_inject_line_with_matched_indent(self):
         context = {
             "text": "New Line",
-            "line_number": 3,
+            "line": 3,
             "column": 4,
             "file_path": create_mock_file_path(
                 """
@@ -67,7 +67,7 @@ class TestTextInject:
                 """
             ),
         }
-        inject_action = inject_text.Operation(mapping={"line_number": "line"})
+        inject_action = inject_text.Operation()
         output_context = inject_action.execute(context)
         assert read_file_path(context["file_path"]) == dedent(
             """
@@ -82,7 +82,7 @@ class TestTextInject:
     def test_inject_line_ignoring_indent(self):
         context = {
             "text": "New Line",
-            "line_number": 3,
+            "line": 3,
             "column": 4,
             "match_indent": False,
             "file_path": create_mock_file_path(
@@ -93,7 +93,7 @@ class TestTextInject:
                 """
             ),
         }
-        inject_action = inject_text.Operation(mapping={"line_number": "line"})
+        inject_action = inject_text.Operation()
         output_context = inject_action.execute(context)
         assert read_file_path(context["file_path"]) == dedent(
             """
@@ -108,7 +108,7 @@ class TestTextInject:
     def test_inject_line_with_no_trailing_new_line(self):
         context = {
             "text": "New Line",
-            "line_number": 2,
+            "line": 2,
             "column": 0,
             "line_ending": "",
             "file_path": create_mock_file_path(
@@ -118,7 +118,7 @@ class TestTextInject:
                 """
             ),
         }
-        inject_action = inject_text.Operation(mapping={"line_number": "line"})
+        inject_action = inject_text.Operation()
         output_context = inject_action.execute(context)
         assert read_file_path(context["file_path"]) == dedent(
             """
