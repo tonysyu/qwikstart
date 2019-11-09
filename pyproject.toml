@@ -1,6 +1,10 @@
 [tool.black]
 line-length = 79
 
+[tool.isort]
+default_section = "THIRDPARTY"
+known_first_party = "qwikstart"
+
 [tool.poetry]
 name = "qwikstart"
 version = "0.4.0"
