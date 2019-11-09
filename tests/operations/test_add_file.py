@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional
 import jinja2
 
 from qwikstart.operations import add_file
-from ..helpers import create_mock_file_path
+from ..helpers import create_mock_file_path, read_file_path
 
 
 class TestAddFile:
@@ -32,8 +32,8 @@ def render_template(
         "template_loader_args": [{template_name: template_string}],
         "template_variables": template_variables,
     }
+
     add_file_op = add_file.Operation()
     add_file_op.execute(context)
 
-    with output_file.open() as f:
-        return f.read()
+    return read_file_path(output_file)

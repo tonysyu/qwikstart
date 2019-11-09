@@ -17,3 +17,9 @@ def create_mock_file_path(string_data: str):
     mock_file_path = Mock(spec=Path)
     mock_file_path.open.side_effect = open_buffer
     return mock_file_path
+
+
+def read_file_path(file_path: Path):
+    """Return text read from `file_path`."""
+    with file_path.open() as f:
+        return f.read()

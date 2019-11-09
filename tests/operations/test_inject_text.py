@@ -1,7 +1,7 @@
 from textwrap import dedent
 
 from qwikstart.operations import inject_text
-from ..helpers import create_mock_file_path
+from ..helpers import create_mock_file_path, read_file_path
 
 
 class TestTextInject:
@@ -22,15 +22,14 @@ class TestTextInject:
         }
         inject_action = inject_text.Operation()
         inject_action.execute(context)
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    A
-                    New Line
-                    B
-                    C
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                A
+                New Line
+                B
+                C
+            """
+        )
 
     def test_inject_line_with_mapped_data(self):
         context = {
@@ -49,15 +48,14 @@ class TestTextInject:
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
         output_context = inject_action.execute(context)
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    A
-                    New Line
-                    B
-                    C
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                A
+                New Line
+                B
+                C
+            """
+        )
         assert output_context == context
 
     def test_inject_line_with_matched_indent(self):
@@ -77,15 +75,14 @@ class TestTextInject:
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
         output_context = inject_action.execute(context)
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    A
-                        B
-                        New Line
-                        C
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                A
+                    B
+                    New Line
+                    C
+            """
+        )
         assert output_context == context
 
     def test_inject_line_ignoring_indent(self):
@@ -106,15 +103,14 @@ class TestTextInject:
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
         output_context = inject_action.execute(context)
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    A
-                        B
-                    New Line
-                        C
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                A
+                    B
+                New Line
+                    C
+            """
+        )
         assert output_context == context
 
     def test_inject_line_with_no_trailing_new_line(self):
@@ -134,11 +130,10 @@ class TestTextInject:
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
         output_context = inject_action.execute(context)
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    A
-                    New LineB
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                A
+                New LineB
+            """
+        )
         assert output_context == context

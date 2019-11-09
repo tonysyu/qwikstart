@@ -1,7 +1,7 @@
 from textwrap import dedent
 
 from qwikstart.operations import find_tagged_line, inject_text
-from ..helpers import create_mock_file_path
+from ..helpers import create_mock_file_path, read_file_path
 
 
 class TestFindAndInject:
@@ -27,13 +27,12 @@ class TestFindAndInject:
         inject_action = inject_text.Operation()
         context = inject_action.execute(context)
 
-        with context["file_path"].open() as f:
-            assert f.read() == dedent(
-                """
-                    INSTALLED_APPS = [
-                        "django.contrib.admin",
-                        # qwikstart-INSTALLED_APPS
-                        "my.app",
-                    ]
-                """
-            )
+        assert read_file_path(context["file_path"]) == dedent(
+            """
+                INSTALLED_APPS = [
+                    "django.contrib.admin",
+                    # qwikstart-INSTALLED_APPS
+                    "my.app",
+                ]
+            """
+        )
