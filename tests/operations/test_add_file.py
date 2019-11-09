@@ -4,7 +4,7 @@ import jinja2
 
 from qwikstart.operations import add_file
 
-from ..helpers import create_mock_file_path, read_file_path
+from ..helpers import TEMPLATES_DIR, create_mock_file_path, read_file_path
 
 
 class TestAddFile:
@@ -17,6 +17,20 @@ class TestAddFile:
             """Hello, {{name}}!""", template_variables={"name": "World"}
         )
         assert rendered_string == "Hello, World!"
+
+    def test_file_system_template(self):
+        output_file = create_mock_file_path("")
+        context: add_file.Context = {
+            "target_path": output_file,
+            "template_name": "hello_world.txt",
+            "template_loader": jinja2.FileSystemLoader,
+            "template_loader_args": [TEMPLATES_DIR],
+            "template_variables": {"name": "World"},
+        }
+
+        add_file_op = add_file.Operation()
+        add_file_op.execute(context)
+        read_file_path(output_file) == "Hello, World!"
 
 
 def render_template(

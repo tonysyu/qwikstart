@@ -1,8 +1,12 @@
 import io
+import os
 from contextlib import contextmanager
 from pathlib import Path
 from textwrap import dedent
 from unittest.mock import Mock
+
+HERE = os.path.abspath(os.path.dirname(__file__))
+TEMPLATES_DIR = os.path.join(HERE, "templates")
 
 
 def create_mock_file_path(string_data: str):
