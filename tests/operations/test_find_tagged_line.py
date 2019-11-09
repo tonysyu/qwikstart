@@ -1,5 +1,3 @@
-from textwrap import dedent
-
 # Ignore pytest typing: see https://github.com/pytest-dev/pytest/issues/3342
 import pytest  # type: ignore
 
@@ -12,14 +10,12 @@ class TestFindTaggedLine:
         context: find_tagged_line.Context = {
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        INSTALLED_APPS = [
-                            "django.contrib.admin",
-                            # qwikstart-INSTALLED_APPS
-                        ]
-                    """
-                )
+                """
+                    INSTALLED_APPS = [
+                        "django.contrib.admin",
+                        # qwikstart-INSTALLED_APPS
+                    ]
+                """
             ),
         }
         find_tagged_line_action = find_tagged_line.Operation()

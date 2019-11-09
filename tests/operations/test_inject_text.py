@@ -11,13 +11,11 @@ class TestTextInject:
             "line": 2,
             "column": 0,
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        A
-                        B
-                        C
-                    """
-                )
+                """
+                    A
+                    B
+                    C
+                """
             ),
         }
         inject_action = inject_text.Operation()
@@ -37,13 +35,11 @@ class TestTextInject:
             "line_number": 2,
             "column": 0,
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        A
-                        B
-                        C
-                    """
-                )
+                """
+                    A
+                    B
+                    C
+                """
             ),
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
@@ -64,13 +60,11 @@ class TestTextInject:
             "line_number": 3,
             "column": 4,
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        A
-                            B
-                            C
-                    """
-                )
+                """
+                    A
+                        B
+                        C
+                """
             ),
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
@@ -92,13 +86,11 @@ class TestTextInject:
             "column": 4,
             "match_indent": False,
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        A
-                            B
-                            C
-                    """
-                )
+                """
+                    A
+                        B
+                        C
+                """
             ),
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})
@@ -120,12 +112,10 @@ class TestTextInject:
             "column": 0,
             "line_ending": "",
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        A
-                        B
-                    """
-                )
+                """
+                    A
+                    B
+                """
             ),
         }
         inject_action = inject_text.Operation(mapping={"line_number": "line"})

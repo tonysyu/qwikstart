@@ -1,13 +1,14 @@
 import io
 from contextlib import contextmanager
 from pathlib import Path
+from textwrap import dedent
 from unittest.mock import Mock
 
 
 def create_mock_file_path(string_data: str):
     """Return mock `pathlib.Path` to file-like buffer containing `string_data`.
     """
-    string_buffer = io.StringIO(string_data)
+    string_buffer = io.StringIO(dedent(string_data))
 
     @contextmanager
     def open_buffer(*args, **kwargs):
