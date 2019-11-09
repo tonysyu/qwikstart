@@ -9,14 +9,12 @@ class TestFindAndInsert:
         context: find_tagged_line.Context = {
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": create_mock_file_path(
-                dedent(
-                    """
-                        INSTALLED_APPS = [
-                            "django.contrib.admin",
-                            # qwikstart-INSTALLED_APPS
-                        ]
-                    """
-                )
+                """
+                    INSTALLED_APPS = [
+                        "django.contrib.admin",
+                        # qwikstart-INSTALLED_APPS
+                    ]
+                """
             ),
         }
 

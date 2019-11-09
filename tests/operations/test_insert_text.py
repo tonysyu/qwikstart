@@ -14,20 +14,26 @@ class TestTextInject:
                 """
                     A
                     B
-                    C
                 """
             ),
         }
-        insert_action = insert_text.Operation()
-        insert_action.execute(context)
-        assert read_file_path(context["file_path"]) == dedent(
+        assert insert_text_and_return_file_text(context) == dedent(
             """
                 A
                 New Line
                 B
-                C
             """
         )
+
+    def test_return_context_unchanged(self):
+        context: insert_text.Context = {
+            "text": "New Line",
+            "line": 1,
+            "column": 0,
+            "file_path": create_mock_file_path("A\nB"),
+        }
+        insert_action = insert_text.Operation()
+        assert insert_action.execute(context) == context
 
     def test_insert_line_with_mapped_data(self):
         context = {
@@ -38,21 +44,19 @@ class TestTextInject:
                 """
                     A
                     B
-                    C
                 """
             ),
         }
-        insert_action = insert_text.Operation(mapping={"line_number": "line"})
-        output_context = insert_action.execute(context)
-        assert read_file_path(context["file_path"]) == dedent(
+        mapping = {"line_number": "line"}
+        assert insert_text_and_return_file_text(
+            context, mapping=mapping
+        ) == dedent(
             """
                 A
                 New Line
                 B
-                C
             """
         )
-        assert output_context == context
 
     def test_insert_line_with_matched_indent(self):
         context = {
@@ -67,9 +71,7 @@ class TestTextInject:
                 """
             ),
         }
-        insert_action = insert_text.Operation()
-        output_context = insert_action.execute(context)
-        assert read_file_path(context["file_path"]) == dedent(
+        assert insert_text_and_return_file_text(context) == dedent(
             """
                 A
                     B
@@ -77,7 +79,6 @@ class TestTextInject:
                     C
             """
         )
-        assert output_context == context
 
     def test_insert_line_ignoring_indent(self):
         context = {
@@ -93,9 +94,7 @@ class TestTextInject:
                 """
             ),
         }
-        insert_action = insert_text.Operation()
-        output_context = insert_action.execute(context)
-        assert read_file_path(context["file_path"]) == dedent(
+        assert insert_text_and_return_file_text(context) == dedent(
             """
                 A
                     B
@@ -103,7 +102,6 @@ class TestTextInject:
                     C
             """
         )
-        assert output_context == context
 
     def test_insert_line_with_no_trailing_new_line(self):
         context = {
@@ -118,12 +116,15 @@ class TestTextInject:
                 """
             ),
         }
-        insert_action = insert_text.Operation()
-        output_context = insert_action.execute(context)
-        assert read_file_path(context["file_path"]) == dedent(
+        assert insert_text_and_return_file_text(context) == dedent(
             """
                 A
                 New LineB
             """
         )
-        assert output_context == context
+
+
+def insert_text_and_return_file_text(context: insert_text.Context, **kwargs):
+    insert_action = insert_text.Operation(**kwargs)
+    insert_action.execute(context)
+    return read_file_path(context["file_path"])
