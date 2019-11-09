@@ -13,6 +13,10 @@ class OperationError(RuntimeError):
     pass
 
 
+class OperationDefinitionError(ValueError):
+    pass
+
+
 class BaseOperation(abc.ABC):
     """An operation within an qwikstart `Task`"""
 
@@ -26,7 +30,7 @@ class BaseOperation(abc.ABC):
     ):
         if mapping and (input_mapping or output_mapping):
             msg = "`mapping` cannot be specified with input or output mappings"
-            raise ValueError(msg)
+            raise OperationDefinitionError(msg)
         if mapping:
             input_mapping = mapping
             output_mapping = {value: key for key, value in mapping.items()}
