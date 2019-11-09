@@ -1,6 +1,6 @@
-========================================
+===========================================
 qwikstart: Code injector for fun and profit
-========================================
+===========================================
 
 .. default-role:: literal
 
@@ -30,4 +30,10 @@ The recommended way of installing `qwikstart` is to use `pip`::
 See Also
 ========
 
-- `hygen <https://www.hygen.io/>`_: The scalable code generator that saves you time.
+- `hygen <https://www.hygen.io/>`_: The scalable code generator that saves you
+  time.
+- `cookiecutter <https://cookiecutter.readthedocs.io/>`_:
+  A command-line utility that creates projects from cookiecutters (project
+  templates)
+- `pyscaffold <https://pyscaffold.org/>`: Python project template generator
+  with batteries included.
