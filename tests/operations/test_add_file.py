@@ -1,16 +1,18 @@
 from typing import Any, Dict, Optional
+
 import jinja2
 
 from qwikstart.operations import add_file
+
 from ..helpers import create_mock_file_path, read_file_path
 
 
 class TestAddFile:
-    def test_file_with_no_variables(self):
+    def test_no_variables(self):
         rendered_string = render_template("Fake template content")
         assert rendered_string == "Fake template content"
 
-    def test_file_with_variables(self):
+    def test_variables(self):
         rendered_string = render_template(
             """Hello, {{name}}!""", template_variables={"name": "World"}
         )

@@ -7,7 +7,6 @@ from typing_extensions import TypedDict
 
 from .base import BaseOperation
 
-
 __all__ = ["Operation"]
 
 

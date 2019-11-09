@@ -11,7 +11,6 @@ from typing import Any, Dict
 
 import qwikstart
 
-
 # -- Project information -----------------------------------------------------
 
 project = "qwikstart"

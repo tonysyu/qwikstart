@@ -3,9 +3,8 @@ from pathlib import Path
 
 from typing_extensions import TypedDict
 
-from .base import BaseOperation
 from ..utils import indent
-
+from .base import BaseOperation
 
 __all__ = ["Operation"]
 

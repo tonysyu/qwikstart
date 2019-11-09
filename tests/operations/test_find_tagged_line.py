@@ -2,6 +2,7 @@
 import pytest  # type: ignore
 
 from qwikstart.operations import OperationError, find_tagged_line
+
 from ..helpers import create_mock_file_path
 
 

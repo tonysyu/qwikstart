@@ -4,7 +4,6 @@ from typing_extensions import TypedDict
 
 from .base import BaseOperation, OperationError
 
-
 __all__ = ["Context", "Operation", "Output"]
 
 

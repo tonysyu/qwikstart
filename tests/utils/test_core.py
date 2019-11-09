@@ -1,6 +1,6 @@
-from qwikstart.utils import core
-
 from typing_extensions import TypedDict
+
+from qwikstart.utils import core
 
 
 class MergeTypedDicts:

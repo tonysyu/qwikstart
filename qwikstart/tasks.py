@@ -3,7 +3,6 @@ from typing import Any, List
 
 from .operations import BaseOperation
 
-
 __all__ = ["Task"]
 
 

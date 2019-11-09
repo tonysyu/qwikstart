@@ -3,7 +3,6 @@ from typing import Any, Mapping, Optional
 
 from qwikstart import utils
 
-
 __all__ = ["BaseOperation", "OperationError"]
 
 

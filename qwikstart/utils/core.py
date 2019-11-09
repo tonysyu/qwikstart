@@ -3,7 +3,6 @@ from typing import Any, Dict
 
 from typing_extensions import TypedDict
 
-
 __all__ = ["indent", "merge_typed_dicts", "remap_dict"]
 
 
