@@ -3,7 +3,11 @@ from typing import Any, Dict
 
 from typing_extensions import TypedDict
 
-__all__ = ["indent", "merge_typed_dicts", "remap_dict"]
+__all__ = ["first", "indent", "merge_typed_dicts", "remap_dict"]
+
+
+def first(iterable):
+    return next(iter(iterable))
 
 
 def remap_dict(
