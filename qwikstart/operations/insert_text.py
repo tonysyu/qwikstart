@@ -3,13 +3,14 @@ from pathlib import Path
 
 from typing_extensions import TypedDict
 
+from ..base_context import BaseContext
 from ..utils import indent
 from .base import BaseOperation
 
 __all__ = ["Operation"]
 
 
-class RequiredContext(TypedDict):
+class RequiredContext(BaseContext):
     text: str
     line: int
     column: int

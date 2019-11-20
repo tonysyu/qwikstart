@@ -4,7 +4,7 @@ import jinja2
 
 from qwikstart.operations import add_file
 
-from ..helpers import TEMPLATES_DIR, create_mock_file_path, read_file_path
+from .. import helpers
 
 
 class TestAddFile:
@@ -19,18 +19,19 @@ class TestAddFile:
         assert rendered_string == "Hello, World!"
 
     def test_file_system_template(self):
-        output_file = create_mock_file_path("")
+        output_file = helpers.create_mock_file_path("")
         context: add_file.Context = {
+            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
             "target_path": output_file,
-            "template_name": "hello_world.txt",
+            "template_path": "hello_world.txt",
             "template_loader": jinja2.FileSystemLoader,
-            "template_loader_args": [TEMPLATES_DIR],
+            "template_loader_args": [helpers.TEMPLATES_DIR],
             "template_variables": {"name": "World"},
         }
 
         add_file_op = add_file.Operation()
         add_file_op.execute(context)
-        read_file_path(output_file) == "Hello, World!"
+        helpers.read_file_path(output_file) == "Hello, World!"
 
 
 def render_template(
@@ -39,17 +40,18 @@ def render_template(
     """Return rendered string given a template and optional variables."""
     template_variables = template_variables or {}
 
-    output_file = create_mock_file_path("")
-    template_name = "test.txt"
+    output_file = helpers.create_mock_file_path("")
+    template_path = "test.txt"
     context: add_file.Context = {
+        "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
         "target_path": output_file,
-        "template_name": template_name,
+        "template_path": template_path,
         "template_loader": jinja2.DictLoader,
-        "template_loader_args": [{template_name: template_string}],
+        "template_loader_args": [{template_path: template_string}],
         "template_variables": template_variables,
     }
 
     add_file_op = add_file.Operation()
     add_file_op.execute(context)
 
-    return read_file_path(output_file)
+    return helpers.read_file_path(output_file)

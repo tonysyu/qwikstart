@@ -5,14 +5,15 @@ from typing import Any, Dict, List, Type
 import jinja2
 from typing_extensions import TypedDict
 
+from ..base_context import BaseContext
 from .base import BaseOperation
 
 __all__ = ["Operation"]
 
 
-class RequiredContext(TypedDict):
+class RequiredContext(BaseContext):
     target_path: Path
-    template_name: str
+    template_path: str
 
 
 class Context(RequiredContext, total=False):
@@ -34,7 +35,7 @@ class Operation(BaseOperation):
         env = jinja2.Environment(
             loader=loader_class(*loader_args, **loader_kwargs)
         )
-        template = env.get_template(context["template_name"])
+        template = env.get_template(context["template_path"])
 
         template_variables = context.get("template_variables", {})
         with context["target_path"].open("w") as f:
