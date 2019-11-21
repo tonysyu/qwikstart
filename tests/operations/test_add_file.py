@@ -20,12 +20,12 @@ class TestAddFile:
 
     def test_file_system_template(self):
         output_file = helpers.create_mock_file_path("")
+        template_loader = jinja2.FileSystemLoader(helpers.TEMPLATES_DIR)
+        execution_context = helpers.get_execution_context(template_loader)
         context: add_file.Context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": execution_context,
             "target_path": output_file,
             "template_path": "hello_world.txt",
-            "template_loader": jinja2.FileSystemLoader,
-            "template_loader_args": [helpers.TEMPLATES_DIR],
             "template_variables": {"name": "World"},
         }
 
@@ -42,12 +42,11 @@ def render_template(
 
     output_file = helpers.create_mock_file_path("")
     template_path = "test.txt"
+    template_loader = jinja2.DictLoader({template_path: template_string})
     context: add_file.Context = {
-        "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+        "execution_context": helpers.get_execution_context(template_loader),
         "target_path": output_file,
         "template_path": template_path,
-        "template_loader": jinja2.DictLoader,
-        "template_loader_args": [{template_path: template_string}],
         "template_variables": template_variables,
     }
 

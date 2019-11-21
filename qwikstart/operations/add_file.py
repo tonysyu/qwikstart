@@ -17,24 +17,17 @@ class RequiredContext(BaseContext):
 
 
 class Context(RequiredContext, total=False):
-    template_loader: Type[jinja2.BaseLoader]
-    template_loader_args: List[Any]
-    template_loader_kwargs: Dict[str, Any]
     template_variables: Dict[str, Any]
 
 
 class Operation(BaseOperation):
-    """Operation write file"""
+    """Operation to add a file to a project."""
 
-    name: str = "write_file"
+    name: str = "add_file"
 
     def run(self, context: Context) -> None:
-        loader_class = context.get("template_loader", jinja2.FileSystemLoader)
-        loader_args = context.get("template_loader_args", ())
-        loader_kwargs = context.get("template_loader_kwargs", {})
-        env = jinja2.Environment(
-            loader=loader_class(*loader_args, **loader_kwargs)
-        )
+        execution_context = context.get("execution_context")
+        env = jinja2.Environment(loader=execution_context.template_loader)
         template = env.get_template(context["template_path"])
 
         template_variables = context.get("template_variables", {})

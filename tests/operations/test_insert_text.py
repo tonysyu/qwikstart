@@ -8,7 +8,7 @@ from .. import helpers
 class TestTextInject:
     def test_insert_line(self):
         context: insert_text.Context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 2,
             "column": 0,
@@ -29,7 +29,7 @@ class TestTextInject:
 
     def test_return_context_unchanged(self):
         context: insert_text.Context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 1,
             "column": 0,
@@ -40,7 +40,7 @@ class TestTextInject:
 
     def test_insert_line_with_mapped_data(self):
         context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line_number": 2,
             "column": 0,
@@ -64,7 +64,7 @@ class TestTextInject:
 
     def test_insert_line_with_matched_indent(self):
         context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 3,
             "column": 4,
@@ -87,7 +87,7 @@ class TestTextInject:
 
     def test_insert_multiline_indent(self):
         context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "One\nTwo",
             "line": 3,
             "column": 4,
@@ -111,7 +111,7 @@ class TestTextInject:
 
     def test_insert_line_ignoring_indent(self):
         context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 3,
             "column": 4,
@@ -135,7 +135,7 @@ class TestTextInject:
 
     def test_insert_line_with_no_trailing_new_line(self):
         context = {
-            "execution_context": helpers.DEFAULT_EXECUTION_CONTEXT,
+            "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 2,
             "column": 0,
