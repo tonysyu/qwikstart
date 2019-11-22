@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Any, Dict, List
 
 from typing_extensions import TypedDict
 
+from .. import base_context
 from ..tasks import Task
 from .core import ParserError, get_operations_mapping
 from .operations import OPERATION_DEFINITION, normalize_op_definition
@@ -39,8 +41,13 @@ def parse_task(task_definition: TaskDefinition) -> Task:
 def normalize_task_definition(
     task_definition: TaskDefinition
 ) -> TaskDefinition:
+    context = {
+        "execution_context": base_context.ExecutionContext(
+            source_dir=Path("."), target_dir=Path(".")
+        )
+    }
     return {
-        "context": task_definition.get("context", {}),
+        "context": task_definition.get("context", context),
         "operations": [
             normalize_op_definition(op_def)
             for op_def in task_definition["operations"]

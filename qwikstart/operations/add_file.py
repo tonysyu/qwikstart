@@ -27,7 +27,8 @@ class Operation(BaseOperation):
 
     def run(self, context: Context) -> None:
         execution_context = context.get("execution_context")
-        env = jinja2.Environment(loader=execution_context.template_loader)
+        template_loader = execution_context.get_template_loader()
+        env = jinja2.Environment(loader=template_loader)
         template = env.get_template(context["template_path"])
 
         template_variables = context.get("template_variables", {})
