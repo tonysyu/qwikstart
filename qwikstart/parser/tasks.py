@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 
 from typing_extensions import TypedDict
 
@@ -27,10 +27,23 @@ def parse_task(task_definition: TaskDefinition) -> Task:
 
     operations = [
         parse_operation(op_def, known_operations)
-        for op_def in task_definition["operations"]
+        for op_def in normalize_operations_list(task_definition["operations"])
     ]
 
     return Task(context=task_definition["context"], operations=operations)
+
+
+def normalize_operations_list(
+    operations_list: Union[
+        List[OPERATION_DEFINITION], Dict[str, OPERATION_DEFINITION]
+    ],
+) -> List[Dict]:
+    """"""
+    if isinstance(operations_list, list):
+        return operations_list
+    return [
+        {op_name: op_config} for op_name, op_config in operations_list.items()
+    ]
 
 
 def normalize_task_definition(
