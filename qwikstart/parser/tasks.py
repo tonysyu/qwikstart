@@ -6,7 +6,7 @@ from typing_extensions import TypedDict
 from .. import base_context
 from ..tasks import Task
 from .core import ParserError, get_operations_mapping
-from .operations import OPERATION_DEFINITION, normalize_op_definition
+from .operations import OPERATION_DEFINITION, parse_operation
 
 __all__ = ["parse_task"]
 
@@ -24,15 +24,10 @@ def parse_task(task_definition: TaskDefinition) -> Task:
     task_definition = normalize_task_definition(task_definition)
 
     known_operations = get_operations_mapping()
-    input_op_names = (op.name for op in task_definition["operations"])
-    unknown_operations = set(input_op_names).difference(known_operations)
-    if unknown_operations:
-        msg = f"Could not find operations named {unknown_operations}"
-        raise ParserError(msg)
 
     operations = [
-        known_operations[op_name](**op_config)
-        for op_name, op_config in task_definition["operations"]
+        parse_operation(op_def, known_operations)
+        for op_def in task_definition["operations"]
     ]
 
     return Task(context=task_definition["context"], operations=operations)
@@ -48,8 +43,5 @@ def normalize_task_definition(
     }
     return {
         "context": task_definition.get("context", context),
-        "operations": [
-            normalize_op_definition(op_def)
-            for op_def in task_definition["operations"]
-        ],
+        "operations": task_definition["operations"],
     }
