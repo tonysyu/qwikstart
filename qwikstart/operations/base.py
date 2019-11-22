@@ -17,6 +17,16 @@ class OperationDefinitionError(ValueError):
     pass
 
 
+class NoisyDict(dict):
+    def __getitem__(self, key):
+        try:
+            return super().__getitem__(key)
+        except KeyError as error:
+            msg = f"Key '{key}' required, but context only has keys: "
+            existing_keys = ", ".join(f"'{k}'" for k in self.keys())
+            raise KeyError(msg + existing_keys) from error
+
+
 class BaseOperation(abc.ABC):
     """An operation within a qwikstart `Task`"""
 
@@ -46,10 +56,10 @@ class BaseOperation(abc.ABC):
 
     def pre_run(self, context):
         if not context:
-            return {}
+            return NoisyDict()
 
         context = utils.remap_dict(context, self.input_mapping)
-        return {**context, **self.local_context}
+        return NoisyDict(**context, **self.local_context)
 
     def post_run(self, context):
         if not context:
@@ -63,9 +73,18 @@ class BaseOperation(abc.ABC):
         context = self.post_run(context)
         return {**original_context, **context}
 
+    def __repr__(self):
+        return (
+            utils.full_class_name(self)
+            + f"(local_context={self.local_context}, "
+            f"input_mapping={self.input_mapping}, "
+            f"output_mapping={self.output_mapping})"
+        )
+
     def __eq__(self, other):
         return (
-            isinstance(other, self.__class__)
+            other.__class__ is self.__class__
+            and other.local_context == self.local_context
             and other.input_mapping == self.input_mapping
             and other.output_mapping == self.output_mapping
         )

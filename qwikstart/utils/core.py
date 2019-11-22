@@ -3,11 +3,21 @@ from typing import Any, Dict
 
 from typing_extensions import TypedDict
 
-__all__ = ["first", "indent", "merge_typed_dicts", "remap_dict"]
+__all__ = [
+    "first",
+    "full_class_name",
+    "indent",
+    "merge_typed_dicts",
+    "remap_dict",
+]
 
 
 def first(iterable):
     return next(iter(iterable))
+
+
+def full_class_name(obj):
+    return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
 
 
 def remap_dict(
