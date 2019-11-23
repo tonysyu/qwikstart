@@ -35,6 +35,10 @@ rope = "^0.14.0"
 typing-extensions = "^3.7"
 ipdb = {version = "^0.12.2", extras = ["debug"]}
 jinja2 = "^2.10"
+click = "^7.0"
+# The dataclasses module is not in the stdlib in Python 3.6
+dataclasses = { version = "^0.7", python = "~3.6" }
+pyyaml = "^5.1"
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
 coverage = "*"

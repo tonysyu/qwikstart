@@ -1,0 +1,7 @@
+operations:
+    add_file:
+        local_context:
+            template_path: "templates/hello_world.txt"
+            template_variables:
+                name: "World"
+            target_path: "./hello_world.txt"
