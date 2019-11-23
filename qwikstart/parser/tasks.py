@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
 from typing_extensions import TypedDict
 
@@ -19,9 +19,11 @@ class TaskDefinition(RequiredTaskDefinition):
     context: Dict[str, Any]
 
 
-def parse_task(task_definition: TaskDefinition) -> Task:
+def parse_task(
+    task_definition: TaskDefinition, source_path: Optional[Path] = None
+) -> Task:
     """Return task parsed from a task definition dictionary."""
-    task_definition = normalize_task_definition(task_definition)
+    normalize_context(task_definition, source_path)
 
     known_operations = get_operations_mapping()
 
@@ -46,15 +48,14 @@ def normalize_operations_list(
     ]
 
 
-def normalize_task_definition(
-    task_definition: TaskDefinition
-) -> TaskDefinition:
-    context = {
-        "execution_context": base_context.ExecutionContext(
-            source_dir=Path("."), target_dir=Path(".")
-        )
-    }
-    return {
-        "context": task_definition.get("context", context),
-        "operations": task_definition["operations"],
-    }
+def normalize_context(
+    task_definition: TaskDefinition, source_path: Optional[Path] = None
+) -> None:
+    task_definition.setdefault("context", {})
+    source_dir = source_path.parent if source_path else Path(".")
+    task_definition["context"].setdefault(
+        "execution_context",
+        base_context.ExecutionContext(
+            source_dir=source_dir, target_dir=Path(".")
+        ),
+    )

@@ -1,18 +1,19 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Type
+from typing import Any, Dict, List, Type, Union
 
 import jinja2
 from typing_extensions import TypedDict
 
 from ..base_context import BaseContext
+from ..utils import ensure_path
 from .base import BaseOperation
 
 __all__ = ["Operation"]
 
 
 class RequiredContext(BaseContext):
-    target_path: Path
+    target_path: Union[Path, str]
     template_path: str
 
 
@@ -32,5 +33,6 @@ class Operation(BaseOperation):
         template = env.get_template(context["template_path"])
 
         template_variables = context.get("template_variables", {})
-        with context["target_path"].open("w") as f:
+
+        with ensure_path(context["target_path"]).open("w") as f:
             f.write(template.render(**template_variables))

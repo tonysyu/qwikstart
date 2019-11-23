@@ -1,15 +1,29 @@
 import textwrap
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, Union
 
 from typing_extensions import TypedDict
 
 __all__ = [
+    "ensure_path",
     "first",
     "full_class_name",
     "indent",
     "merge_typed_dicts",
     "remap_dict",
 ]
+
+
+def ensure_path(path: Union[Path, str]) -> Path:
+    """Return path object from `pathlib.Path` or string.
+
+    While `Path` can be called on strings or `Path` and return a `Path`, it
+    does not behave correctly for mock path instances. This helper function
+    ensures we can support normal usage and mocked paths used for testing.
+    """
+    if hasattr(path, "open"):
+        return path
+    return Path(path)
 
 
 def first(iterable):
