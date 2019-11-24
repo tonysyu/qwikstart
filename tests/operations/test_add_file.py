@@ -14,7 +14,8 @@ class TestAddFile:
 
     def test_variables(self):
         rendered_string = render_template(
-            """Hello, {{name}}!""", template_variables={"name": "World"}
+            """Hello, {{ qwikstart.name }}!""",
+            template_variables={"name": "World"},
         )
         assert rendered_string == "Hello, World!"
 
@@ -31,7 +32,7 @@ class TestAddFile:
 
         add_file_op = add_file.Operation()
         add_file_op.execute(context)
-        helpers.read_file_path(output_file) == "Hello, World!"
+        assert helpers.read_file_path(output_file) == "Hello, World!"
 
 
 def render_template(

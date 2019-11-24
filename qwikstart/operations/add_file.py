@@ -19,6 +19,7 @@ class RequiredContext(BaseContext):
 
 class Context(RequiredContext, total=False):
     template_variables: Dict[str, Any]
+    template_variable_prefix: str
 
 
 class Operation(BaseOperation):
@@ -33,6 +34,7 @@ class Operation(BaseOperation):
         template = env.get_template(context["template_path"])
 
         template_variables = context.get("template_variables", {})
+        prefix = context.get("template_variable_prefix", "qwikstart")
 
         with ensure_path(context["target_path"]).open("w") as f:
-            f.write(template.render(**template_variables))
+            f.write(template.render({prefix: template_variables}))
