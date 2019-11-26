@@ -2,10 +2,9 @@
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-import click
 import yaml
 
-from .parser import ParserError, get_operations_mapping, parse_task
+from ..parser import ParserError, get_operations_mapping, parse_task
 
 
 class YamlLoader:
@@ -52,48 +51,3 @@ def resolve_task(task_path):
     else:
         attempts = "\n- ".join(attempted_paths)
         raise RuntimeError(f"Could not resolve path. Attempted: {attempts}")
-
-
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-@click.argument("task_path")
-def run(task_path):
-    """Run task in the current directory."""
-    task = resolve_task(task_path)
-    task.execute()
-
-
-@cli.command()
-@click.argument("op_name")
-def help(op_name):
-    """Show help for the given operation."""
-    op_mapping = get_operations_mapping()
-    operation = op_mapping[op_name]
-
-    click.echo(click.style(op_name, fg="green") + f": {operation.__doc__}")
-
-    variables = operation.run.__annotations__["context"].__annotations__
-    if variables:
-        click.echo(f"\nContext variables:")
-    for var_name, var_type in variables.items():
-        click.echo(click.style(var_name, fg="yellow") + f": {var_type}")
-
-
-@cli.command()
-def list_operations():
-    """Show help for the given operation."""
-    op_mapping = get_operations_mapping()
-    for op_name, operation in op_mapping.items():
-        click.echo(click.style(op_name, fg="green") + f": {operation.__doc__}")
-
-
-def main():
-    cli()
-
-
-if __name__ == "__main__":
-    cli()

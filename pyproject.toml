@@ -57,7 +57,7 @@ pytest-mypy = "^0.4.1"
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
 
 [tool.poetry.scripts]
-qwikstart = "qwikstart.cli:main"
+qwikstart = "qwikstart.cli.main:main"
 
 [build-system]
 requires = ["poetry>=0.12"]
