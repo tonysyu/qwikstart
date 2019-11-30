@@ -7,6 +7,7 @@ from typing_extensions import TypedDict
 
 from ..base_context import BaseContext
 from ..utils import ensure_path
+from ..utils.templates import TemplateRenderer
 from .base import BaseOperation
 
 __all__ = ["Operation"]
@@ -28,13 +29,6 @@ class Operation(BaseOperation):
     name: str = "add_file"
 
     def run(self, context: Context) -> None:
-        execution_context = context.get("execution_context")
-        template_loader = execution_context.get_template_loader()
-        env = jinja2.Environment(loader=template_loader)
-        template = env.get_template(context["template_path"])
-
-        template_variables = context.get("template_variables", {})
-        prefix = context.get("template_variable_prefix", "qwikstart")
-
+        renderer = TemplateRenderer.from_context(context)
         with ensure_path(context["target_path"]).open("w") as f:
-            f.write(template.render({prefix: template_variables}))
+            f.write(renderer.render(context["template_path"]))
