@@ -21,15 +21,20 @@ class TemplateRenderer:
         self.template_variable_prefix = (
             template_variable_prefix or DEFAULT_TEMPLATE_VARIABLE_PREFIX
         )
+        self._template_context = {
+            self.template_variable_prefix: self.template_variables
+        }
 
-    def get_template(self, path: str):
+    def get_template(self, path: str) -> jinja2.Template:
         return self._env.get_template(path)
 
-    def render(self, template_path: str):
+    def render(self, template_path: str) -> str:
         template = self.get_template(template_path)
-        return template.render(
-            {self.template_variable_prefix: self.template_variables}
-        )
+        return template.render(self._template_context)
+
+    def render_string(self, string: str) -> str:
+        template = self._env.from_string(string)
+        return template.render(self._template_context)
 
     @classmethod
     def from_context(cls, context: BaseContext):

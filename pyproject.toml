@@ -52,6 +52,7 @@ twine = "*"
 wheel = "*"
 pre-commit = "^1.17"
 pytest-mypy = "^0.4.1"
+pyfakefs = "^3.7"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
