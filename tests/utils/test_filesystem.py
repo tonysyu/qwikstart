@@ -17,12 +17,16 @@ class TestRenderFileTree(TestCase):
         self.fs.create_dir(self.target_dir)
 
     def render_source_directory_to_target_directory(
-        self, template_variables=None
+        self, template_variables=None, source_dir=None, target_dir=None
     ) -> None:
         renderer = templates.TemplateRenderer(
             jinja2.FileSystemLoader("/"), template_variables=template_variables
         )
-        filesystem.render_file_tree(self.source_dir, self.target_dir, renderer)
+        filesystem.render_file_tree(
+            source_dir or self.source_dir,
+            target_dir or self.target_dir,
+            renderer,
+        )
 
     def test_empty_source_tree(self):
         self.render_source_directory_to_target_directory()
@@ -37,17 +41,17 @@ class TestRenderFileTree(TestCase):
             assert f.read() == "test"
 
     def test_copy_file_in_directory(self):
-        directory = self.source_dir / "subdir"
-        self.fs.create_dir(directory)
-        self.fs.create_file(directory / "test.txt")
+        subdir = self.source_dir / "subdir"
+        self.fs.create_dir(subdir)
+        self.fs.create_file(subdir / "test.txt")
         self.render_source_directory_to_target_directory()
 
         assert os.path.isdir(self.target_dir / "subdir")
         assert os.path.isfile(self.target_dir / "subdir" / "test.txt")
 
     def test_render_variable_in_directory_name(self):
-        directory = self.source_dir / "{{ qwikstart.name }}"
-        self.fs.create_dir(directory)
+        subdir = self.source_dir / "{{ qwikstart.name }}"
+        self.fs.create_dir(subdir)
         self.render_source_directory_to_target_directory(
             template_variables={"name": "dynamic-name"}
         )
@@ -61,6 +65,16 @@ class TestRenderFileTree(TestCase):
         )
 
         assert os.path.isfile(self.target_dir / "dynamic-name.txt")
+
+    def test_render_sub_directory(self):
+        subdir = self.source_dir / "subdir"
+        self.fs.create_dir(subdir)
+        self.fs.create_file(subdir / "test.txt")
+        self.render_source_directory_to_target_directory(source_dir=subdir)
+
+        # Only the contents of subdir should be copied, not subdir itself.
+        assert not os.path.exists(self.target_dir / "subdir")
+        assert os.path.isfile(self.target_dir / "test.txt")
 
     def test_render_variable_in_file_contents(self):
         self.fs.create_file(

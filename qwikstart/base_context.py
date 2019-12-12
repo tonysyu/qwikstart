@@ -17,7 +17,7 @@ class ExecutionContext:
     target_dir: Path
 
     def get_template_loader(self) -> jinja2.BaseLoader:
-        return jinja2.FileSystemLoader(str(self.source_dir))
+        return jinja2.FileSystemLoader("/")
 
 
 class BaseContext(TypedDict):
