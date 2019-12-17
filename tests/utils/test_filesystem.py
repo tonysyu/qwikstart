@@ -40,6 +40,16 @@ class TestRenderFileTree(TestCase):
         with open(self.target_dir / "test.txt") as f:
             assert f.read() == "test"
 
+    def test_copy_binary_file(self):
+        data = bytes([123, 3, 255, 0, 100])
+        with open(self.source_dir / "array.bin", "wb") as f:
+            assert f.write(data)
+        self.render_source_directory_to_target_directory()
+
+        assert os.listdir(self.target_dir) == ["array.bin"]
+        with open(self.target_dir / "array.bin", "rb") as f:
+            assert f.read() == data
+
     def test_copy_file_in_directory(self):
         subdir = self.source_dir / "subdir"
         self.fs.create_dir(subdir)

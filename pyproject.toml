@@ -39,6 +39,7 @@ click = "^7.0"
 # The dataclasses module is not in the stdlib in Python 3.6
 dataclasses = { version = "^0.7", python = "~3.6" }
 pyyaml = "^5.1"
+binaryornot = "^0.4.4"
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
 coverage = "*"
