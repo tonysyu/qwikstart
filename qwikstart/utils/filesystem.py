@@ -11,6 +11,9 @@ from .templates import TemplateRenderer
 def render_file_tree(
     source_dir: Path, target_dir: Path, renderer: TemplateRenderer
 ):
+    if not target_dir.exists():
+        target_dir.mkdir()
+
     for root, dirs, files in os.walk(source_dir.resolve()):
         for filename in files:
             source_path = Path(root, filename)

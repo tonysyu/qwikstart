@@ -8,11 +8,14 @@ from qwikstart.utils import filesystem, templates
 
 
 class TestRenderFileTree(TestCase):
-    source_dir = Path("/source")
-    target_dir = Path("/target")
-
     def setUp(self):
         self.setUpPyfakefs()
+
+        # Define paths here rather than using class variables since pyfakefs
+        # can't patch globally scoped variables.
+        self.source_dir = Path("/source")
+        self.target_dir = Path("/target")
+
         self.fs.create_dir(self.source_dir)
         self.fs.create_dir(self.target_dir)
 
@@ -55,6 +58,15 @@ class TestRenderFileTree(TestCase):
         self.fs.create_dir(subdir)
         self.fs.create_file(subdir / "test.txt")
         self.render_source_directory_to_target_directory()
+
+        assert os.path.isdir(self.target_dir / "subdir")
+        assert os.path.isfile(self.target_dir / "subdir" / "test.txt")
+
+    def test_create_target_directory(self):
+        self.fs.create_file(self.source_dir / "test.txt")
+        target_dir = self.target_dir / "subdir"
+        assert not os.path.isdir(target_dir)
+        self.render_source_directory_to_target_directory(target_dir=target_dir)
 
         assert os.path.isdir(self.target_dir / "subdir")
         assert os.path.isfile(self.target_dir / "subdir" / "test.txt")
