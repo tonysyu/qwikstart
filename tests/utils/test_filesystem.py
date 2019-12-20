@@ -1,3 +1,10 @@
+"""
+Tests for qwikstart.utils.filesystem
+
+These tests use pyfakefs (https://jmcgeheeiv.github.io/pyfakefs/) for mocking
+the filesystem. It appears that this doesn't play nicely with `ipdb` so any
+debugging of these tests will need to be done with normal `pdb`.
+"""
 import os
 from pathlib import Path
 
@@ -62,6 +69,10 @@ class TestRenderFileTree(TestCase):
         assert os.path.isdir(self.target_dir / "subdir")
         assert os.path.isfile(self.target_dir / "subdir" / "test.txt")
 
+        # Regression test: Previous versions copied subdirectory files
+        # to the parent directory in addition to the subdirectory.
+        assert not os.path.isfile(self.target_dir / "test.txt")
+
     def test_create_target_directory(self):
         self.fs.create_file(self.source_dir / "test.txt")
         target_dir = self.target_dir / "subdir"
@@ -74,11 +85,14 @@ class TestRenderFileTree(TestCase):
     def test_render_variable_in_directory_name(self):
         subdir = self.source_dir / "{{ qwikstart.name }}"
         self.fs.create_dir(subdir)
+        self.fs.create_file(subdir / "test.txt")
+
         self.render_source_directory_to_target_directory(
             template_variables={"name": "dynamic-name"}
         )
 
         assert os.path.isdir(self.target_dir / "dynamic-name")
+        assert os.path.isfile(self.target_dir / "dynamic-name" / "test.txt")
 
     def test_render_variable_in_file_name(self):
         self.fs.create_file(self.source_dir / "{{ qwikstart.name }}.txt")
