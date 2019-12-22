@@ -104,5 +104,7 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# Don't ignore examples
-!/example_data/*
+# Ignore example output
+examples/output
+
+

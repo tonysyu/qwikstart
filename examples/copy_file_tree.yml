@@ -1,0 +1,9 @@
+operations:
+    add_file_tree:
+        local_context:
+            target_dir: "./examples/output/copy-file-tree"
+            template_dir: "templates/copy-file-tree"
+            template_variables:
+                name: "World"
+                dynamic_directory_name: "my-dynamic-directory"
+                dynamic_file_name: "my-dynamic-file"
