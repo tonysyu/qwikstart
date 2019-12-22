@@ -32,11 +32,12 @@ class TestRenderFileTree(TestCase):
         renderer = templates.TemplateRenderer(
             jinja2.FileSystemLoader("/"), template_variables=template_variables
         )
-        filesystem.render_file_tree(
+        generator = filesystem.FileTreeGenerator(
             source_dir or self.source_dir,
             target_dir or self.target_dir,
             renderer,
         )
+        generator.copy()
 
     def test_empty_source_tree(self):
         self.render_source_directory_to_target_directory()

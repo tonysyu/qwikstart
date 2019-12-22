@@ -8,38 +8,50 @@ from .core import ensure_path
 from .templates import TemplateRenderer
 
 
-def render_file_tree(
-    source_dir: Path, target_dir: Path, renderer: TemplateRenderer
-):
-    if not target_dir.exists():
-        target_dir.mkdir()
-    source_dir = source_dir.resolve()
+class FileTreeGenerator:
+    def __init__(
+        self, source_dir: Path, target_dir: Path, renderer: TemplateRenderer
+    ):
+        if not target_dir.exists():
+            target_dir.mkdir()
 
-    # Keep a mapping between source directories and target directories.
-    # This simplifies resolution of rendered directory names.
-    directory_mapping = {str(source_dir): target_dir}
+        self.target_dir = target_dir
+        self.source_dir = source_dir.resolve()
+        self.renderer = renderer
 
-    for source_root, dirs, files in os.walk(source_dir):
-        source_root = Path(source_root)
-        target_root = directory_mapping[str(source_root)]
+        # Keep a mapping between source directories and target directories.
+        # This simplifies resolution of rendered directory names.
+        self._directory_mapping = {str(source_dir): target_dir}
 
-        for filename in files:
-            source_path = Path(source_root, filename)
+    def copy(self):
+        for source_root, dirs, files in os.walk(self.source_dir):
+            source_root = Path(source_root)
+            target_root = self._directory_mapping[str(source_root)]
 
-            # Render filename since it may be a template:
-            target_filename = renderer.render_string(filename)
-            target_path = target_root / target_filename
+            for filename in files:
+                self._copy_file(filename, source_root, target_root)
 
-            if is_binary(str(source_path)):
-                shutil.copy(source_path, target_path)
-            else:
-                with target_path.open("w") as f:
-                    f.write(renderer.render(str(source_path)))
+            for subdir in dirs:
+                self._ensure_dir_exists(subdir, source_root, target_root)
 
-        for source_subdir in dirs:
-            target_subdir = renderer.render_string(source_subdir)
-            target_path = target_root / target_subdir
+    def _copy_file(self, source_filename, source_root, target_root):
+        # Render source_filename since it may be a template:
+        tgt_path = target_root / self.renderer.render_string(source_filename)
 
-            directory_mapping[str(source_root / source_subdir)] = target_path
+        src_path = Path(source_root, source_filename)
+        if is_binary(str(src_path)):
+            shutil.copy(src_path, tgt_path)
+        else:
+            with tgt_path.open("w") as f:
+                f.write(self.renderer.render(str(src_path)))
 
-            target_path.mkdir(exist_ok=True)
+    def _ensure_dir_exists(self, source_subdir, source_root, target_root):
+        """Create subdirectory in target directory ."""
+        # Render source_subdir since it may be a template:
+        tgt_path = target_root / self.renderer.render_string(source_subdir)
+
+        # Whenever a new directory is traversed, add to directory mapping.
+        src_path = source_root / source_subdir
+        self._directory_mapping[str(src_path)] = tgt_path
+
+        tgt_path.mkdir(exist_ok=True)
