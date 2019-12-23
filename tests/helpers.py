@@ -5,24 +5,16 @@ from pathlib import Path
 from textwrap import dedent
 from unittest.mock import Mock
 
-import jinja2
-
 from qwikstart import base_context
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(HERE, "templates")
 
 
-def get_execution_context(template_loader=None):
-    if template_loader:
-
-        class ExecutionContext(base_context.ExecutionContext):
-            def get_template_loader(self) -> jinja2.BaseLoader:
-                return template_loader
-
-    else:
-        ExecutionContext = base_context.ExecutionContext
-    return ExecutionContext(source_dir=Path(HERE), target_dir=Path(HERE))
+def get_execution_context(**execution_context_kwargs):
+    execution_context_kwargs.setdefault("source_dir", Path(HERE))
+    execution_context_kwargs.setdefault("target_dir", Path(HERE))
+    return base_context.ExecutionContext(**execution_context_kwargs)
 
 
 def create_mock_file_path(string_data: str):

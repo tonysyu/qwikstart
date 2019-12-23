@@ -1,28 +1,35 @@
+from pathlib import Path
 from typing import Any, Dict, Optional
 
-import jinja2
+from pyfakefs.fake_filesystem_unittest import TestCase  # type: ignore
 
 from qwikstart.operations import add_file
 
 from .. import helpers
 
 
-class TestAddFile:
+class TestAddFile(TestCase):
+    def setUp(self):
+        self.setUpPyfakefs()
+
     def test_no_variables(self):
-        rendered_string = render_template("Fake template content")
+        rendered_string = self.render_template("Fake template content")
         assert rendered_string == "Fake template content"
 
     def test_variables(self):
-        rendered_string = render_template(
+        rendered_string = self.render_template(
             """Hello, {{ qwikstart.name }}!""",
             template_variables={"name": "World"},
         )
         assert rendered_string == "Hello, World!"
 
     def test_file_system_template(self):
-        output_file = helpers.create_mock_file_path("")
-        template_loader = jinja2.FileSystemLoader(helpers.TEMPLATES_DIR)
-        execution_context = helpers.get_execution_context(template_loader)
+        execution_context = helpers.get_execution_context(
+            source_dir=helpers.TEMPLATES_DIR
+        )
+        self.fs.add_real_directory(helpers.TEMPLATES_DIR)
+
+        output_file = Path("output.txt")
         context: add_file.Context = {
             "execution_context": execution_context,
             "target_path": output_file,
@@ -34,24 +41,30 @@ class TestAddFile:
         add_file_op.execute(context)
         assert helpers.read_file_path(output_file) == "Hello, World!"
 
+    def render_template(
+        self,
+        template_string: str,
+        template_variables: Optional[Dict[str, Any]] = None,
+    ):
+        """Return rendered string given a template and optional variables."""
+        template_variables = template_variables or {}
+        source_dir = Path("/source")
 
-def render_template(
-    template_string: str, template_variables: Optional[Dict[str, Any]] = None
-):
-    """Return rendered string given a template and optional variables."""
-    template_variables = template_variables or {}
+        template_path = "test.txt"
+        self.fs.create_file(source_dir / "test.txt", contents=template_string)
 
-    output_file = helpers.create_mock_file_path("")
-    template_path = "test.txt"
-    template_loader = jinja2.DictLoader({template_path: template_string})
-    context: add_file.Context = {
-        "execution_context": helpers.get_execution_context(template_loader),
-        "target_path": output_file,
-        "template_path": template_path,
-        "template_variables": template_variables,
-    }
+        output_file = Path("output.txt")
 
-    add_file_op = add_file.Operation()
-    add_file_op.execute(context)
+        context: add_file.Context = {
+            "execution_context": helpers.get_execution_context(
+                source_dir=source_dir
+            ),
+            "target_path": output_file,
+            "template_path": template_path,
+            "template_variables": template_variables,
+        }
 
-    return helpers.read_file_path(output_file)
+        add_file_op = add_file.Operation()
+        add_file_op.execute(context)
+
+        return helpers.read_file_path(output_file)
