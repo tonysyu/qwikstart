@@ -1,0 +1,10 @@
+operations:
+    prompt_user:
+        local_context:
+            prompts:
+                - name: "name"
+                  default_value: "Tony"
+    add_file:
+        local_context:
+            template_path: "./templates/hello_world.txt"
+            target_path: "./examples/output/hello_world_with_prompt.txt"
