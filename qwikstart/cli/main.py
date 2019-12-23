@@ -37,6 +37,7 @@ def help(op_name):
     click.echo(click.style(op_name, fg="green") + f": {operation.__doc__}")
 
     variables = operation.run.__annotations__["context"].__annotations__
+    variables.pop("execution_context", None)
     if variables:
         click.echo(f"\nContext variables:")
     for var_name, var_type in variables.items():
