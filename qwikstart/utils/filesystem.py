@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 from pathlib import Path
@@ -6,6 +7,8 @@ from binaryornot.check import is_binary
 
 from .core import ensure_path
 from .templates import TemplateRenderer
+
+logger = logging.getLogger(__name__)
 
 
 class FileTreeGenerator:
@@ -41,9 +44,11 @@ class FileTreeGenerator:
         src_path = Path(source_root, source_filename)
         if is_binary(str(src_path)):
             shutil.copy(src_path, tgt_path)
+            logger.debug(f"Copied binary file from {src_path} to {tgt_path}")
         else:
             with tgt_path.open("w") as f:
                 f.write(self.renderer.render(str(src_path)))
+            logger.debug(f"Rendered template from {src_path} to {tgt_path}")
 
     def _ensure_dir_exists(self, source_subdir, source_root, target_root):
         """Create subdirectory in target directory ."""
@@ -55,3 +60,4 @@ class FileTreeGenerator:
         self._directory_mapping[str(src_path)] = tgt_path
 
         tgt_path.mkdir(exist_ok=True)
+        logger.debug(f"Created directory {tgt_path}")

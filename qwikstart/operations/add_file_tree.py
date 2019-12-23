@@ -1,3 +1,4 @@
+import logging
 from pathlib import Path
 from typing import Any, Dict, Union
 
@@ -10,6 +11,8 @@ from ..utils.templates import TemplateRenderer
 from .base import BaseOperation
 
 __all__ = ["Operation"]
+
+logger = logging.getLogger(__name__)
 
 
 class RequiredContext(BaseContext):
@@ -36,3 +39,5 @@ class Operation(BaseOperation):
 
         generator = FileTreeGenerator(Path(source), Path(target), renderer)
         generator.copy()
+
+        logger.info(f"Add file tree at {target}")

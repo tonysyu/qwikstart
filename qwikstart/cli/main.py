@@ -2,6 +2,7 @@
 import click
 
 from ..parser import get_operations_mapping
+from ..utils import logging
 from .resolver import resolve_task
 
 
@@ -12,8 +13,16 @@ def cli():
 
 @cli.command()
 @click.argument("task_path")
-def run(task_path):
+@click.option(
+    "-v",
+    "--verbose",
+    is_flag=True,
+    help="Print debug information",
+    default=False,
+)
+def run(task_path, verbose):
     """Run task in the current directory."""
+    logging.configure_logger("DEBUG" if verbose else "INFO")
     task = resolve_task(task_path)
     task.execute()
 
