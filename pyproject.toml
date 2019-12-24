@@ -33,7 +33,6 @@ sphinx-autobuild = { version = "*", optional = true }
 sphinxcontrib-napoleon = { version = "*", optional = true }
 rope = "^0.14.0"
 typing-extensions = "^3.7"
-ipdb = {version = "^0.12.2", extras = ["debug"]}
 jinja2 = "^2.10"
 click = "^7.0"
 # The dataclasses module is not in the stdlib in Python 3.6
@@ -45,6 +44,7 @@ colorlog = "^4.0.2"
 bumpversion = "*"
 coverage = "*"
 flake8 = "*"
+ipdb = "^0.12.2"
 mock = "*"
 pytest = "*"
 pytest-cov = "*"
