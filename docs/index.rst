@@ -1,3 +1,9 @@
+Welcome to qwikstart's documentation!
+=====================================
+
+Contents
+--------
+
 .. toctree::
    :maxdepth: 2
 
