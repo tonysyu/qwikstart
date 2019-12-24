@@ -1,4 +1,3 @@
-===========================================
 qwikstart: Code injector for fun and profit
 ===========================================
 
@@ -23,9 +22,23 @@ qwikstart: Code injector for fun and profit
 Install
 =======
 
-The recommended way of installing `qwikstart` is to use `pip`::
+The recommended way of installing `qwikstart` is to use pipx_::
 
-    pip install qwikstart
+    pipx install qwikstart
+
+If you happen to be setting up pipx_ for the first time, the
+`pipx installation instructions`_ suggest running `pipx ensurepath` to update
+the user path. Note, if you use `~/.profile` instead of `~/.bash_profile`,
+this will add `~/.bash_profile`, which will take precendence over `~/.profile`.
+
+.. _pipx: https://pypi.org/project/pipx/
+.. _pipx installation instructions:
+    https://pipxproject.github.io/pipx/installation/
+
+Basic Usage
+===========
+
+
 
 See Also
 ========
@@ -35,5 +48,5 @@ See Also
 - `cookiecutter <https://cookiecutter.readthedocs.io/>`_:
   A command-line utility that creates projects from cookiecutters (project
   templates)
-- `pyscaffold <https://pyscaffold.org/>`: Python project template generator
+- `pyscaffold <https://pyscaffold.org/>`_: Python project template generator
   with batteries included.
