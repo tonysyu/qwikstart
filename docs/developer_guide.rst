@@ -81,7 +81,7 @@ A reminder for the maintainers on how to deploy.
     $ git push
     $ git push --tags
 
-- Build release, deploy to PyPI, and clean ::
+- Build release and deploy to PyPI::
 
-    $ make release
-    $ make clean
+    $ poetry build
+    $ poetry publish
