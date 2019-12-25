@@ -81,5 +81,6 @@ class BaseOperation(abc.ABC):
             and other.output_mapping == self.output_mapping
         )
 
-    def get_context_class(self):
-        return self.run.__annotations__["context"]
+    @classmethod
+    def get_context_class(cls):
+        return cls.run.__annotations__["context"]
