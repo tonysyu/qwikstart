@@ -37,3 +37,7 @@ class BaseContext:
                 if key in inspect.signature(cls).parameters
             }
         )
+
+    @classmethod
+    def help(cls, field_name):
+        return None
