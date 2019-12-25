@@ -3,7 +3,7 @@ operations:
         local_context:
             prompts:
                 - name: "name"
-                  default_value: "Tony"
+                  default_value: "World"
     add_file:
         local_context:
             template_path: "./templates/hello_world.txt"
