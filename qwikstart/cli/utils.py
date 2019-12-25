@@ -1,48 +1,64 @@
+import dataclasses
 import inspect
-from dataclasses import dataclass, field
 from typing import Any, List
 
 from ..parser import get_operations_mapping
 
+__all__ = ["get_operation_help"]
 
-@dataclass(frozen=True)
+
+@dataclasses.dataclass(frozen=True)
 class ContextVar:
     name: str
     annotation: Any
-    default: Any = inspect.Parameter.empty
+    default: Any = dataclasses.MISSING
 
     @classmethod
-    def from_parameter(cls, parameter: inspect.Parameter):
+    def from_field(cls, field: dataclasses.Field):
         return cls(
-            name=parameter.name,
-            annotation=parameter.annotation,
-            default=parameter.default,
+            name=field.name,
+            annotation=field.type,
+            default=cls._get_default(field),
+        )
+
+    @property
+    def is_required(self):
+        return self.default is dataclasses.MISSING
+
+    @staticmethod
+    def _get_default(field: dataclasses.Field):
+        return (
+            field.default
+            if field.default is not dataclasses.MISSING
+            else field.default_factory
         )
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class OperationHelp:
     name: str
     docstring: str
-    required_context: List[ContextVar] = field(default_factory=list)
-    optional_context: List[ContextVar] = field(default_factory=list)
+    required_context: List[ContextVar]
+    optional_context: List[ContextVar]
 
 
 def get_operation_help(op_name: str) -> OperationHelp:
     op_mapping = get_operations_mapping()
     operation = op_mapping[op_name]
 
-    context_signature = inspect.signature(operation.get_context_class())
+    context_class = operation.get_context_class()
+    context_signature = inspect.signature(context_class)
     required_context = []
     optional_context = []
-    for parameter in context_signature.parameters.values():
-        if parameter.name != "execution_context":
+    for field in context_class.__dataclass_fields__.values():
+        if field.name != "execution_context":
+            context_var = ContextVar.from_field(field)
             context = (
                 required_context
-                if parameter.default is inspect.Parameter.empty
+                if context_var.is_required
                 else optional_context
             )
-            context.append(ContextVar.from_parameter(parameter))
+            context.append(context_var)
 
     return OperationHelp(
         name=op_name,

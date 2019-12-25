@@ -1,7 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import List
 from unittest.mock import patch
 
 from qwikstart.cli import utils
+from qwikstart.utils import first
 
 FAKE_OP_NAME = "fake_operation"
 
@@ -71,3 +73,23 @@ class TestGetOperationHelp:
 
         assert op_help.required_context == []
         assert op_help.optional_context == []
+
+    def test_default_value(self):
+        @dataclass
+        class FakeContext:
+            default_string: str = "default"
+
+        op_help = mock_get_operation_help(FakeContext)
+
+        context_var = first(op_help.optional_context)
+        assert context_var.default == "default"
+
+    def test_default_factory(self):
+        @dataclass
+        class FakeContext:
+            default_factory: List[int] = field(default_factory=list)
+
+        op_help = mock_get_operation_help(FakeContext)
+
+        context_var = first(op_help.optional_context)
+        assert context_var.default == list
