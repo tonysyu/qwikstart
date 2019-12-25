@@ -4,6 +4,7 @@ import click
 from ..parser import get_operations_mapping
 from ..utils import logging
 from .resolver import resolve_task
+from .utils import get_operation_help
 
 
 @click.group()
@@ -31,17 +32,27 @@ def run(task_path, verbose):
 @click.argument("op_name")
 def help(op_name):
     """Show help for the given operation."""
-    op_mapping = get_operations_mapping()
-    operation = op_mapping[op_name]
+    op_help = get_operation_help(op_name)
 
-    click.echo(click.style(op_name, fg="green") + f": {operation.__doc__}")
+    echo_field(op_name, op_help.docstring, color="green")
 
-    variables = operation.get_context_class().__annotations__
-    variables.pop("execution_context", None)
-    if variables:
-        click.echo(f"\nContext variables:")
-    for var_name, var_type in variables.items():
-        click.echo(click.style(var_name, fg="yellow") + f": {var_type}")
+    if op_help.required_context:
+        click.echo(f"\nRequired context:")
+    for context_var in op_help.required_context:
+        click.secho(context_var.name, fg="green")
+        echo_field("type", context_var.annotation, indent=1)
+
+    if op_help.required_context:
+        click.echo(f"\nOptional context:")
+    for context_var in op_help.optional_context:
+        click.secho(context_var.name, fg="green")
+        echo_field("type", context_var.annotation, indent=1)
+        echo_field("default", context_var.default, indent=1)
+
+
+def echo_field(field_name, field_value, indent=0, color="yellow"):
+    indent = "    " * indent
+    click.echo(indent + click.style(field_name, fg=color) + f": {field_value}")
 
 
 @cli.command()
