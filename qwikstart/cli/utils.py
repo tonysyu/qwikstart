@@ -36,12 +36,13 @@ def get_operation_help(op_name: str) -> OperationHelp:
     required_context = []
     optional_context = []
     for parameter in context_signature.parameters.values():
-        context = (
-            required_context
-            if parameter.default is inspect.Parameter.empty
-            else optional_context
-        )
-        context.append(ContextVar.from_parameter(parameter))
+        if parameter.name != "execution_context":
+            context = (
+                required_context
+                if parameter.default is inspect.Parameter.empty
+                else optional_context
+            )
+            context.append(ContextVar.from_parameter(parameter))
 
     return OperationHelp(
         name=op_name,

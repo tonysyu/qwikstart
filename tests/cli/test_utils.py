@@ -61,3 +61,13 @@ class TestGetOperationHelp:
         assert op_help.optional_context == []
         var_names = [var.name for var in op_help.required_context]
         assert var_names == ["required_parameter"]
+
+    def test_execution_context_excluded(self):
+        @dataclass
+        class FakeContext:
+            execution_context: str
+
+        op_help = mock_get_operation_help(FakeContext)
+
+        assert op_help.required_context == []
+        assert op_help.optional_context == []
