@@ -45,10 +45,10 @@ class TemplateRenderer:
 
     @classmethod
     def from_context(cls, context: BaseContext):
-        execution_context = context["execution_context"]
+        execution_context = context.execution_context
         return cls(
             template_loader=execution_context.get_template_loader(),
-            template_variables=context.get("template_variables"),
-            template_variable_prefix=context.get("template_variable_prefix"),
+            template_variables=context.template_variables,
+            template_variable_prefix=context.template_variable_prefix,
             source_dir=execution_context.source_dir,
         )

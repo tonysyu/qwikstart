@@ -1,10 +1,14 @@
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Union
 
 from ..base_context import BaseContext
 from ..utils import ensure_path
-from ..utils.templates import TemplateRenderer
+from ..utils.templates import (
+    DEFAULT_TEMPLATE_VARIABLE_PREFIX,
+    TemplateRenderer,
+)
 from .base import BaseOperation
 
 __all__ = ["Operation"]
@@ -12,14 +16,12 @@ __all__ = ["Operation"]
 logger = logging.getLogger(__name__)
 
 
-class RequiredContext(BaseContext):
+@dataclass(frozen=True)
+class Context(BaseContext):
     target_path: Union[Path, str]
     template_path: str
-
-
-class Context(RequiredContext, total=False):
-    template_variables: Dict[str, Any]
-    template_variable_prefix: str
+    template_variables: Dict[str, Any] = field(default_factory=dict)
+    template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
 
 
 class Operation(BaseOperation):
@@ -29,6 +31,6 @@ class Operation(BaseOperation):
 
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)
-        with ensure_path(context["target_path"]).open("w") as f:
-            f.write(renderer.render(context["template_path"]))
-        logger.info(f"Wrote file to {context['target_path']}")
+        with ensure_path(context.target_path).open("w") as f:
+            f.write(renderer.render(context.template_path))
+        logger.info(f"Wrote file to {context.target_path}")

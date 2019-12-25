@@ -1,7 +1,8 @@
 import abc
-from typing import Any, Mapping, Optional
+from typing import Any, Dict, Mapping, Optional
 
-from qwikstart import utils
+from .. import utils
+from ..base_context import BaseContext
 
 __all__ = ["BaseOperation", "OperationError"]
 
@@ -55,11 +56,12 @@ class BaseOperation(abc.ABC):
         """Override with action"""
 
     def pre_run(self, context):
-        if not context:
-            return NoisyDict()
+        context_class = self.get_context_class()
+        if not context_class:
+            return BaseContext()
 
         context = utils.remap_dict(context, self.input_mapping)
-        return NoisyDict(**context, **self.local_context)
+        return context_class.from_dict(**context, **self.local_context)
 
     def post_run(self, context):
         if not context:
@@ -67,11 +69,11 @@ class BaseOperation(abc.ABC):
 
         return utils.remap_dict(context, self.output_mapping)
 
-    def execute(self, original_context):
+    def execute(self, original_context) -> Dict[str, Any]:
         context = self.pre_run(original_context)
-        context = self.run(context)
-        context = self.post_run(context)
-        return {**original_context, **context}
+        context_dict = self.run(context)
+        context_dict = self.post_run(context_dict)
+        return {**original_context, **context_dict}
 
     def __repr__(self):
         return (
@@ -88,3 +90,6 @@ class BaseOperation(abc.ABC):
             and other.input_mapping == self.input_mapping
             and other.output_mapping == self.output_mapping
         )
+
+    def get_context_class(self):
+        return self.run.__annotations__["context"]

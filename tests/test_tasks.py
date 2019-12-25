@@ -3,12 +3,17 @@ from textwrap import dedent
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.tasks import Task
 
-from .helpers import create_mock_file_path, read_file_path
+from .helpers import (
+    create_mock_file_path,
+    get_execution_context,
+    read_file_path,
+)
 
 
 class TestTask:
     def test_find_tagged_line_and_insert_text(self):
         context = {
+            "execution_context": get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": create_mock_file_path(
                 """

@@ -18,13 +18,11 @@ logger = logging.getLogger(__name__)
 DEFAULT_INTRO = "Please enter the following information:"
 
 
-class RequiredContext(BaseContext):
+@dataclass(frozen=True)
+class Context(BaseContext):
     prompts: List[Dict[str, Any]]
-
-
-class Context(RequiredContext, total=False):
-    output_dict_name: str
-    introduction: str
+    output_dict_name: str = "template_variables"
+    introduction: str = DEFAULT_INTRO
 
 
 class Operation(BaseOperation):
@@ -33,10 +31,10 @@ class Operation(BaseOperation):
     name: str = "prompt_user"
 
     def run(self, context: Context) -> None:
-        output_name = context.get("output_dict_name", "template_variables")
-        prompt_list = [Prompt(**pdict) for pdict in context["prompts"]]
+        output_name = context.output_dict_name
+        prompt_list = [Prompt(**pdict) for pdict in context.prompts]
 
-        introduction = context.get("introduction", DEFAULT_INTRO)
+        introduction = context.introduction
         logger.info(introduction)
 
         user_responses = {}
