@@ -1,4 +1,5 @@
 import logging
+import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Union
@@ -15,6 +16,16 @@ __all__ = ["Operation"]
 
 logger = logging.getLogger(__name__)
 
+CONTEXT_HELP = {
+    "target_path": textwrap.dedent(
+        """
+            File path where rendered template will be saved. This will
+            be relative to the `target_dir` (default '.') specified in
+            the execution context.
+        """
+    )
+}
+
 
 @dataclass(frozen=True)
 class Context(BaseContext):
@@ -22,6 +33,10 @@ class Context(BaseContext):
     template_path: str
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
+
+    @classmethod
+    def help(cls, field_name):
+        return CONTEXT_HELP.get(field_name)
 
 
 class Operation(BaseOperation):

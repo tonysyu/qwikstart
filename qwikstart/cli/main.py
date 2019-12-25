@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import textwrap
+
 import click
 
 from ..parser import get_operations_mapping
 from ..utils import logging
 from .resolver import resolve_task
-from .utils import get_operation_help
+from .utils import ContextVar, get_operation_help
 
 
 @click.group()
@@ -39,20 +41,30 @@ def help(op_name):
     if op_help.required_context:
         click.echo(f"\nRequired context:")
     for context_var in op_help.required_context:
-        click.secho(context_var.name, fg="green")
-        echo_field("type", context_var.annotation, indent=1)
+        echo_context_var(context_var)
 
     if op_help.required_context:
         click.echo(f"\nOptional context:")
     for context_var in op_help.optional_context:
-        click.secho(context_var.name, fg="green")
-        echo_field("type", context_var.annotation, indent=1)
-        echo_field("default", context_var.default, indent=1)
+        echo_context_var(context_var)
 
 
-def echo_field(field_name, field_value, indent=0, color="yellow"):
-    indent = "    " * indent
-    click.echo(indent + click.style(field_name, fg=color) + f": {field_value}")
+def echo_context_var(context_var: ContextVar):
+    click.secho(context_var.name, fg="green")
+    echo_field(indent("type"), context_var.annotation)
+    if not context_var.is_required:
+        echo_field(indent("default"), context_var.default)
+    if context_var.description:
+        click.echo(indent(context_var.description))
+
+
+def indent(text, level=1):
+    prefix = "    " * level
+    return textwrap.indent(text, prefix)
+
+
+def echo_field(field_name, field_value, color="yellow"):
+    click.echo(click.style(field_name, fg=color) + f": {field_value}")
 
 
 @cli.command()
