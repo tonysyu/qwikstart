@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import Field, dataclass, field, make_dataclass
 from typing import List
 from unittest.mock import patch
 
@@ -11,12 +11,11 @@ FAKE_OP_NAME = "fake_operation"
 
 class TestGetOperationHelp:
     def test_basic_context(self):
-        @dataclass(frozen=True)
-        class FakeContext(BaseContext):
-            required_parameter: str
-            optional_parameter: str = "default value"
-
-        op_help = get_operation_from_context_class(FakeContext)
+        context_class = make_context(
+            ("required_parameter", str),
+            ("optional_parameter", str, "default value"),
+        )
+        op_help = get_operation_from_context_class(context_class)
 
         assert op_help.name == FAKE_OP_NAME
         assert op_help.docstring == "Docstring for fake operation"
@@ -27,22 +26,18 @@ class TestGetOperationHelp:
         assert var_names == ["optional_parameter"]
 
     def test_context_with_no_required_params(self):
-        @dataclass(frozen=True)
-        class FakeContext(BaseContext):
-            optional_parameter: str = "default value"
-
-        op_help = get_operation_from_context_class(FakeContext)
+        context_class = make_context(
+            ("optional_parameter", str, "default value")
+        )
+        op_help = get_operation_from_context_class(context_class)
 
         assert op_help.required_context == []
         var_names = [var.name for var in op_help.optional_context]
         assert var_names == ["optional_parameter"]
 
     def test_context_with_no_optional_params(self):
-        @dataclass(frozen=True)
-        class FakeContext(BaseContext):
-            required_parameter: str
-
-        op_help = get_operation_from_context_class(FakeContext)
+        context_class = make_context(("required_parameter", str))
+        op_help = get_operation_from_context_class(context_class)
 
         assert op_help.optional_context == []
         var_names = [var.name for var in op_help.required_context]
@@ -56,21 +51,17 @@ class TestGetOperationHelp:
         assert op_help.optional_context == []
 
     def test_default_value(self):
-        @dataclass(frozen=True)
-        class FakeContext(BaseContext):
-            default_string: str = "default"
-
-        op_help = get_operation_from_context_class(FakeContext)
+        context_class = make_context(("default_string", str, "default"))
+        op_help = get_operation_from_context_class(context_class)
 
         context_var = first(op_help.optional_context)
         assert context_var.default == "default"
 
     def test_default_factory(self):
-        @dataclass(frozen=True)
-        class FakeContext(BaseContext):
-            default_factory: List[int] = field(default_factory=list)
-
-        op_help = get_operation_from_context_class(FakeContext)
+        context_class = make_context(
+            ("default_factory", List[int], field(default_factory=list))
+        )
+        op_help = get_operation_from_context_class(context_class)
 
         context_var = first(op_help.optional_context)
         assert context_var.default == list
@@ -115,3 +106,22 @@ def get_operation_from_fake_operation(fake_coperation_class):
         utils, "get_operations_mapping", return_value=op_mapping
     ):
         return utils.get_operation_help(FAKE_OP_NAME)
+
+
+def make_context(*fields):
+    fields = [_resolve_dataclass_field(f) for f in fields]
+    return make_dataclass(
+        "FakeContext", fields, bases=(BaseContext,), frozen=True
+    )
+
+
+def _resolve_dataclass_field(field_list):
+    """Return field list expected by `make_dataclass` with casting for defaults
+
+    The third value of each field passed to `make_dataclass` is expected to be
+    a `Field` instance. Cast third value to field, assuming it defines default
+    value of field.
+    """
+    if len(field_list) == 3 and not isinstance(field_list[2], Field):
+        return field_list[:2] + (field(default=field_list[2]),)
+    return field_list
