@@ -18,16 +18,6 @@ class OperationDefinitionError(ValueError):
     pass
 
 
-class NoisyDict(dict):
-    def __getitem__(self, key):
-        try:
-            return super().__getitem__(key)
-        except KeyError as error:
-            msg = f"Key '{key}' required, but context only has keys: "
-            existing_keys = ", ".join(f"'{k}'" for k in self.keys())
-            raise KeyError(msg + existing_keys) from error
-
-
 class BaseOperation(abc.ABC):
     """An operation within a qwikstart `Task`"""
 
