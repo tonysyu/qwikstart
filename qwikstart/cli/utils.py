@@ -44,12 +44,10 @@ def get_operation_help(op_name: str) -> OperationHelp:
                 default=_get_default(field),
                 description=context_class.help(field.name),
             )
-            context = (
-                required_context
-                if context_var.is_required
-                else optional_context
-            )
-            context.append(context_var)
+            if context_var.is_required:
+                required_context.append(context_var)
+            else:
+                optional_context.append(context_var)
 
     return OperationHelp(
         name=op_name,
