@@ -55,7 +55,7 @@ class TestAddFile(TestCase):
 
         output_file = Path("output.txt")
 
-        context: add_file.Context = {
+        context = {
             "execution_context": helpers.get_execution_context(
                 source_dir=source_dir
             ),

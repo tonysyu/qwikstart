@@ -1,13 +1,16 @@
+from dataclasses import dataclass
 from pathlib import Path
 
 from typing_extensions import TypedDict
 
+from ..base_context import BaseContext
 from .base import BaseOperation, OperationError
 
 __all__ = ["Context", "Operation", "Output"]
 
 
-class Context(TypedDict):
+@dataclass(frozen=True)
+class Context(BaseContext):
     file_path: Path
     tag: str
 
@@ -23,8 +26,8 @@ class Operation(BaseOperation):
     name: str = "find_tagged_line"
 
     def run(self, context: Context) -> Output:
-        tag = context["tag"]
-        with context["file_path"].open() as f:
+        tag = context.tag
+        with context.file_path.open() as f:
             for line_number, line in enumerate(f, 1):
                 if tag in line:
                     column = line.find(tag)

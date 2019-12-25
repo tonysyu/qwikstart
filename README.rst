@@ -30,6 +30,8 @@ If you happen to be setting up pipx_ for the first time, the
 `pipx installation instructions`_ suggest running `pipx ensurepath` to update
 the user path. Note, if you use `~/.profile` instead of `~/.bash_profile`,
 this will add `~/.bash_profile`, which will take precendence over `~/.profile`.
+Either move the code from `~/.bash_profile` to `~/.profile` or
+`link your profiles <https://superuser.com/a/789465>`_.
 
 .. _pipx: https://pypi.org/project/pipx/
 .. _pipx installation instructions:

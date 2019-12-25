@@ -1,8 +1,8 @@
+import inspect
 from dataclasses import dataclass
 from pathlib import Path
 
 import jinja2
-from typing_extensions import TypedDict
 
 
 @dataclass(frozen=True)
@@ -20,5 +20,20 @@ class ExecutionContext:
         return jinja2.FileSystemLoader("/")
 
 
-class BaseContext(TypedDict):
+@dataclass(frozen=True)
+class BaseContext:
     execution_context: ExecutionContext
+
+    @classmethod
+    def from_dict(cls, **kwargs):
+        """Return instance of context, ignoring unknown kwargs.
+
+        Adapted from https://stackoverflow.com/a/55096964/260303.
+        """
+        return cls(
+            **{
+                key: value
+                for key, value in kwargs.items()
+                if key in inspect.signature(cls).parameters
+            }
+        )

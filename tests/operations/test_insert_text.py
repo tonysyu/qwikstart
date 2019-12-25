@@ -7,7 +7,7 @@ from .. import helpers
 
 class TestTextInject:
     def test_insert_line(self):
-        context: insert_text.Context = {
+        context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 2,
@@ -28,7 +28,7 @@ class TestTextInject:
         )
 
     def test_return_context_unchanged(self):
-        context: insert_text.Context = {
+        context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
             "line": 1,
@@ -155,7 +155,7 @@ class TestTextInject:
         )
 
 
-def insert_text_and_return_file_text(context: insert_text.Context, **kwargs):
+def insert_text_and_return_file_text(context, **kwargs):
     insert_action = insert_text.Operation(**kwargs)
     insert_action.execute(context)
     return helpers.read_file_path(context["file_path"])
