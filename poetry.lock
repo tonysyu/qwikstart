@@ -7,7 +7,7 @@ python-versions = "*"
 version = "0.7.12"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Disable App Nap on OS X 10.9"
 marker = "python_version >= \"3.4\" and sys_platform == \"darwin\""
 name = "appnope"
@@ -69,7 +69,7 @@ version = "2.7.0"
 pytz = ">=2015.7"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Specifications for callback functions passed in to an API"
 marker = "python_version >= \"3.4\""
 name = "backcall"
@@ -216,7 +216,7 @@ python-versions = ">=3.6, <3.7"
 version = "0.7"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Decorators for Humans"
 marker = "python_version >= \"3.4\""
 name = "decorator"
@@ -307,7 +307,7 @@ python-versions = ">=2.7,!=3.0,!=3.1,!=3.2,!=3.3"
 version = "1.0.2"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "IPython-enabled pdb"
 name = "ipdb"
 optional = false
@@ -322,7 +322,7 @@ python = ">=3.4"
 version = ">=5.1.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "IPython: Productive Interactive Computing"
 marker = "python_version >= \"3.4\""
 name = "ipython"
@@ -355,7 +355,7 @@ qtconsole = ["qtconsole"]
 test = ["nose (>=0.10.1)", "requests", "testpath", "pygments", "nbformat", "ipykernel", "numpy (>=1.14)"]
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Vestigial utilities from IPython"
 marker = "python_version >= \"3.4\""
 name = "ipython-genutils"
@@ -364,7 +364,7 @@ python-versions = "*"
 version = "0.2.0"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "An autocompletion tool for Python that can be used for text editors."
 marker = "python_version >= \"3.4\""
 name = "jedi"
@@ -523,7 +523,7 @@ pyparsing = ">=2.0.2"
 six = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "A Python Parser"
 marker = "python_version >= \"3.4\""
 name = "parso"
@@ -543,7 +543,7 @@ python-versions = "*"
 version = "0.1.2"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Pexpect allows easy control of interactive console applications."
 marker = "python_version >= \"3.4\" and sys_platform != \"win32\""
 name = "pexpect"
@@ -555,7 +555,7 @@ version = "4.7.0"
 ptyprocess = ">=0.5"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Tiny 'shelve'-like database with concurrency support"
 marker = "python_version >= \"3.4\""
 name = "pickleshare"
@@ -636,7 +636,7 @@ python = "<3.7"
 version = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Library for building powerful interactive command lines in Python"
 marker = "python_version >= \"3.4\""
 name = "prompt-toolkit"
@@ -648,7 +648,7 @@ version = "3.0.2"
 wcwidth = "*"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Run a subprocess in a pseudo terminal"
 marker = "python_version >= \"3.4\" and sys_platform != \"win32\""
 name = "ptyprocess"
@@ -975,7 +975,7 @@ version = "1.1.2"
 test = ["pytest", "mock"]
 
 [[package]]
-category = "dev"
+category = "main"
 description = "ANSII Color formatting for output in terminal."
 name = "termcolor"
 optional = false
@@ -1010,7 +1010,7 @@ version = "4.41.0"
 dev = ["py-make (>=0.1.0)", "twine", "argopt", "pydoc-markdown"]
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Traitlets Python config system"
 marker = "python_version >= \"3.4\""
 name = "traitlets"
@@ -1103,7 +1103,7 @@ argh = ">=0.24.1"
 pathtools = ">=0.1.1"
 
 [[package]]
-category = "main"
+category = "dev"
 description = "Measures number of Terminal column cells of wide-character codes"
 name = "wcwidth"
 optional = false
@@ -1149,7 +1149,7 @@ testing = ["pathlib2", "contextlib2", "unittest2"]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
 
 [metadata]
-content-hash = "26a7ef7f73033965dcc085441be49d5cb77db81e3378654566565ede3ac2a921"
+content-hash = "f96cb845bf1490889afb9e1877840d3193b5541e204d58b2f36eca28a3799732"
 python-versions = "^3.6"
 
 [metadata.files]
