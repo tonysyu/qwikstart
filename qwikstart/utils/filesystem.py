@@ -5,7 +5,6 @@ from pathlib import Path
 
 from binaryornot.check import is_binary
 
-from .core import ensure_path
 from .templates import TemplateRenderer
 
 logger = logging.getLogger(__name__)

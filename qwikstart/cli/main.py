@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-import textwrap
-
 import click
 
 from ..parser import get_operations_mapping

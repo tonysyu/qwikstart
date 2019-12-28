@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import yaml
 
-from ..parser import ParserError, get_operations_mapping, parse_task
+from ..parser import parse_task
 
 
 class YamlLoader:

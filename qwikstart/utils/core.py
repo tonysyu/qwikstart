@@ -55,6 +55,6 @@ def merge_typed_dicts(*typed_dicts, name: str = "MergedTypeDict"):
     return TypedDict(name, key_types)  # type: ignore
 
 
-def indent(text, space_count, predicate=None):
+def indent(text, space_count):
     """Return `text` indented by `space_count` spaces."""
     return textwrap.indent(text, " " * space_count)

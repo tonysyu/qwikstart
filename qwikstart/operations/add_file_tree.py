@@ -3,15 +3,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Union
 
-import jinja2
-
 from ..base_context import BaseContext
-from ..utils import ensure_path
 from ..utils.filesystem import FileTreeGenerator
-from ..utils.templates import (
-    DEFAULT_TEMPLATE_VARIABLE_PREFIX,
-    TemplateRenderer,
-)
+from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
 
 __all__ = ["Operation"]

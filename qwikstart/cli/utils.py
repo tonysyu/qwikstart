@@ -1,5 +1,4 @@
 import dataclasses
-import inspect
 import os.path as pth
 import textwrap
 from pathlib import Path
@@ -8,7 +7,6 @@ from typing import Any, List
 from jinja2 import Environment, FileSystemLoader
 from termcolor import colored
 
-from ..base_context import BaseContext
 from ..parser import get_operations_mapping
 
 __all__ = ["get_operation_help"]
@@ -53,7 +51,6 @@ def get_operation_help(op_name: str) -> OperationHelp:
     operation = op_mapping[op_name]
 
     context_class = operation.get_context_class()
-    context_signature = inspect.signature(context_class)
     required_context = []
     optional_context = []
     for field in context_class.__dataclass_fields__.values():

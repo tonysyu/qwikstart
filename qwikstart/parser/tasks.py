@@ -5,7 +5,7 @@ from typing_extensions import TypedDict
 
 from .. import base_context
 from ..tasks import Task
-from .core import ParserError, get_operations_mapping
+from .core import get_operations_mapping
 from .operations import OPERATION_DEFINITION, parse_operation
 
 __all__ = ["parse_task"]

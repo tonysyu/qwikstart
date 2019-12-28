@@ -1,13 +1,8 @@
 import logging
-import os
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-from typing_extensions import TypedDict
+from typing import Any, Dict, List
 
 from ..base_context import BaseContext
-from ..utils import indent
 from ..utils.prompt import Prompt, read_user_variable
 from .base import BaseOperation
 

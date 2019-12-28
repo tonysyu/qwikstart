@@ -1,5 +1,5 @@
 import collections
-from typing import Any, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Dict, NamedTuple, Optional, Union
 
 from .. import utils
 from ..operations import BaseOperation
