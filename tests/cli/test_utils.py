@@ -1,5 +1,5 @@
 from dataclasses import Field, dataclass, field, make_dataclass
-from typing import List
+from typing import List, Tuple, Union
 from unittest.mock import patch
 
 from qwikstart.base_context import BaseContext
@@ -7,6 +7,8 @@ from qwikstart.cli import utils
 from qwikstart.utils import first
 
 FAKE_OP_NAME = "fake_operation"
+
+_DataClassField = Union[str, Tuple[str, type], Tuple[str, type, Field]]
 
 
 class TestGetOperationHelp:
@@ -41,7 +43,7 @@ class TestGetOperationHelp:
         assert var_names == ["required_parameter"]
 
     def test_execution_context_excluded(self):
-        assert "execution_context" in BaseContext.__dataclass_fields__
+        assert "execution_context" in BaseContext.__dataclass_fields__  # type:ignore
         op_help = get_operation_from_context_class(BaseContext)
 
         assert op_help.required_context == []
@@ -104,11 +106,12 @@ def get_operation_from_fake_operation(fake_coperation_class):
 
 
 def make_context(*fields):
-    fields = [_resolve_dataclass_field(f) for f in fields]
-    return make_dataclass("FakeContext", fields, bases=(BaseContext,), frozen=True)
+    resolved_fields = [_resolve_dataclass_field(f) for f in fields]
+    bases = (BaseContext,)
+    return make_dataclass("FakeContext", resolved_fields, bases=bases, frozen=True)
 
 
-def _resolve_dataclass_field(field_list):
+def _resolve_dataclass_field(field_list) -> _DataClassField:
     """Return field list expected by `make_dataclass` with casting for defaults
 
     The third value of each field passed to `make_dataclass` is expected to be

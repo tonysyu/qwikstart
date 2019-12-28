@@ -25,7 +25,7 @@ class Operation(BaseOperation):
 
     name: str = "prompt_user"
 
-    def run(self, context: Context) -> None:
+    def run(self, context: Context) -> Dict[str, Dict[str, Any]]:
         output_name = context.output_dict_name
         prompt_list = [Prompt(**pdict) for pdict in context.prompts]
 

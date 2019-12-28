@@ -8,7 +8,7 @@ from .. import helpers
 
 class TestFindTaggedLine:
     def test_line_found(self):
-        context: find_tagged_line.Context = {
+        context = {
             "execution_context": helpers.get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": helpers.create_mock_file_path(
@@ -25,7 +25,7 @@ class TestFindTaggedLine:
         assert context["line"] == 4
 
     def test_line_not_found(self):
-        context: find_tagged_line.Context = {
+        context = {
             "execution_context": helpers.get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
             "file_path": helpers.create_mock_file_path("File without tag"),

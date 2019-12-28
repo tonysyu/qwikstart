@@ -6,17 +6,16 @@ from typing_extensions import TypedDict
 from .. import base_context
 from ..tasks import Task
 from .core import get_operations_mapping
-from .operations import OPERATION_DEFINITION, parse_operation
+from .operations import UnparsedOperation, parse_operation
 
-__all__ = ["parse_task"]
+__all__ = ["TaskDefinition", "parse_task"]
 
-
-class RequiredTaskDefinition(TypedDict):
-    operations: List[OPERATION_DEFINITION]
+OperationsList = Union[List[UnparsedOperation], Dict[str, UnparsedOperation]]
 
 
-class TaskDefinition(RequiredTaskDefinition):
+class TaskDefinition(TypedDict, total=False):
     context: Dict[str, Any]
+    operations: OperationsList
 
 
 def parse_task(
@@ -35,12 +34,10 @@ def parse_task(
     return Task(context=task_definition["context"], operations=operations)
 
 
-def normalize_operations_list(
-    operations_list: Union[List[OPERATION_DEFINITION], Dict[str, OPERATION_DEFINITION]],
-) -> List[Dict]:
+def normalize_operations_list(operations_list: OperationsList) -> List[Dict]:
     """"""
     if isinstance(operations_list, list):
-        return operations_list
+        return operations_list  # type: ignore
     return [{op_name: op_config} for op_name, op_config in operations_list.items()]
 
 

@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 
-from binaryornot.check import is_binary
+from binaryornot.check import is_binary  # type:ignore
 
 from .templates import TemplateRenderer
 
@@ -24,8 +24,8 @@ class FileTreeGenerator:
         self._directory_mapping = {str(source_dir): target_dir}
 
     def copy(self):
-        for source_root, dirs, files in os.walk(self.source_dir):
-            source_root = Path(source_root)
+        for root, dirs, files in os.walk(self.source_dir):
+            source_root = Path(root)
             target_root = self._directory_mapping[str(source_root)]
 
             for filename in files:

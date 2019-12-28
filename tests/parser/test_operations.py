@@ -15,18 +15,20 @@ class TestParseOperation:
 
     def test_dict_definition(self):
         mapping = {"line_number": "line"}
-        op_def = {"insert_text": {"mapping": mapping}}
+        op_def: operations.UnparsedOperation = {"insert_text": {"mapping": mapping}}
         assert operations.parse_operation(op_def) == insert_text.Operation(
             mapping=mapping
         )
 
     def test_tuple_definition(self):
-        op_def = ("insert_text", {})
+        op_def: operations.UnparsedOperation = ("insert_text", {})
         assert operations.parse_operation(op_def) == insert_text.Operation()
 
     def test_operation_with_local_context(self):
         context = {"line": 42}
-        op_def = {"insert_text": {"local_context": context}}
+        op_def: operations.UnparsedOperation = {
+            "insert_text": {"local_context": context}
+        }
         assert operations.parse_operation(op_def) == insert_text.Operation(
             local_context=context
         )

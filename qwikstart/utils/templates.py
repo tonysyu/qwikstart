@@ -3,11 +3,26 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import jinja2
+from typing_extensions import Protocol
 
-from ..base_context import BaseContext
+from ..base_context import ExecutionContext
 from .core import ensure_path
 
 DEFAULT_TEMPLATE_VARIABLE_PREFIX = "qwikstart"
+
+
+class TemplateContext(Protocol):
+    @property
+    def execution_context(self) -> ExecutionContext:
+        pass
+
+    @property
+    def template_variables(self) -> Dict[str, Any]:
+        pass
+
+    @property
+    def template_variable_prefix(self) -> str:
+        pass
 
 
 class TemplateRenderer:
@@ -44,7 +59,7 @@ class TemplateRenderer:
         return template.render(self._template_context)
 
     @classmethod
-    def from_context(cls, context: BaseContext):
+    def from_context(cls, context: TemplateContext):
         execution_context = context.execution_context
         return cls(
             template_loader=execution_context.get_template_loader(),

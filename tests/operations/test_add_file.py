@@ -29,7 +29,7 @@ class TestAddFile(TestCase):
         self.fs.add_real_directory(helpers.TEMPLATES_DIR)
 
         output_file = Path("output.txt")
-        context: add_file.Context = {
+        context = {
             "execution_context": execution_context,
             "target_path": output_file,
             "template_path": "hello_world.txt",

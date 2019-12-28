@@ -1,17 +1,8 @@
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, Mapping, Union, cast
 
-from typing_extensions import TypedDict
-
-__all__ = [
-    "ensure_path",
-    "first",
-    "full_class_name",
-    "indent",
-    "merge_typed_dicts",
-    "remap_dict",
-]
+__all__ = ["ensure_path", "first", "full_class_name", "indent", "remap_dict"]
 
 
 def ensure_path(path: Union[Path, str]) -> Path:
@@ -22,7 +13,7 @@ def ensure_path(path: Union[Path, str]) -> Path:
     ensures we can support normal usage and mocked paths used for testing.
     """
     if hasattr(path, "open"):
-        return path
+        return cast(Path, path)
     return Path(path)
 
 
@@ -35,7 +26,7 @@ def full_class_name(obj):
 
 
 def remap_dict(
-    original_dict: Dict[str, Any], key_mapping: Dict[str, str]
+    original_dict: Mapping[str, Any], key_mapping: Mapping[str, str]
 ) -> Dict[str, Any]:
     """Return dict with any keys in `key_mapping` renamed.
 
@@ -45,14 +36,6 @@ def remap_dict(
             Any keys not in `key_mapping` are returned unchanged.
     """
     return {key_mapping.get(key, key): value for key, value in original_dict.items()}
-
-
-def merge_typed_dicts(*typed_dicts, name: str = "MergedTypeDict"):
-    """Return `TypedDict` containing all keys in one or more `typed_dicts`."""
-    key_types: Dict[str, Any] = {}
-    for tdict in typed_dicts:
-        key_types.update(tdict.__annotations__)
-    return TypedDict(name, key_types)  # type: ignore
 
 
 def indent(text, space_count):

@@ -2,7 +2,7 @@ import dataclasses
 import os.path as pth
 import textwrap
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Optional
 
 from jinja2 import Environment, FileSystemLoader
 from termcolor import colored
@@ -14,7 +14,7 @@ __all__ = ["get_operation_help"]
 
 def get_template_environment():
     LOCAL_DIR = pth.dirname(pth.abspath(__file__))
-    templates_dir = Path(LOCAL_DIR, "templates")
+    templates_dir = str(Path(LOCAL_DIR, "templates"))
     env = Environment(loader=FileSystemLoader([templates_dir]))
     env.filters["colored"] = colored
     env.filters["indent"] = indent
@@ -41,7 +41,7 @@ class ContextVar:
 @dataclasses.dataclass(frozen=True)
 class OperationHelp:
     name: str
-    docstring: str
+    docstring: Optional[str]
     required_context: List[ContextVar]
     optional_context: List[ContextVar]
 
@@ -78,5 +78,5 @@ def _get_default(field: dataclasses.Field):
     return (
         field.default
         if field.default is not dataclasses.MISSING
-        else field.default_factory
+        else field.default_factory  # type:ignore
     )
