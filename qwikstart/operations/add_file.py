@@ -6,10 +6,7 @@ from typing import Any, Dict, Union
 
 from ..base_context import BaseContext
 from ..utils import ensure_path
-from ..utils.templates import (
-    DEFAULT_TEMPLATE_VARIABLE_PREFIX,
-    TemplateRenderer,
-)
+from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
 
 __all__ = ["Operation"]
