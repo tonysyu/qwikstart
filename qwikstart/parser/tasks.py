@@ -36,16 +36,12 @@ def parse_task(
 
 
 def normalize_operations_list(
-    operations_list: Union[
-        List[OPERATION_DEFINITION], Dict[str, OPERATION_DEFINITION]
-    ],
+    operations_list: Union[List[OPERATION_DEFINITION], Dict[str, OPERATION_DEFINITION]],
 ) -> List[Dict]:
     """"""
     if isinstance(operations_list, list):
         return operations_list
-    return [
-        {op_name: op_config} for op_name, op_config in operations_list.items()
-    ]
+    return [{op_name: op_config} for op_name, op_config in operations_list.items()]
 
 
 def normalize_context(
@@ -55,7 +51,5 @@ def normalize_context(
     source_dir = source_path.parent if source_path else Path(".")
     task_definition["context"].setdefault(
         "execution_context",
-        base_context.ExecutionContext(
-            source_dir=source_dir, target_dir=Path(".")
-        ),
+        base_context.ExecutionContext(source_dir=source_dir, target_dir=Path(".")),
     )

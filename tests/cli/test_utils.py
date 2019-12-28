@@ -12,8 +12,7 @@ FAKE_OP_NAME = "fake_operation"
 class TestGetOperationHelp:
     def test_basic_context(self):
         context_class = make_context(
-            ("required_parameter", str),
-            ("optional_parameter", str, "default value"),
+            ("required_parameter", str), ("optional_parameter", str, "default value")
         )
         op_help = get_operation_from_context_class(context_class)
 
@@ -26,9 +25,7 @@ class TestGetOperationHelp:
         assert var_names == ["optional_parameter"]
 
     def test_context_with_no_required_params(self):
-        context_class = make_context(
-            ("optional_parameter", str, "default value")
-        )
+        context_class = make_context(("optional_parameter", str, "default value"))
         op_help = get_operation_from_context_class(context_class)
 
         assert op_help.required_context == []
@@ -102,17 +99,13 @@ def get_operation_from_context_class(context_class):
 def get_operation_from_fake_operation(fake_coperation_class):
     """Mock `utils.get_operation_help` return help for fake operation"""
     op_mapping = {FAKE_OP_NAME: fake_coperation_class}
-    with patch.object(
-        utils, "get_operations_mapping", return_value=op_mapping
-    ):
+    with patch.object(utils, "get_operations_mapping", return_value=op_mapping):
         return utils.get_operation_help(FAKE_OP_NAME)
 
 
 def make_context(*fields):
     fields = [_resolve_dataclass_field(f) for f in fields]
-    return make_dataclass(
-        "FakeContext", fields, bases=(BaseContext,), frozen=True
-    )
+    return make_dataclass("FakeContext", fields, bases=(BaseContext,), frozen=True)
 
 
 def _resolve_dataclass_field(field_list):

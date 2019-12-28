@@ -33,9 +33,7 @@ class TestRenderFileTree(TestCase):
             jinja2.FileSystemLoader("/"), template_variables=template_variables
         )
         generator = filesystem.FileTreeGenerator(
-            source_dir or self.source_dir,
-            target_dir or self.target_dir,
-            renderer,
+            source_dir or self.source_dir, target_dir or self.target_dir, renderer
         )
         generator.copy()
 
@@ -115,8 +113,7 @@ class TestRenderFileTree(TestCase):
 
     def test_render_variable_in_file_contents(self):
         self.fs.create_file(
-            self.source_dir / "test.txt",
-            contents="Hello, {{ qwikstart.name }}!",
+            self.source_dir / "test.txt", contents="Hello, {{ qwikstart.name }}!"
         )
         self.render_source_directory_to_target_directory(
             template_variables={"name": "World"}

@@ -19,8 +19,6 @@ def configure_logger(level="INFO"):
                     "stream": "ext://sys.stdout",
                 }
             },
-            "loggers": {
-                "qwikstart": {"level": level, "handlers": ["termcolor"]}
-            },
+            "loggers": {"qwikstart": {"level": level, "handlers": ["termcolor"]}},
         }
     )

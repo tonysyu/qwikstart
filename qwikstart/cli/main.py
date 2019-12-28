@@ -17,11 +17,7 @@ def cli():
 @cli.command()
 @click.argument("task_path")
 @click.option(
-    "-v",
-    "--verbose",
-    is_flag=True,
-    help="Print debug information",
-    default=False,
+    "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
 def run(task_path, verbose):
     """Run task in the current directory."""

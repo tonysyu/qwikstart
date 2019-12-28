@@ -128,13 +128,7 @@ latex_elements: Dict[str, Any] = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (
-        master_doc,
-        "qwikstart.tex",
-        "qwikstart Documentation",
-        "Tony S. Yu",
-        "manual",
-    )
+    (master_doc, "qwikstart.tex", "qwikstart Documentation", "Tony S. Yu", "manual")
 ]
 
 

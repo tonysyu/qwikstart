@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class FileTreeGenerator:
-    def __init__(
-        self, source_dir: Path, target_dir: Path, renderer: TemplateRenderer
-    ):
+    def __init__(self, source_dir: Path, target_dir: Path, renderer: TemplateRenderer):
         if not target_dir.exists():
             target_dir.mkdir()
 

@@ -52,9 +52,7 @@ class TestTextInject:
             ),
         }
         mapping = {"line_number": "line"}
-        assert insert_text_and_return_file_text(
-            context, mapping=mapping
-        ) == dedent(
+        assert insert_text_and_return_file_text(context, mapping=mapping) == dedent(
             """
                 A
                 New Line

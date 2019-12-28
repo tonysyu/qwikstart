@@ -18,8 +18,7 @@ class TestAddFile(TestCase):
 
     def test_variables(self):
         rendered_string = self.render_template(
-            """Hello, {{ qwikstart.name }}!""",
-            template_variables={"name": "World"},
+            """Hello, {{ qwikstart.name }}!""", template_variables={"name": "World"}
         )
         assert rendered_string == "Hello, World!"
 
@@ -42,9 +41,7 @@ class TestAddFile(TestCase):
         assert helpers.read_file_path(output_file) == "Hello, World!"
 
     def render_template(
-        self,
-        template_string: str,
-        template_variables: Optional[Dict[str, Any]] = None,
+        self, template_string: str, template_variables: Optional[Dict[str, Any]] = None
     ):
         """Return rendered string given a template and optional variables."""
         template_variables = template_variables or {}
@@ -56,9 +53,7 @@ class TestAddFile(TestCase):
         output_file = Path("output.txt")
 
         context = {
-            "execution_context": helpers.get_execution_context(
-                source_dir=source_dir
-            ),
+            "execution_context": helpers.get_execution_context(source_dir=source_dir),
             "target_path": output_file,
             "template_path": template_path,
             "template_variables": template_variables,

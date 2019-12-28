@@ -67,8 +67,7 @@ class BaseOperation(abc.ABC):
 
     def __repr__(self):
         return (
-            utils.full_class_name(self)
-            + f"(local_context={self.local_context}, "
+            utils.full_class_name(self) + f"(local_context={self.local_context}, "
             f"input_mapping={self.input_mapping}, "
             f"output_mapping={self.output_mapping})"
         )

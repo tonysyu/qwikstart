@@ -44,10 +44,7 @@ def remap_dict(
         key_mapping: Dictionary mapping keys in `original_dict` to new keys.
             Any keys not in `key_mapping` are returned unchanged.
     """
-    return {
-        key_mapping.get(key, key): value
-        for key, value in original_dict.items()
-    }
+    return {key_mapping.get(key, key): value for key, value in original_dict.items()}
 
 
 def merge_typed_dicts(*typed_dicts, name: str = "MergedTypeDict"):

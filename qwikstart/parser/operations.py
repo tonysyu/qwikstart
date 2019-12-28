@@ -33,8 +33,7 @@ def parse_operation(
 
 
 def normalize_op_definition(
-    op_def: OPERATION_DEFINITION,
-    op_mapping: Optional[Dict[str, BaseOperation]] = None,
+    op_def: OPERATION_DEFINITION, op_mapping: Optional[Dict[str, BaseOperation]] = None
 ) -> OperationDefinition:
     if op_mapping is None:
         op_mapping = get_operations_mapping()

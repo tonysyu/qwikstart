@@ -44,9 +44,7 @@ class Operation(BaseOperation):
         logger.debug(f"Responses recorded to {output_name}:")
         logger.debug(
             "\t"
-            + "\n\t".join(
-                f"{key}: {value!r}" for key, value in user_responses.items()
-            )
+            + "\n\t".join(f"{key}: {value!r}" for key, value in user_responses.items())
         )
 
         return {output_name: user_responses}
