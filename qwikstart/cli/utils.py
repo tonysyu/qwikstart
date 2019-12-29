@@ -78,5 +78,7 @@ def _get_default(field: dataclasses.Field):
     return (
         field.default
         if field.default is not dataclasses.MISSING
+        # FIXME: Ignore mypy error when accessing callable attribute.
+        # See https://github.com/python/mypy/issues/6910
         else field.default_factory  # type:ignore
     )

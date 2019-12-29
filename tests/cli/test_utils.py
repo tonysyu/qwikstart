@@ -43,7 +43,9 @@ class TestGetOperationHelp:
         assert var_names == ["required_parameter"]
 
     def test_execution_context_excluded(self):
-        assert "execution_context" in BaseContext.__dataclass_fields__  # type:ignore
+        # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+        # See https://github.com/python/mypy/issues/6568
+        assert "execution_context" in BaseContext.__dataclass_fields__
         op_help = get_operation_from_context_class(BaseContext)
 
         assert op_help.required_context == []

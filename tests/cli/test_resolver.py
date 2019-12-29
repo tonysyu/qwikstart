@@ -2,7 +2,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from unittest.mock import Mock, patch
 
-import pytest  # type:ignore
+import pytest
 
 from qwikstart.cli import resolver
 

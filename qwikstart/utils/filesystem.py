@@ -3,7 +3,7 @@ import os
 import shutil
 from pathlib import Path
 
-from binaryornot.check import is_binary  # type:ignore
+from binaryornot.check import is_binary
 
 from .templates import TemplateRenderer
 
