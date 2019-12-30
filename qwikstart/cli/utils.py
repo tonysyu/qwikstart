@@ -1,14 +1,12 @@
 import dataclasses
-import inspect
 import os.path as pth
 import textwrap
 from pathlib import Path
-from typing import Any, List
+from typing import Any, List, Optional
 
 from jinja2 import Environment, FileSystemLoader
 from termcolor import colored
 
-from ..base_context import BaseContext
 from ..parser import get_operations_mapping
 
 __all__ = ["get_operation_help"]
@@ -16,7 +14,7 @@ __all__ = ["get_operation_help"]
 
 def get_template_environment():
     LOCAL_DIR = pth.dirname(pth.abspath(__file__))
-    templates_dir = Path(LOCAL_DIR, "templates")
+    templates_dir = str(Path(LOCAL_DIR, "templates"))
     env = Environment(loader=FileSystemLoader([templates_dir]))
     env.filters["colored"] = colored
     env.filters["indent"] = indent
@@ -43,7 +41,7 @@ class ContextVar:
 @dataclasses.dataclass(frozen=True)
 class OperationHelp:
     name: str
-    docstring: str
+    docstring: Optional[str]
     required_context: List[ContextVar]
     optional_context: List[ContextVar]
 
@@ -53,7 +51,6 @@ def get_operation_help(op_name: str) -> OperationHelp:
     operation = op_mapping[op_name]
 
     context_class = operation.get_context_class()
-    context_signature = inspect.signature(context_class)
     required_context = []
     optional_context = []
     for field in context_class.__dataclass_fields__.values():
@@ -81,5 +78,7 @@ def _get_default(field: dataclasses.Field):
     return (
         field.default
         if field.default is not dataclasses.MISSING
-        else field.default_factory
+        # FIXME: Ignore mypy error when accessing callable attribute.
+        # See https://github.com/python/mypy/issues/6910
+        else field.default_factory  # type:ignore
     )

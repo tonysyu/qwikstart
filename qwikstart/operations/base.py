@@ -7,7 +7,8 @@ from ..base_context import BaseContext
 __all__ = ["BaseOperation", "OperationError"]
 
 
-ContextMapping = Optional[Mapping[str, Any]]
+ContextData = Optional[Mapping[str, Any]]
+ContextMapping = Optional[Mapping[str, str]]
 
 
 class OperationError(RuntimeError):
@@ -25,7 +26,7 @@ class BaseOperation(abc.ABC):
 
     def __init__(
         self,
-        local_context: ContextMapping = None,
+        local_context: ContextData = None,
         mapping: ContextMapping = None,
         input_mapping: ContextMapping = None,
         output_mapping: ContextMapping = None,
@@ -48,7 +49,7 @@ class BaseOperation(abc.ABC):
     def pre_run(self, context):
         context_class = self.get_context_class()
         if not context_class:
-            return BaseContext()
+            return BaseContext.from_dict(**context)
 
         context = utils.remap_dict(context, self.input_mapping)
         return context_class.from_dict(**context, **self.local_context)
@@ -67,8 +68,7 @@ class BaseOperation(abc.ABC):
 
     def __repr__(self):
         return (
-            utils.full_class_name(self)
-            + f"(local_context={self.local_context}, "
+            utils.full_class_name(self) + f"(local_context={self.local_context}, "
             f"input_mapping={self.input_mapping}, "
             f"output_mapping={self.output_mapping})"
         )

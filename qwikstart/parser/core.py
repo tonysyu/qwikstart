@@ -1,14 +1,19 @@
-from typing import Dict
+from typing import Dict, Type
 
 from ..operations import BaseOperation
 
-__all__ = ["ParserError", "get_operations_mapping"]
+__all__ = ["OperationMapping", "ParserError", "get_operations_mapping"]
 
 
 class ParserError(RuntimeError):
     pass
 
 
-def get_operations_mapping() -> Dict[str, BaseOperation]:
+OperationMapping = Dict[str, Type[BaseOperation]]
+
+
+def get_operations_mapping() -> OperationMapping:
     """Return mapping of known operation names to their respective"""
-    return {op.name: op for op in BaseOperation.__subclasses__()}
+    # FIXME: Ignore mypy error due to use of Type with abstract baseclass
+    # See https://github.com/python/mypy/issues/4717
+    return {op.name: op for op in BaseOperation.__subclasses__()}  # type:ignore

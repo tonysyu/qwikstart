@@ -3,11 +3,7 @@ from textwrap import dedent
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.tasks import Task
 
-from .helpers import (
-    create_mock_file_path,
-    get_execution_context,
-    read_file_path,
-)
+from .helpers import create_mock_file_path, get_execution_context, read_file_path
 
 
 class TestTask:

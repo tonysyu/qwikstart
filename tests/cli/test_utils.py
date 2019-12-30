@@ -1,5 +1,5 @@
 from dataclasses import Field, dataclass, field, make_dataclass
-from typing import List
+from typing import List, Tuple, Union
 from unittest.mock import patch
 
 from qwikstart.base_context import BaseContext
@@ -8,12 +8,13 @@ from qwikstart.utils import first
 
 FAKE_OP_NAME = "fake_operation"
 
+_DataClassField = Union[str, Tuple[str, type], Tuple[str, type, Field]]
+
 
 class TestGetOperationHelp:
     def test_basic_context(self):
         context_class = make_context(
-            ("required_parameter", str),
-            ("optional_parameter", str, "default value"),
+            ("required_parameter", str), ("optional_parameter", str, "default value")
         )
         op_help = get_operation_from_context_class(context_class)
 
@@ -26,9 +27,7 @@ class TestGetOperationHelp:
         assert var_names == ["optional_parameter"]
 
     def test_context_with_no_required_params(self):
-        context_class = make_context(
-            ("optional_parameter", str, "default value")
-        )
+        context_class = make_context(("optional_parameter", str, "default value"))
         op_help = get_operation_from_context_class(context_class)
 
         assert op_help.required_context == []
@@ -44,6 +43,8 @@ class TestGetOperationHelp:
         assert var_names == ["required_parameter"]
 
     def test_execution_context_excluded(self):
+        # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+        # See https://github.com/python/mypy/issues/6568
         assert "execution_context" in BaseContext.__dataclass_fields__
         op_help = get_operation_from_context_class(BaseContext)
 
@@ -102,20 +103,17 @@ def get_operation_from_context_class(context_class):
 def get_operation_from_fake_operation(fake_coperation_class):
     """Mock `utils.get_operation_help` return help for fake operation"""
     op_mapping = {FAKE_OP_NAME: fake_coperation_class}
-    with patch.object(
-        utils, "get_operations_mapping", return_value=op_mapping
-    ):
+    with patch.object(utils, "get_operations_mapping", return_value=op_mapping):
         return utils.get_operation_help(FAKE_OP_NAME)
 
 
 def make_context(*fields):
-    fields = [_resolve_dataclass_field(f) for f in fields]
-    return make_dataclass(
-        "FakeContext", fields, bases=(BaseContext,), frozen=True
-    )
+    resolved_fields = [_resolve_dataclass_field(f) for f in fields]
+    bases = (BaseContext,)
+    return make_dataclass("FakeContext", resolved_fields, bases=bases, frozen=True)
 
 
-def _resolve_dataclass_field(field_list):
+def _resolve_dataclass_field(field_list) -> _DataClassField:
     """Return field list expected by `make_dataclass` with casting for defaults
 
     The third value of each field passed to `make_dataclass` is expected to be

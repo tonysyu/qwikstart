@@ -1,13 +1,8 @@
 import logging
-import os
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Any, Dict, List, Optional
-
-from typing_extensions import TypedDict
+from typing import Any, Dict, List
 
 from ..base_context import BaseContext
-from ..utils import indent
 from ..utils.prompt import Prompt, read_user_variable
 from .base import BaseOperation
 
@@ -30,7 +25,7 @@ class Operation(BaseOperation):
 
     name: str = "prompt_user"
 
-    def run(self, context: Context) -> None:
+    def run(self, context: Context) -> Dict[str, Dict[str, Any]]:
         output_name = context.output_dict_name
         prompt_list = [Prompt(**pdict) for pdict in context.prompts]
 
@@ -44,9 +39,7 @@ class Operation(BaseOperation):
         logger.debug(f"Responses recorded to {output_name}:")
         logger.debug(
             "\t"
-            + "\n\t".join(
-                f"{key}: {value!r}" for key, value in user_responses.items()
-            )
+            + "\n\t".join(f"{key}: {value!r}" for key, value in user_responses.items())
         )
 
         return {output_name: user_responses}

@@ -1,14 +1,14 @@
 import collections
-from typing import Any, Dict, List, NamedTuple, Optional, Union
+from typing import Any, Dict, NamedTuple, Optional, Tuple, Type, Union
 
 from .. import utils
 from ..operations import BaseOperation
-from .core import ParserError, get_operations_mapping
+from .core import OperationMapping, ParserError, get_operations_mapping
 
-__all__ = ["OPERATION_DEFINITION", "parse_operation"]
+__all__ = ["OperationDefinition", "parse_operation"]
 
 
-OPERATION_DEFINITION = Union[str, Dict[str, Dict[str, Any]]]
+UnparsedOperation = Union[str, Dict[str, Dict[str, Any]], Tuple[str, Dict[str, Any]]]
 
 
 class OperationDefinition(NamedTuple):
@@ -17,9 +17,9 @@ class OperationDefinition(NamedTuple):
 
 
 def parse_operation(
-    op_def: OPERATION_DEFINITION,
-    known_operations: Optional[Dict[str, BaseOperation]] = None,
-) -> OperationDefinition:
+    op_def: UnparsedOperation,
+    known_operations: Optional[Dict[str, Type[BaseOperation]]] = None,
+) -> BaseOperation:
     if known_operations is None:
         known_operations = get_operations_mapping()
 
@@ -33,8 +33,7 @@ def parse_operation(
 
 
 def normalize_op_definition(
-    op_def: OPERATION_DEFINITION,
-    op_mapping: Optional[Dict[str, BaseOperation]] = None,
+    op_def: UnparsedOperation, op_mapping: Optional[OperationMapping] = None
 ) -> OperationDefinition:
     if op_mapping is None:
         op_mapping = get_operations_mapping()

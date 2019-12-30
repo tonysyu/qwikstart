@@ -12,10 +12,8 @@ class TestAddFileTree:
         template_dir = Path("/path/to/template/dir")
         target_dir = Path("/path/to/target/dir")
 
-        context: add_file_tree.Context = {
-            "execution_context": helpers.get_execution_context(
-                target_dir=target_dir
-            ),
+        context = {
+            "execution_context": helpers.get_execution_context(target_dir=target_dir),
             "template_dir": template_dir,
             "target_dir": target_dir,
         }

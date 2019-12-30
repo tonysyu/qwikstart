@@ -1,11 +1,9 @@
-[tool.black]
-line-length = 79
-
 [tool.isort]
 default_section = "THIRDPARTY"
 known_first_party = "qwikstart"
 multi_line_output = 3
 include_trailing_comma = true
+line_length = 88
 
 [tool.poetry]
 name = "qwikstart"
@@ -43,6 +41,7 @@ pyyaml = "^5.1"
 binaryornot = "^0.4.4"
 colorlog = "^4.0.2"
 termcolor = "^1.1.0"
+
 [tool.poetry.dev-dependencies]
 bumpversion = "*"
 coverage = "*"
@@ -51,13 +50,13 @@ ipdb = "^0.12.2"
 mock = "*"
 pytest = "*"
 pytest-cov = "*"
-pytest-flake8 = "*"
 pytest-sugar = "*"
 twine = "*"
 wheel = "*"
 pre-commit = "^1.17"
-pytest-mypy = "^0.4.1"
 pyfakefs = "^3.7"
+flake8-bugbear = "^19.8.0"
+mypy = "^0.761"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
