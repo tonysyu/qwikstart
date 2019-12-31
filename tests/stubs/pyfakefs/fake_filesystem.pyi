@@ -14,5 +14,8 @@ class FakeFilesystem:
     ) -> None:
         ...
 
-    def create_file(self, file_path, contents: str = "") -> None:
+    def create_file(self, file_path: PathLike, contents: str = "") -> None:
+        ...
+
+    def create_dir(self, directory_path: PathLike) -> None:
         ...
