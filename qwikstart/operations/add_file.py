@@ -36,7 +36,7 @@ class Context(BaseContext):
         return CONTEXT_HELP.get(field_name)
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, None]):
     """Operation to add a file to a project."""
 
     name: str = "add_file"

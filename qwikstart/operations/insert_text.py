@@ -19,7 +19,7 @@ class Context(BaseContext):
     match_indent: bool = True
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, None]):
     """Operation inserting text on a given line"""
 
     name: str = "insert_text"

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, Sequence
 
 from .operations import BaseOperation
 
@@ -10,7 +10,8 @@ __all__ = ["Task"]
 class Task:
     """A series of operations to complete an qwikstart task."""
 
-    operations: List[BaseOperation]
+    # FIXME: Allow subclasses of BaseOperation and specify type parameters.
+    operations: Sequence[BaseOperation]  # type:ignore
     context: Dict[str, Any]
 
     def execute(self) -> Dict[str, Any]:

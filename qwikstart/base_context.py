@@ -1,11 +1,12 @@
 import inspect
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Mapping, Optional, Type, TypeVar
 
 import jinja2
 
-DictContext = Dict[str, Any]
+DictContext = Mapping[str, Any]
+TContext = TypeVar("TContext", bound="BaseContext")
 
 
 @dataclass(frozen=True)
@@ -28,7 +29,7 @@ class BaseContext:
     execution_context: ExecutionContext
 
     @classmethod
-    def from_dict(cls, **kwargs):
+    def from_dict(cls: Type[TContext], **kwargs: Any) -> TContext:
         """Return instance of context, ignoring unknown kwargs.
 
         Adapted from https://stackoverflow.com/a/55096964/260303.

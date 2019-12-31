@@ -2,7 +2,7 @@ import collections
 from typing import Any, Dict, NamedTuple, Optional, Tuple, Type, Union
 
 from .. import utils
-from ..operations import BaseOperation
+from ..operations import GenericOperation
 from .core import OperationMapping, ParserError, get_operations_mapping
 
 __all__ = ["OperationDefinition", "parse_operation"]
@@ -18,8 +18,8 @@ class OperationDefinition(NamedTuple):
 
 def parse_operation(
     op_def: UnparsedOperation,
-    known_operations: Optional[Dict[str, Type[BaseOperation]]] = None,
-) -> BaseOperation:
+    known_operations: Optional[Dict[str, Type[GenericOperation]]] = None,
+) -> GenericOperation:
     if known_operations is None:
         known_operations = get_operations_mapping()
 

@@ -76,7 +76,10 @@ def get_operation_help(op_name: str) -> OperationHelp:
     )
 
 
-def _get_default(field: dataclasses.Field) -> Any:
+# FIXME: Ignore typing error for Field without type parameters.
+# Using `Field` mypy error: Missing type parameters for generic type "Field"
+# Using `Field[Any]` runtime error: TypeError: 'type' object is not subscriptable
+def _get_default(field: dataclasses.Field) -> Any:  # type:ignore
     return (
         field.default
         if field.default is not dataclasses.MISSING

@@ -20,7 +20,7 @@ class Output(TypedDict):
     column: int
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, Output]):
     """Operation inserting text on a given line"""
 
     name: str = "find_tagged_line"

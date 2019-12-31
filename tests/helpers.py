@@ -3,7 +3,7 @@ import os
 from contextlib import contextmanager
 from pathlib import Path
 from textwrap import dedent
-from typing import Any
+from typing import Any, Iterator
 from unittest.mock import Mock
 
 from qwikstart.base_context import ExecutionContext
@@ -24,7 +24,7 @@ def create_mock_file_path(string_data: str) -> Mock:
     string_buffer = io.StringIO(dedent(string_data))
 
     @contextmanager
-    def open_buffer(*args, **kwargs):
+    def open_buffer(*args: Any, **kwargs: Any) -> Iterator[io.StringIO]:
         string_buffer.seek(0)
         yield string_buffer
 

@@ -12,6 +12,10 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_INTRO = "Please enter the following information:"
 
+# Output will be dict with single key, `Context.output_dict_name`, and dict
+# value w/ keys defined by `Context.prompts` mapping to user responses.
+Output = Dict[str, Dict[str, Any]]
+
 
 @dataclass(frozen=True)
 class Context(BaseContext):
@@ -20,12 +24,12 @@ class Context(BaseContext):
     introduction: str = DEFAULT_INTRO
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, Output]):
     """Operation to prompt user for inputs."""
 
     name: str = "prompt_user"
 
-    def run(self, context: Context) -> Dict[str, Dict[str, Any]]:
+    def run(self, context: Context) -> Output:
         output_name = context.output_dict_name
         prompt_list = [Prompt(**pdict) for pdict in context.prompts]
 

@@ -1,14 +1,16 @@
 import abc
-from typing import Any, Dict, Mapping, Optional, cast
+from typing import Any, Dict, Generic, Mapping, Optional, TypeVar, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
 
-__all__ = ["BaseOperation", "OperationError"]
+__all__ = ["BaseOperation", "GenericOperation", "OperationError"]
 
 
 ContextData = Optional[Mapping[str, Any]]
 ContextMapping = Optional[Mapping[str, str]]
+TContext = TypeVar("TContext", bound=BaseContext)
+TOutput = TypeVar("TOutput", bound=Optional[DictContext])
 
 
 class OperationError(RuntimeError):
@@ -19,7 +21,7 @@ class OperationDefinitionError(ValueError):
     pass
 
 
-class BaseOperation(abc.ABC):
+class BaseOperation(Generic[TContext, TOutput], abc.ABC):
     """An operation within a qwikstart `Task`"""
 
     name: str
@@ -43,28 +45,29 @@ class BaseOperation(abc.ABC):
         self.output_mapping = output_mapping or {}
 
     @abc.abstractmethod
-    def run(self, context: BaseContext) -> Optional[DictContext]:
+    def run(self, context: TContext) -> TOutput:
         """Override with action"""
 
-    def pre_run(self, context: DictContext) -> BaseContext:
+    def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
         if not context_class:
-            return BaseContext.from_dict(**context)
+            return cast(TContext, BaseContext.from_dict(**context_dict))
 
-        context = utils.remap_dict(context, self.input_mapping)
-        return context_class.from_dict(**context, **self.local_context)
+        context_dict = utils.remap_dict(context_dict, self.input_mapping)
+        return context_class.from_dict(**context_dict, **self.local_context)
 
-    def post_run(self, context: DictContext) -> DictContext:
-        if not context:
+    def post_run(self, output: TOutput) -> DictContext:
+        if not output:
             return {}
 
-        return utils.remap_dict(context, self.output_mapping)
+        # If output is not `None`, then it should be a dict; tell mypy.
+        return utils.remap_dict(cast(DictContext, output), self.output_mapping)
 
-    def execute(self, original_context) -> Dict[str, Any]:
+    def execute(self, original_context: DictContext) -> Dict[str, Any]:
         context = self.pre_run(original_context)
-        context_dict = self.run(context)
-        context_dict = self.post_run(context_dict)
-        return {**original_context, **context_dict}
+        output = self.run(context)
+        output_dict = self.post_run(output)
+        return {**original_context, **output_dict}
 
     def __repr__(self) -> str:
         return (
@@ -82,5 +85,8 @@ class BaseOperation(abc.ABC):
         )
 
     @classmethod
-    def get_context_class(cls) -> BaseContext:
-        return cast(BaseContext, cls.run.__annotations__["context"])
+    def get_context_class(cls) -> TContext:
+        return cast(TContext, cls.run.__annotations__["context"])
+
+
+GenericOperation = BaseOperation[BaseContext, Optional[DictContext]]
