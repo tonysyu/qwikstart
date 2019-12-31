@@ -1,5 +1,5 @@
 # Ignore pytest typing: see https://github.com/pytest-dev/pytest/issues/3342
-import pytest  # type: ignore
+import pytest
 
 from qwikstart.operations import OperationError, find_tagged_line
 
@@ -7,7 +7,7 @@ from .. import helpers
 
 
 class TestFindTaggedLine:
-    def test_line_found(self):
+    def test_line_found(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
@@ -24,7 +24,7 @@ class TestFindTaggedLine:
         context = find_tagged_line_action.execute(context)
         assert context["line"] == 4
 
-    def test_line_not_found(self):
+    def test_line_not_found(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
