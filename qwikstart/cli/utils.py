@@ -9,10 +9,10 @@ from termcolor import colored
 
 from ..parser import get_operations_mapping
 
-__all__ = ["get_operation_help"]
+__all__ = ["get_operation_help", "OperationHelp"]
 
 
-def get_template_environment():
+def get_template_environment() -> Environment:
     LOCAL_DIR = pth.dirname(pth.abspath(__file__))
     templates_dir = str(Path(LOCAL_DIR, "templates"))
     env = Environment(loader=FileSystemLoader([templates_dir]))
@@ -21,7 +21,7 @@ def get_template_environment():
     return env
 
 
-def indent(text, level=1):
+def indent(text: str, level: int = 1) -> str:
     prefix = "    " * level
     return textwrap.indent(text, prefix)
 
@@ -34,7 +34,7 @@ class ContextVar:
     description: str = ""
 
     @property
-    def is_required(self):
+    def is_required(self) -> bool:
         return self.default is dataclasses.MISSING
 
 
@@ -74,7 +74,7 @@ def get_operation_help(op_name: str) -> OperationHelp:
     )
 
 
-def _get_default(field: dataclasses.Field):
+def _get_default(field: dataclasses.Field[Any]) -> Any:
     return (
         field.default
         if field.default is not dataclasses.MISSING
