@@ -1,0 +1,3 @@
+from typing import Any, Dict, TextIO
+
+def safe_load(code: TextIO) -> Dict[str, Any]: ...
