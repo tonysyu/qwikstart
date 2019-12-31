@@ -1,7 +1,7 @@
 import inspect
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import jinja2
 
@@ -42,5 +42,5 @@ class BaseContext:
         )
 
     @classmethod
-    def help(cls, field_name: str) -> str:
+    def help(cls, field_name: str) -> Optional[str]:
         return None

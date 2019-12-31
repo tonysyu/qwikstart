@@ -7,7 +7,7 @@ from .. import helpers
 
 
 class TestAddFileTree:
-    def test_generator_initialized_and_called(self):
+    def test_generator_initialized_and_called(self) -> None:
         add_file_tree_op = add_file_tree.Operation()
         template_dir = Path("/path/to/template/dir")
         target_dir = Path("/path/to/target/dir")

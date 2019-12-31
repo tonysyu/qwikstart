@@ -31,7 +31,7 @@ class ContextVar:
     name: str
     annotation: Any
     default: Any = dataclasses.MISSING
-    description: str = ""
+    description: Optional[str] = ""
 
     @property
     def is_required(self) -> bool:
@@ -76,7 +76,7 @@ def get_operation_help(op_name: str) -> OperationHelp:
     )
 
 
-def _get_default(field: dataclasses.Field[Any]) -> Any:
+def _get_default(field: dataclasses.Field) -> Any:
     return (
         field.default
         if field.default is not dataclasses.MISSING

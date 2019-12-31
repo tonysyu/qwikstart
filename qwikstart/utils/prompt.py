@@ -10,7 +10,7 @@ class Prompt:
     default_value: Optional[Any] = None
 
 
-def read_user_variable(prompt):
+def read_user_variable(prompt: Prompt) -> Any:
     """Prompt user for variable and return the entered value or given default.
 
     Adapted from `cookiecutter.prompt`

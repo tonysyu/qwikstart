@@ -13,7 +13,7 @@ class Task:
     operations: List[BaseOperation]
     context: Dict[str, Any]
 
-    def execute(self):
+    def execute(self) -> Dict[str, Any]:
         context = self.context
         for operation in self.operations:
             context = operation.execute(context)

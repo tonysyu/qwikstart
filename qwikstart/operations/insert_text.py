@@ -35,7 +35,7 @@ class Operation(BaseOperation):
         with file_path.open("w") as f:
             f.writelines(contents)
 
-    def get_text(self, context):
+    def get_text(self, context: Context) -> str:
         text = context.text
         if context.match_indent:
             text = indent(text, context.column)

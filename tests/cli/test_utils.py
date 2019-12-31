@@ -64,7 +64,7 @@ class TestGetOperationHelp:
 
     def test_default_factory(self) -> None:
         context_class = make_context(
-            # FIXME: Ignore typing since "default_factory" raises incompatible type error
+            # FIXME: Ignore typing: "default_factory" raises incompatible type error
             ("default_factory", List[int], field(default_factory=list))  # type:ignore
         )
         op_help = get_op_help_from_context_class(context_class)

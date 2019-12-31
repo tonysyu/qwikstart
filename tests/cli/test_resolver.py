@@ -24,6 +24,11 @@ class TestResolveTask:
         mocks.parse_task.assert_not_called()
 
 
+@dataclass
+class MockResolveTaskDependencies:
+    parse_task: Mock
+
+
 @contextmanager
 def patch_resolve_task_dependencies(
     mock_resolver: Mock
@@ -31,11 +36,6 @@ def patch_resolve_task_dependencies(
     with patch_task_resolver(mock_resolver):
         with patch.object(resolver, "parse_task") as mock_parse_task:
             yield MockResolveTaskDependencies(parse_task=mock_parse_task)
-
-
-@dataclass
-class MockResolveTaskDependencies:
-    parse_task: Mock
 
 
 @contextmanager
