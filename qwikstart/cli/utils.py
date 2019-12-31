@@ -53,7 +53,9 @@ def get_operation_help(op_name: str) -> OperationHelp:
     context_class = operation.get_context_class()
     required_context = []
     optional_context = []
-    for field in context_class.__dataclass_fields__.values():
+    # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+    # See https://github.com/python/mypy/issues/6568
+    for field in context_class.__dataclass_fields__.values():  # type:ignore
         if field.name != "execution_context":
             context_var = ContextVar(
                 name=field.name,
