@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type, TypeVar
 
 import jinja2
 from typing_extensions import Protocol
@@ -9,6 +9,7 @@ from ..base_context import ExecutionContext
 from .core import ensure_path
 
 DEFAULT_TEMPLATE_VARIABLE_PREFIX = "qwikstart"
+TRenderer = TypeVar("TRenderer", bound="TemplateRenderer")
 
 
 class TemplateContext(Protocol):
@@ -59,7 +60,7 @@ class TemplateRenderer:
         return template.render(self._template_context)
 
     @classmethod
-    def from_context(cls, context: TemplateContext):
+    def from_context(cls: Type[TRenderer], context: TemplateContext) -> TRenderer:
         execution_context = context.execution_context
         return cls(
             template_loader=execution_context.get_template_loader(),

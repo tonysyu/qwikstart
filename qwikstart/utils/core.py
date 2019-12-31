@@ -1,8 +1,8 @@
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, Mapping, Union, cast
+from typing import Any, Dict, Iterable, Mapping, TypeVar, Union, cast
 
-__all__ = ["ensure_path", "first", "full_class_name", "indent", "remap_dict"]
+T = TypeVar("T")
 
 
 def ensure_path(path: Union[Path, str]) -> Path:
@@ -17,11 +17,11 @@ def ensure_path(path: Union[Path, str]) -> Path:
     return Path(path)
 
 
-def first(iterable):
+def first(iterable: Iterable[T]) -> T:
     return next(iter(iterable))
 
 
-def full_class_name(obj):
+def full_class_name(obj: Any) -> str:
     return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
 
 
@@ -38,6 +38,6 @@ def remap_dict(
     return {key_mapping.get(key, key): value for key, value in original_dict.items()}
 
 
-def indent(text, space_count):
+def indent(text: str, space_count: int) -> str:
     """Return `text` indented by `space_count` spaces."""
     return textwrap.indent(text, " " * space_count)

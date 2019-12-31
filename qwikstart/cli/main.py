@@ -8,7 +8,7 @@ from .resolver import resolve_task
 
 
 @click.group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -17,7 +17,7 @@ def cli():
 @click.option(
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
-def run(task_path, verbose):
+def run(task_path: str, verbose: bool) -> None:
     """Run task in the current directory."""
     logging.configure_logger("DEBUG" if verbose else "INFO")
     task = resolve_task(task_path)
@@ -26,7 +26,7 @@ def run(task_path, verbose):
 
 @cli.command()
 @click.argument("op_name")
-def help(op_name):
+def help(op_name: str) -> None:
     """Show help for the given operation."""
     env = utils.get_template_environment()
     template = env.get_template("operation_help.term")
@@ -36,14 +36,14 @@ def help(op_name):
 
 
 @cli.command()
-def list_operations():
+def list_operations() -> None:
     """Show help for the given operation."""
     op_mapping = get_operations_mapping()
     for op_name, operation in op_mapping.items():
         click.echo(click.style(op_name, fg="green") + f": {operation.__doc__}")
 
 
-def main():
+def main() -> None:
     cli()
 
 

@@ -5,7 +5,7 @@ from qwikstart.operations import add_file
 from qwikstart.parser import get_operations_mapping
 
 
-def test_list_operations():
+def test_list_operations() -> None:
     runner = CliRunner()
     result = runner.invoke(main.list_operations)
     assert result.exit_code == 0
@@ -14,7 +14,7 @@ def test_list_operations():
         assert op_name in result.output
 
 
-def test_help():
+def test_help() -> None:
     runner = CliRunner()
     result = runner.invoke(main.help, [add_file.Operation.name])
     assert result.exit_code == 0

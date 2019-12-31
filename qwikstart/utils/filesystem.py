@@ -23,7 +23,7 @@ class FileTreeGenerator:
         # This simplifies resolution of rendered directory names.
         self._directory_mapping = {str(source_dir): target_dir}
 
-    def copy(self):
+    def copy(self) -> None:
         for root, dirs, files in os.walk(self.source_dir):
             source_root = Path(root)
             target_root = self._directory_mapping[str(source_root)]
@@ -34,7 +34,9 @@ class FileTreeGenerator:
             for subdir in dirs:
                 self._ensure_dir_exists(subdir, source_root, target_root)
 
-    def _copy_file(self, source_filename, source_root, target_root):
+    def _copy_file(
+        self, source_filename: str, source_root: Path, target_root: Path
+    ) -> None:
         # Render source_filename since it may be a template:
         tgt_path = target_root / self.renderer.render_string(source_filename)
 
@@ -47,7 +49,9 @@ class FileTreeGenerator:
                 f.write(self.renderer.render(str(src_path)))
             logger.debug(f"Rendered template from {src_path} to {tgt_path}")
 
-    def _ensure_dir_exists(self, source_subdir, source_root, target_root):
+    def _ensure_dir_exists(
+        self, source_subdir: str, source_root: Path, target_root: Path
+    ) -> None:
         """Create subdirectory in target directory ."""
         # Render source_subdir since it may be a template:
         tgt_path = target_root / self.renderer.render_string(source_subdir)

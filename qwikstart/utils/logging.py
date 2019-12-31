@@ -1,7 +1,7 @@
 import logging.config
 
 
-def configure_logger(level="INFO"):
+def configure_logger(level: str = "INFO") -> None:
     logging.config.dictConfig(
         {
             "version": 1,

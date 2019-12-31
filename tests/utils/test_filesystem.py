@@ -7,15 +7,16 @@ debugging of these tests will need to be done with normal `pdb`.
 """
 import os
 from pathlib import Path
+from typing import Any, Dict, Optional
 
 import jinja2
-from pyfakefs.fake_filesystem_unittest import TestCase  # type: ignore
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.utils import filesystem, templates
 
 
 class TestRenderFileTree(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.setUpPyfakefs()
 
         # Define paths here rather than using class variables since pyfakefs
@@ -27,7 +28,10 @@ class TestRenderFileTree(TestCase):
         self.fs.create_dir(self.target_dir)
 
     def render_source_directory_to_target_directory(
-        self, template_variables=None, source_dir=None, target_dir=None
+        self,
+        template_variables: Optional[Dict[str, Any]] = None,
+        source_dir: Optional[Path] = None,
+        target_dir: Optional[Path] = None,
     ) -> None:
         renderer = templates.TemplateRenderer(
             jinja2.FileSystemLoader("/"), template_variables=template_variables
@@ -37,11 +41,11 @@ class TestRenderFileTree(TestCase):
         )
         generator.copy()
 
-    def test_empty_source_tree(self):
+    def test_empty_source_tree(self) -> None:
         self.render_source_directory_to_target_directory()
         assert os.listdir(self.target_dir) == []
 
-    def test_copy_single_file(self):
+    def test_copy_single_file(self) -> None:
         self.fs.create_file(self.source_dir / "test.txt", contents="test")
         self.render_source_directory_to_target_directory()
 
@@ -49,7 +53,7 @@ class TestRenderFileTree(TestCase):
         with open(self.target_dir / "test.txt") as f:
             assert f.read() == "test"
 
-    def test_copy_binary_file(self):
+    def test_copy_binary_file(self) -> None:
         data = bytes([123, 3, 255, 0, 100])
         with open(self.source_dir / "array.bin", "wb") as f:
             assert f.write(data)
@@ -59,7 +63,7 @@ class TestRenderFileTree(TestCase):
         with open(self.target_dir / "array.bin", "rb") as f:
             assert f.read() == data
 
-    def test_copy_file_in_directory(self):
+    def test_copy_file_in_directory(self) -> None:
         subdir = self.source_dir / "subdir"
         self.fs.create_dir(subdir)
         self.fs.create_file(subdir / "test.txt")
@@ -72,7 +76,7 @@ class TestRenderFileTree(TestCase):
         # to the parent directory in addition to the subdirectory.
         assert not os.path.isfile(self.target_dir / "test.txt")
 
-    def test_create_target_directory(self):
+    def test_create_target_directory(self) -> None:
         self.fs.create_file(self.source_dir / "test.txt")
         target_dir = self.target_dir / "subdir"
         assert not os.path.isdir(target_dir)
@@ -81,7 +85,7 @@ class TestRenderFileTree(TestCase):
         assert os.path.isdir(self.target_dir / "subdir")
         assert os.path.isfile(self.target_dir / "subdir" / "test.txt")
 
-    def test_render_variable_in_directory_name(self):
+    def test_render_variable_in_directory_name(self) -> None:
         subdir = self.source_dir / "{{ qwikstart.name }}"
         self.fs.create_dir(subdir)
         self.fs.create_file(subdir / "test.txt")
@@ -93,7 +97,7 @@ class TestRenderFileTree(TestCase):
         assert os.path.isdir(self.target_dir / "dynamic-name")
         assert os.path.isfile(self.target_dir / "dynamic-name" / "test.txt")
 
-    def test_render_variable_in_file_name(self):
+    def test_render_variable_in_file_name(self) -> None:
         self.fs.create_file(self.source_dir / "{{ qwikstart.name }}.txt")
         self.render_source_directory_to_target_directory(
             template_variables={"name": "dynamic-name"}
@@ -101,7 +105,7 @@ class TestRenderFileTree(TestCase):
 
         assert os.path.isfile(self.target_dir / "dynamic-name.txt")
 
-    def test_render_sub_directory(self):
+    def test_render_sub_directory(self) -> None:
         subdir = self.source_dir / "subdir"
         self.fs.create_dir(subdir)
         self.fs.create_file(subdir / "test.txt")
@@ -111,7 +115,7 @@ class TestRenderFileTree(TestCase):
         assert not os.path.exists(self.target_dir / "subdir")
         assert os.path.isfile(self.target_dir / "test.txt")
 
-    def test_render_variable_in_file_contents(self):
+    def test_render_variable_in_file_contents(self) -> None:
         self.fs.create_file(
             self.source_dir / "test.txt", contents="Hello, {{ qwikstart.name }}!"
         )

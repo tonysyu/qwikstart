@@ -19,7 +19,7 @@ class Context(BaseContext):
     match_indent: bool = True
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, None]):
     """Operation inserting text on a given line"""
 
     name: str = "insert_text"
@@ -35,7 +35,7 @@ class Operation(BaseOperation):
         with file_path.open("w") as f:
             f.writelines(contents)
 
-    def get_text(self, context):
+    def get_text(self, context: Context) -> str:
         text = context.text
         if context.match_indent:
             text = indent(text, context.column)

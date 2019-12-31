@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from pathlib import Path
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
 import yaml
 
 from ..parser import TaskDefinition, parse_task
+from ..tasks import Task
 
 
 class YamlLoader:
@@ -22,7 +23,7 @@ loaders_list = [YamlLoader()]
 
 
 class ResolveLocalPath:
-    def __init__(self, path: str, root: Path = None):
+    def __init__(self, path: str, root: Optional[Path] = None):
         root = root or Path(".")
         self.resolved_path = root.joinpath(path).resolve()
 
@@ -40,7 +41,7 @@ class ResolveLocalPath:
 task_resolver_list = [ResolveLocalPath]
 
 
-def resolve_task(task_path):
+def resolve_task(task_path: str) -> Task:
     attempted_paths = []
     for path_resolver in task_resolver_list:
         resolver = path_resolver(task_path)

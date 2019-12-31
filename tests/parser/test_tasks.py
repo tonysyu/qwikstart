@@ -6,7 +6,7 @@ from qwikstart.tasks import Task
 
 
 class TestParseTask:
-    def test_operation_list(self):
+    def test_operation_list(self) -> None:
         mapping = {"line_number": "line"}
         task_definition: parser.TaskDefinition = {
             "operations": [{"insert_text": {"mapping": mapping}}]
@@ -16,7 +16,7 @@ class TestParseTask:
             operations=[insert_text.Operation(mapping=mapping)],
         )
 
-    def test_operation_dict(self):
+    def test_operation_dict(self) -> None:
         mapping = {"line_number": "line"}
         task_definition: parser.TaskDefinition = {
             "operations": {"insert_text": {"mapping": mapping}}

@@ -2,7 +2,7 @@ import logging
 import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 from ..base_context import BaseContext
 from ..utils import ensure_path
@@ -32,11 +32,11 @@ class Context(BaseContext):
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
 
     @classmethod
-    def help(cls, field_name):
+    def help(cls, field_name: str) -> Optional[str]:
         return CONTEXT_HELP.get(field_name)
 
 
-class Operation(BaseOperation):
+class Operation(BaseOperation[Context, None]):
     """Operation to add a file to a project."""
 
     name: str = "add_file"

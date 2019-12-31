@@ -7,7 +7,7 @@ from .helpers import create_mock_file_path, get_execution_context, read_file_pat
 
 
 class TestTask:
-    def test_find_tagged_line_and_insert_text(self):
+    def test_find_tagged_line_and_insert_text(self) -> None:
         context = {
             "execution_context": get_execution_context(),
             "tag": "# qwikstart-INSTALLED_APPS",
