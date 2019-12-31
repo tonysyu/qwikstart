@@ -8,8 +8,6 @@ from ..tasks import Task
 from .core import get_operations_mapping
 from .operations import UnparsedOperation, parse_operation
 
-__all__ = ["TaskDefinition", "parse_task"]
-
 OperationsList = Union[List[UnparsedOperation], Dict[str, UnparsedOperation]]
 
 
