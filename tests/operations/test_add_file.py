@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from pyfakefs.fake_filesystem_unittest import TestCase  # type: ignore
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.operations import add_file
 
@@ -9,20 +9,20 @@ from .. import helpers
 
 
 class TestAddFile(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.setUpPyfakefs()
 
-    def test_no_variables(self):
+    def test_no_variables(self) -> None:
         rendered_string = self.render_template("Fake template content")
         assert rendered_string == "Fake template content"
 
-    def test_variables(self):
+    def test_variables(self) -> None:
         rendered_string = self.render_template(
             """Hello, {{ qwikstart.name }}!""", template_variables={"name": "World"}
         )
         assert rendered_string == "Hello, World!"
 
-    def test_file_system_template(self):
+    def test_file_system_template(self) -> None:
         execution_context = helpers.get_execution_context(
             source_dir=helpers.TEMPLATES_DIR
         )
@@ -42,7 +42,7 @@ class TestAddFile(TestCase):
 
     def render_template(
         self, template_string: str, template_variables: Optional[Dict[str, Any]] = None
-    ):
+    ) -> str:
         """Return rendered string given a template and optional variables."""
         template_variables = template_variables or {}
         source_dir = Path("/source")
