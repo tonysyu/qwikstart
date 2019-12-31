@@ -1,8 +1,11 @@
 import inspect
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any, Dict
 
 import jinja2
+
+DictContext = Dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -39,5 +42,5 @@ class BaseContext:
         )
 
     @classmethod
-    def help(cls, field_name):
+    def help(cls, field_name: str) -> str:
         return None

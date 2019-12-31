@@ -1,12 +1,14 @@
 from textwrap import dedent
+from typing import Any
 
+from qwikstart.base_context import DictContext
 from qwikstart.operations import insert_text
 
 from .. import helpers
 
 
 class TestTextInject:
-    def test_insert_line(self):
+    def test_insert_line(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -27,7 +29,7 @@ class TestTextInject:
             """
         )
 
-    def test_return_context_unchanged(self):
+    def test_return_context_unchanged(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -38,7 +40,7 @@ class TestTextInject:
         insert_action = insert_text.Operation()
         assert insert_action.execute(context) == context
 
-    def test_insert_line_with_mapped_data(self):
+    def test_insert_line_with_mapped_data(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -60,7 +62,7 @@ class TestTextInject:
             """
         )
 
-    def test_insert_line_with_matched_indent(self):
+    def test_insert_line_with_matched_indent(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -83,7 +85,7 @@ class TestTextInject:
             """
         )
 
-    def test_insert_multiline_indent(self):
+    def test_insert_multiline_indent(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "One\nTwo",
@@ -107,7 +109,7 @@ class TestTextInject:
             """
         )
 
-    def test_insert_line_ignoring_indent(self):
+    def test_insert_line_ignoring_indent(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -131,7 +133,7 @@ class TestTextInject:
             """
         )
 
-    def test_insert_line_with_no_trailing_new_line(self):
+    def test_insert_line_with_no_trailing_new_line(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": "New Line",
@@ -153,7 +155,7 @@ class TestTextInject:
         )
 
 
-def insert_text_and_return_file_text(context, **kwargs):
+def insert_text_and_return_file_text(context: DictContext, **kwargs: Any) -> str:
     insert_action = insert_text.Operation(**kwargs)
     insert_action.execute(context)
     return helpers.read_file_path(context["file_path"])
