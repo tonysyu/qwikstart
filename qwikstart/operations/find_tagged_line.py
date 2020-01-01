@@ -4,7 +4,8 @@ from pathlib import Path
 from typing_extensions import TypedDict
 
 from ..base_context import BaseContext
-from .base import BaseOperation, OperationError
+from ..exceptions import OperationError
+from .base import BaseOperation
 
 __all__ = ["Context", "Operation", "Output"]
 

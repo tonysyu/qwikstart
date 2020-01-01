@@ -3,22 +3,15 @@ from typing import Any, Dict, Generic, Mapping, Optional, TypeVar, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
+from ..exceptions import OperationDefinitionError
 
-__all__ = ["BaseOperation", "GenericOperation", "OperationError"]
+__all__ = ["BaseOperation", "GenericOperation"]
 
 
 ContextData = Optional[Mapping[str, Any]]
 ContextMapping = Optional[Mapping[str, str]]
 TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
-
-
-class OperationError(RuntimeError):
-    pass
-
-
-class OperationDefinitionError(ValueError):
-    pass
 
 
 class BaseOperation(Generic[TContext, TOutput], abc.ABC):
