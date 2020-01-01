@@ -2,11 +2,6 @@ from typing import Dict, Type
 
 from ..operations import BaseOperation, GenericOperation
 
-
-class ParserError(RuntimeError):
-    pass
-
-
 OperationMapping = Dict[str, Type[GenericOperation]]
 
 

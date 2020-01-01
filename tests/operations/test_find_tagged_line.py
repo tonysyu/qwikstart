@@ -1,7 +1,8 @@
 # Ignore pytest typing: see https://github.com/pytest-dev/pytest/issues/3342
 import pytest
 
-from qwikstart.operations import OperationError, find_tagged_line
+from qwikstart.exceptions import OperationError
+from qwikstart.operations import find_tagged_line
 
 from .. import helpers
 

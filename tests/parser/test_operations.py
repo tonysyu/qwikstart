@@ -1,7 +1,7 @@
 # Ignore pytest typing: see https://github.com/pytest-dev/pytest/issues/3342
 import pytest
 
-from qwikstart import parser
+from qwikstart.exceptions import TaskParserError
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.parser import operations
 
@@ -34,5 +34,5 @@ class TestParseOperation:
         )
 
     def test_unknown_operation(self) -> None:
-        with pytest.raises(parser.ParserError):
+        with pytest.raises(TaskParserError):
             operations.parse_operation("undefined_operation")
