@@ -12,20 +12,20 @@ from qwikstart.exceptions import TaskLoaderError
 class TestResolveTask:
     def test_resolve_file(self) -> None:
         data = {"name": "fake_task"}
-        mock_resolver = create_mock_task_resolver(data)
+        mock_resolver = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_resolver) as mocks:
             resolver.resolve_task("fake.yml")
         mocks.parse_task.assert_called_once_with(data, "fake.yml")
 
     def test_resolve_directory(self) -> None:
         data = {"name": "fake_task"}
-        mock_resolver = create_mock_task_resolver(data)
+        mock_resolver = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_resolver) as mocks:
             resolver.resolve_task("fake.yml")
         mocks.parse_task.assert_called_once_with(data, "fake.yml")
 
     def test_not_found(self) -> None:
-        mock_resolver = create_mock_task_resolver(data={}, file_exists=False)
+        mock_resolver = create_mock_repo_loader(data={}, can_load=False)
         with patch_resolve_task_dependencies(mock_resolver) as mocks:
             with pytest.raises(TaskLoaderError):
                 resolver.resolve_task("fake.yml")
@@ -48,17 +48,17 @@ def patch_resolve_task_dependencies(
 
 @contextmanager
 def patch_task_resolver(mock_resolver: Mock) -> Iterator[None]:
-    with patch.object(resolver, "task_resolver_list", new=[mock_resolver]):
+    with patch.object(resolver, "repo_loader_list", new=[mock_resolver]):
         yield
 
 
-def create_mock_task_resolver(
-    data: Dict[str, Any], file_exists: bool = True
+def create_mock_repo_loader(
+    data: Dict[str, Any], can_load: bool = True
 ) -> Callable[[str], None]:
-    def mock_resolver_init(task_path: str) -> Mock:
-        resolver = Mock(resolved_path=task_path)
-        resolver.parsed_data.return_value = data
-        resolver.exists.return_value = file_exists
-        return resolver
+    def mock_repo_loader_init(task_path: str) -> Mock:
+        loader = Mock(resolved_path=task_path)
+        loader.load_task_data.return_value = data
+        loader.can_load.return_value = can_load
+        return loader
 
-    return mock_resolver_init
+    return mock_repo_loader_init

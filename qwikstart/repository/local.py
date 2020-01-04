@@ -21,7 +21,7 @@ class YamlFileLoader:
 
 class LocalRepoLoader:
 
-    loader = YamlFileLoader()
+    file_loader = YamlFileLoader()
 
     def __init__(self, path: str, root: Optional[Path] = None):
         root = root or Path(".")
@@ -29,11 +29,13 @@ class LocalRepoLoader:
         if self.resolved_path.is_dir():
             self.resolved_path = self.resolved_path / QWIKSTART_TASK_DEFINITION_FILE
 
-    def exists(self) -> bool:
-        return self.resolved_path.is_file()
+    def can_load(self) -> bool:
+        return self.resolved_path.is_file() and self._can_load_file()
 
-    def parsed_data(self) -> Dict[str, Any]:
-        if self.loader.can_load(self.resolved_path):
-            return self.loader.load(self.resolved_path)
-        else:
+    def _can_load_file(self) -> bool:
+        return self.file_loader.can_load(self.resolved_path)
+
+    def load_task_data(self) -> Dict[str, Any]:
+        if not self.file_loader.can_load(self.resolved_path):
             raise TaskLoaderError(f"Cannot load {self.resolved_path!r}")
+        return self.file_loader.load(self.resolved_path)
