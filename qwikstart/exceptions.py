@@ -10,7 +10,11 @@ class QwikstartException(Exception):
     """Base exception class. All qwikstart-specific exceptions should subclass this."""
 
 
-class TaskLoaderError(QwikstartException):
+class UserFacingError(QwikstartException):
+    """Base exception for errors that are meant to be displayed to users."""
+
+
+class RepoLoaderError(QwikstartException):
     """Exception raised when loading task definition fails."""
 
 

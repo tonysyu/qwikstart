@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import click
 
+from ..exceptions import UserFacingError
 from ..parser import get_operations_mapping
 from ..utils import logging
 from . import utils
@@ -44,7 +45,11 @@ def list_operations() -> None:
 
 
 def main() -> None:
-    cli()
+    try:
+        cli()
+    except UserFacingError as error:
+        click.secho("Command failed with the following error:\n", fg="red")
+        click.echo(str(error))
 
 
 if __name__ == "__main__":

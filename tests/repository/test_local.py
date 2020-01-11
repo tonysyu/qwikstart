@@ -1,11 +1,11 @@
 import pytest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from qwikstart.exceptions import TaskLoaderError
+from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import local
 
 
-class TestLocalPathResolver(TestCase):
+class TestLocalRepoLoader(TestCase):
     def setUp(self) -> None:
         self.setUpPyfakefs()
 
@@ -25,5 +25,5 @@ class TestLocalPathResolver(TestCase):
         self.fs.create_file("/path/to/file.txt", contents='{"a": 1}')
         loader = local.LocalRepoLoader("/path/to/file.txt")
         assert not loader.can_load()
-        with pytest.raises(TaskLoaderError):
+        with pytest.raises(RepoLoaderError):
             loader.load_task_data()

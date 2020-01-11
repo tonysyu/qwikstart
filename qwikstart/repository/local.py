@@ -3,7 +3,8 @@ from typing import Any, Dict, Optional
 
 import yaml
 
-from ..exceptions import TaskLoaderError
+from ..exceptions import RepoLoaderError
+from .base import BaseRepoLoader
 
 QWIKSTART_TASK_DEFINITION_FILE = "qwikstart.yml"
 
@@ -19,7 +20,8 @@ class YamlFileLoader:
             return yaml.safe_load(f)
 
 
-class LocalRepoLoader:
+class LocalRepoLoader(BaseRepoLoader):
+    """Loader for qwikstart task repos stored on the local filesystem."""
 
     file_loader = YamlFileLoader()
 
@@ -36,6 +38,6 @@ class LocalRepoLoader:
         return self.file_loader.can_load(self.resolved_path)
 
     def load_task_data(self) -> Dict[str, Any]:
-        if not self.file_loader.can_load(self.resolved_path):
-            raise TaskLoaderError(f"Cannot load {self.resolved_path!r}")
+        if not self.can_load():
+            raise RepoLoaderError(f"Cannot load {self.resolved_path!r}")
         return self.file_loader.load(self.resolved_path)

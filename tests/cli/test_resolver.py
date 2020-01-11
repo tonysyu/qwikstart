@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from qwikstart.cli import resolver
-from qwikstart.exceptions import TaskLoaderError
+from qwikstart.exceptions import UserFacingError
 
 
 class TestResolveTask:
@@ -27,7 +27,7 @@ class TestResolveTask:
     def test_not_found(self) -> None:
         mock_resolver = create_mock_repo_loader(data={}, can_load=False)
         with patch_resolve_task_dependencies(mock_resolver) as mocks:
-            with pytest.raises(TaskLoaderError):
+            with pytest.raises(UserFacingError):
                 resolver.resolve_task("fake.yml")
         mocks.parse_task.assert_not_called()
 
