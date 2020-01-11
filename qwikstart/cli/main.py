@@ -18,10 +18,11 @@ def cli() -> None:
 @click.option(
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
-def run(task_path: str, verbose: bool) -> None:
+@click.option("--git", help="Git url for repo containing qwikstart task", default=None)
+def run(task_path: str, verbose: bool, git: str) -> None:
     """Run task in the current directory."""
     logging.configure_logger("DEBUG" if verbose else "INFO")
-    task = resolve_task(task_path)
+    task = resolve_task(task_path, git_url=git)
     task.execute()
 
 

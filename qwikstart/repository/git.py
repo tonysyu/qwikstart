@@ -15,10 +15,12 @@ PATH_SEPARATOR = "::"
 class GitRepoLoader(base.BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
 
-    def __init__(self, path: str):
-        local_path = get_local_repo_path(path)
-        if not local_path.exists():
-            download_git_repo(path, local_path)
+    def __init__(self, git_url: str, path: str = ""):
+        local_repo_path = get_local_repo_path(git_url)
+        if not local_repo_path.exists():
+            download_git_repo(git_url, local_repo_path)
+
+        local_path = local_repo_path / path
         self._local_loader = local.LocalRepoLoader(str(local_path))
 
     @property

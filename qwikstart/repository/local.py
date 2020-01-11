@@ -27,9 +27,13 @@ class LocalRepoLoader(BaseRepoLoader):
 
     def __init__(self, path: str, root: Optional[Path] = None):
         root = root or Path(".")
-        self.resolved_path = root.joinpath(path).resolve()
-        if self.resolved_path.is_dir():
-            self.resolved_path = self.resolved_path / QWIKSTART_TASK_DEFINITION_FILE
+        self._local_path = root.joinpath(path).resolve()
+        if self._local_path.is_dir():
+            self._local_path = self.resolved_path / QWIKSTART_TASK_DEFINITION_FILE
+
+    @property
+    def resolved_path(self) -> Path:
+        return self._local_path
 
     def can_load(self) -> bool:
         return self.resolved_path.is_file() and self._can_load_file()

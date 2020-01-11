@@ -1,64 +1,72 @@
 from contextlib import contextmanager
-from dataclasses import dataclass
-from typing import Any, Callable, Dict, Iterator
+from pathlib import Path
+from typing import Any, Dict
 from unittest.mock import Mock, patch
 
 import pytest
 
 from qwikstart.cli import resolver
-from qwikstart.exceptions import UserFacingError
+from qwikstart.exceptions import RepoLoaderError, UserFacingError
+from qwikstart.repository import LocalRepoLoader
+
+FAKE_PATH_STR = "/path/to/fake.yml"
+FAKE_PATH = Path(FAKE_PATH_STR)
 
 
 class TestResolveTask:
     def test_resolve_file(self) -> None:
         data = {"name": "fake_task"}
-        mock_resolver = create_mock_repo_loader(data)
-        with patch_resolve_task_dependencies(mock_resolver) as mocks:
-            resolver.resolve_task("fake.yml")
-        mocks.parse_task.assert_called_once_with(data, "fake.yml")
+        mock_loader = create_mock_repo_loader(data)
+        with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
+            resolver.resolve_task(FAKE_PATH_STR)
+        mock_parse_task.assert_called_once_with(data, FAKE_PATH)
 
     def test_resolve_directory(self) -> None:
         data = {"name": "fake_task"}
-        mock_resolver = create_mock_repo_loader(data)
-        with patch_resolve_task_dependencies(mock_resolver) as mocks:
-            resolver.resolve_task("fake.yml")
-        mocks.parse_task.assert_called_once_with(data, "fake.yml")
+        mock_loader = create_mock_repo_loader(data)
+        with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
+            resolver.resolve_task(FAKE_PATH_STR)
+        mock_parse_task.assert_called_once_with(data, FAKE_PATH)
 
     def test_not_found(self) -> None:
-        mock_resolver = create_mock_repo_loader(data={}, can_load=False)
-        with patch_resolve_task_dependencies(mock_resolver) as mocks:
+        mock_loader = create_mock_repo_loader(data={}, can_load=False)
+        with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             with pytest.raises(UserFacingError):
-                resolver.resolve_task("fake.yml")
-        mocks.parse_task.assert_not_called()
+                resolver.resolve_task(FAKE_PATH_STR)
+        mock_parse_task.assert_not_called()
+
+    def test_loader_error(self) -> None:
+        error = RepoLoaderError("fake error")
+        with patch.object(resolver, "get_repo_loader", side_effect=error):
+            with pytest.raises(UserFacingError):
+                resolver.resolve_task(FAKE_PATH_STR)
 
 
-@dataclass
-class MockResolveTaskDependencies:
-    parse_task: Mock
+class TestGetRepoLoader:
+    def test_local_loader(self) -> None:
+        loader = resolver.get_repo_loader(FAKE_PATH_STR)
+        assert isinstance(loader, LocalRepoLoader)
+
+    def test_git_loader(self) -> None:
+        git_url = "http://example.com"
+        with patch.object(resolver, "GitRepoLoader") as loader_class:
+            loader = resolver.get_repo_loader(FAKE_PATH_STR, git_url=git_url)
+        assert loader is loader_class.return_value
+        loader_class.assert_called_once_with(git_url, FAKE_PATH_STR)
 
 
 @contextmanager
-def patch_resolve_task_dependencies(
-    mock_resolver: Mock
-) -> Iterator[MockResolveTaskDependencies]:
-    with patch_task_resolver(mock_resolver):
+def patch_resolve_task_dependencies(mock_loader: Mock) -> Mock:
+    with patch.object(resolver, "get_repo_loader", return_value=mock_loader):
         with patch.object(resolver, "parse_task") as mock_parse_task:
-            yield MockResolveTaskDependencies(parse_task=mock_parse_task)
-
-
-@contextmanager
-def patch_task_resolver(mock_resolver: Mock) -> Iterator[None]:
-    with patch.object(resolver, "repo_loader_list", new=[mock_resolver]):
-        yield
+            yield mock_parse_task
 
 
 def create_mock_repo_loader(
-    data: Dict[str, Any], can_load: bool = True
-) -> Callable[[str], None]:
-    def mock_repo_loader_init(task_path: str) -> Mock:
-        loader = Mock(resolved_path=task_path)
-        loader.load_task_data.return_value = data
-        loader.can_load.return_value = can_load
-        return loader
-
-    return mock_repo_loader_init
+    data: Dict[str, Any], can_load: bool = True, task_path: str = FAKE_PATH_STR
+) -> Any:
+    return Mock(
+        resolved_path=Path(task_path),
+        load_task_data=Mock(return_value=data),
+        can_load=Mock(return_value=can_load),
+    )

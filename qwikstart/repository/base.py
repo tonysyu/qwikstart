@@ -1,13 +1,10 @@
 import abc
+from pathlib import Path
 from typing import Any, Dict
 
 
 class BaseRepoLoader(abc.ABC):
     """Base class for loader for qwikstart task repos."""
-
-    @abc.abstractmethod
-    def __init__(self, path: str):
-        pass
 
     @abc.abstractmethod
     def can_load(self) -> bool:
@@ -16,3 +13,8 @@ class BaseRepoLoader(abc.ABC):
     @abc.abstractmethod
     def load_task_data(self) -> Dict[str, Any]:
         """Return task definition dictionary loaded from qwikstart repo."""
+
+    @property
+    @abc.abstractmethod
+    def resolved_path(self) -> Path:
+        """Return local path to qwikstart repo."""
