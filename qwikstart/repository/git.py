@@ -8,9 +8,6 @@ from ..config import get_user_config
 from ..exceptions import RepoLoaderError
 from . import base, local
 
-# Separator between git repo url and paths within the git repo.
-PATH_SEPARATOR = "::"
-
 
 class GitRepoLoader(base.BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
