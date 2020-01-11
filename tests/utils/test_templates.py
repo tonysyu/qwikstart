@@ -5,14 +5,13 @@ These tests use pyfakefs (https://jmcgeheeiv.github.io/pyfakefs/) for mocking
 the filesystem. It appears that this doesn't play nicely with `ipdb` so any
 debugging of these tests will need to be done with normal `pdb`.
 """
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import jinja2
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from qwikstart.utils import filesystem, templates
+from qwikstart.utils import templates
 
 
 class TestRenderFileTree(TestCase):
