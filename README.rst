@@ -40,6 +40,9 @@ Either move the code from `~/.bash_profile` to `~/.profile` or
 Basic Usage
 ===========
 
+After installing `qwikstart`, you can run a simple hello-world example using the following::
+
+    qwikstart run --git https://github.com/tonysyu/qwikstart examples/hello_world.yml
 
 
 See Also
