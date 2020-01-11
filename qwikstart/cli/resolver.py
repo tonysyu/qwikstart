@@ -1,24 +1,28 @@
-from typing import cast
+from typing import Optional, cast
 
-from ..exceptions import TaskLoaderError
+from ..exceptions import RepoLoaderError, UserFacingError
 from ..parser import TaskDefinition, parse_task
-from ..repository import LocalRepoLoader
+from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
 from ..tasks import Task
 
-repo_loader_list = [LocalRepoLoader]
+
+def resolve_task(task_path: str, git_url: Optional[str] = None) -> Task:
+    try:
+        loader = get_repo_loader(task_path, git_url)
+    except RepoLoaderError as error:
+        raise UserFacingError(str(error)) from error
+
+    if not loader.can_load():
+        msg = f"{loader.__class__.__name__}: Cannot load {loader.resolved_path}"
+        raise UserFacingError(msg)
+
+    task_data = loader.load_task_data()
+    # FIXME: We should check whether the data has the required keys.
+    task_definition = cast(TaskDefinition, task_data)
+    return parse_task(task_definition, loader.resolved_path)
 
 
-def resolve_task(task_path: str) -> Task:
-    attempted_paths = []
-    for repo_loader in repo_loader_list:
-        loader = repo_loader(task_path)
-        if loader.can_load():
-            task_data = loader.load_task_data()
-            # FIXME: We should check whether the data has the required keys.
-            task_definition = cast(TaskDefinition, task_data)
-            return parse_task(task_definition, loader.resolved_path)
-        else:
-            attempted_paths.append(loader.resolved_path)
-    else:
-        attempts = "\n- ".join(str(path) for path in attempted_paths)
-        raise TaskLoaderError(f"Could not resolve path. Attempted: {attempts}")
+def get_repo_loader(task_path: str, git_url: Optional[str] = None) -> BaseRepoLoader:
+    if git_url is not None:
+        return GitRepoLoader(git_url, task_path)
+    return LocalRepoLoader(task_path)

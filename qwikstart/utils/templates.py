@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 from typing import Any, Dict, Optional, Type, TypeVar
 
@@ -46,10 +45,11 @@ class TemplateRenderer:
         }
         self.source_dir = ensure_path(source_dir or Path("."))
 
-    def get_template(self, path: str) -> jinja2.Template:
-        if not os.path.isabs(path):
-            path = str(self.source_dir / path)
-        return self._env.get_template(path)
+    def get_template(self, path_str: str) -> jinja2.Template:
+        path = Path(path_str)
+        if not path.is_absolute():
+            path = self.source_dir / path
+        return self._env.get_template(str(path.resolve()))
 
     def render(self, template_path: str) -> str:
         template = self.get_template(template_path)

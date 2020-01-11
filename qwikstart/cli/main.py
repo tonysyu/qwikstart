@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import click
 
+from ..exceptions import UserFacingError
 from ..parser import get_operations_mapping
 from ..utils import logging
 from . import utils
@@ -17,10 +18,11 @@ def cli() -> None:
 @click.option(
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
-def run(task_path: str, verbose: bool) -> None:
+@click.option("--git", help="Git url for repo containing qwikstart task", default=None)
+def run(task_path: str, verbose: bool, git: str) -> None:
     """Run task in the current directory."""
     logging.configure_logger("DEBUG" if verbose else "INFO")
-    task = resolve_task(task_path)
+    task = resolve_task(task_path, git_url=git)
     task.execute()
 
 
@@ -44,7 +46,11 @@ def list_operations() -> None:
 
 
 def main() -> None:
-    cli()
+    try:
+        cli()
+    except UserFacingError as error:
+        click.secho("Command failed with the following error:\n", fg="red")
+        click.echo(str(error))
 
 
 if __name__ == "__main__":
