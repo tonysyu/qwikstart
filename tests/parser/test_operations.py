@@ -1,4 +1,3 @@
-# Ignore pytest typing: see https://github.com/pytest-dev/pytest/issues/3342
 import pytest
 
 from qwikstart.exceptions import TaskParserError

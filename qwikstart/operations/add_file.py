@@ -16,9 +16,8 @@ logger = logging.getLogger(__name__)
 CONTEXT_HELP = {
     "target_path": textwrap.dedent(
         """
-            File path where rendered template will be saved. This will
-            be relative to the `target_dir` (default '.') specified in
-            the execution context.
+            File path where rendered template will be saved. This will be relative to
+            the `target_dir` (default '.') specified in the execution context.
         """
     )
 }

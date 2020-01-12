@@ -59,6 +59,9 @@ class TemplateRenderer:
         template = self._env.from_string(string)
         return template.render(self._template_context)
 
+    def add_template_variable(self, key: str, value: Any) -> None:
+        self.template_variables[key] = value
+
     @classmethod
     def from_context(cls: Type[TRenderer], context: TemplateContext) -> TRenderer:
         execution_context = context.execution_context
