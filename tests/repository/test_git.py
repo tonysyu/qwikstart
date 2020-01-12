@@ -11,7 +11,7 @@ from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import git
 
 CACHE_DIR = get_user_config().qwikstart_cache
-TEST_URL = "https://github.com/tonysyu/qwikstart"
+TEST_URL = "https://github.com/user/repo"
 
 
 class TestGitRepoLoader:
@@ -39,6 +39,21 @@ class TestGitRepoLoader:
         with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
             loader = git.GitRepoLoader(TEST_URL)
         assert loader.load_task_data() == {"greeting": "Hello"}
+
+
+class TestResolveGitUrl:
+    def test_echo_full_url(self) -> None:
+        url = "https://github.com/user/repo"
+        assert git.resolve_git_url(url) == url
+
+    def test_github_abbreviation_resolved(self) -> None:
+        assert git.resolve_git_url("gh:user/repo") == "https://github.com/user/repo"
+
+    def test_gitlab_abbreviation_resolved(self) -> None:
+        assert git.resolve_git_url("gl:user/repo") == "https://gitlab.com/user/repo"
+
+    def test_bitbucket_abbreviation_resolved(self) -> None:
+        assert git.resolve_git_url("bb:user/repo") == "https://bitbucket.org/user/repo"
 
 
 class TestGetLocalRepoPath:
