@@ -42,7 +42,11 @@ Basic Usage
 
 After installing `qwikstart`, you can run a simple hello-world example using the following::
 
-    qwikstart run --git https://github.com/tonysyu/qwikstart examples/hello_world.yml
+    qwikstart run --repo https://github.com/tonysyu/qwikstart examples/hello_world.yml
+
+By default, there are abbreviations for common git repos, so the above can also be written::
+
+    qwikstart run --repo gh:tonysyu/qwikstart examples/hello_world.yml
 
 
 See Also

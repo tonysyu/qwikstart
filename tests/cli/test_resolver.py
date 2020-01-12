@@ -48,11 +48,11 @@ class TestGetRepoLoader:
         assert isinstance(loader, LocalRepoLoader)
 
     def test_git_loader(self) -> None:
-        git_url = "http://example.com"
+        repo_url = "http://example.com"
         with patch.object(resolver, "GitRepoLoader") as loader_class:
-            loader = resolver.get_repo_loader(FAKE_PATH_STR, git_url=git_url)
+            loader = resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
         assert loader is loader_class.return_value
-        loader_class.assert_called_once_with(git_url, FAKE_PATH_STR)
+        loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
 
 
 @contextmanager

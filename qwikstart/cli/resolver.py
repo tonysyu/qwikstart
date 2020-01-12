@@ -6,9 +6,9 @@ from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
 from ..tasks import Task
 
 
-def resolve_task(task_path: str, git_url: Optional[str] = None) -> Task:
+def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
     try:
-        loader = get_repo_loader(task_path, git_url)
+        loader = get_repo_loader(task_path, repo_url)
     except RepoLoaderError as error:
         raise UserFacingError(str(error)) from error
 
@@ -22,7 +22,7 @@ def resolve_task(task_path: str, git_url: Optional[str] = None) -> Task:
     return parse_task(task_definition, loader.resolved_path)
 
 
-def get_repo_loader(task_path: str, git_url: Optional[str] = None) -> BaseRepoLoader:
-    if git_url is not None:
-        return GitRepoLoader(git_url, task_path)
+def get_repo_loader(task_path: str, repo_url: Optional[str] = None) -> BaseRepoLoader:
+    if repo_url is not None:
+        return GitRepoLoader(repo_url, task_path)
     return LocalRepoLoader(task_path)
