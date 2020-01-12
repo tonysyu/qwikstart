@@ -52,8 +52,8 @@ def merge_nested_dicts(
     new_dict: Dict[str, Any] = copy.deepcopy(cast(Dict[str, Any], default))
 
     for k, v in overwrite.items():
-        # Preserve default values in nested dicts
-        new_dict[k] = merge_nested_dicts(default[k], v) if isinstance(v, dict) else v
+        merge_needed = isinstance(v, dict) and k in default
+        new_dict[k] = merge_nested_dicts(default[k], v) if merge_needed else v
 
     return new_dict
 
