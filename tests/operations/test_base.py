@@ -2,7 +2,10 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, Optional, cast
 from unittest import TestCase
 
+import pytest
+
 from qwikstart.base_context import BaseContext, DictContext
+from qwikstart.exceptions import OperationDefinitionError
 from qwikstart.operations.base import BaseOperation
 
 from .. import helpers
@@ -78,6 +81,16 @@ class TestOperationHavingContextWithDict(TestCase):
             }
         )
         assert output["output_vars"] == {"some": "value"}
+
+    def test_mapping_and_input_mapping_cannot_both_be_defined(self) -> None:
+        mapping = {"vars": "template_variables"}
+        with pytest.raises(OperationDefinitionError):
+            FakeOperation(mapping=mapping, input_mapping=mapping)
+
+    def test_mapping_and_output_mapping_cannot_both_be_defined(self) -> None:
+        mapping = {"vars": "template_variables"}
+        with pytest.raises(OperationDefinitionError):
+            FakeOperation(mapping=mapping, output_mapping=mapping)
 
     def test_local_context_takes_precedence(self) -> None:
         operation = FakeOperation(
