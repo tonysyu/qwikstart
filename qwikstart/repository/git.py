@@ -13,6 +13,7 @@ class GitRepoLoader(base.BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
 
     def __init__(self, git_url: str, path: str = ""):
+        git_url = resolve_git_url(git_url)
         local_repo_path = get_local_repo_path(git_url)
         if not local_repo_path.exists():
             download_git_repo(git_url, local_repo_path)
@@ -31,12 +32,21 @@ class GitRepoLoader(base.BaseRepoLoader):
         return self._local_loader.load_task_data()
 
 
-def get_local_repo_path(url: str) -> Path:
+def resolve_git_url(url: str) -> str:
+    prefix, _, repo_path = url.partition(":")
     config = get_user_config()
+    if prefix in config.git_abbreviations:
+        url = config.git_abbreviations[prefix].format(repo_path)
+    return url
+
+
+def get_local_repo_path(url: str) -> Path:
     parsed_url = urlparse(url)
     if parsed_url.hostname is None:
         raise RepoLoaderError(f"Cannot load from repo with no hostname: {url!r}")
     local_repo_path = parsed_url.hostname + str(parsed_url.path)
+
+    config = get_user_config()
     return config.qwikstart_cache / local_repo_path
 
 
