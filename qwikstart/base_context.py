@@ -29,15 +29,15 @@ class BaseContext:
     execution_context: ExecutionContext
 
     @classmethod
-    def from_dict(cls: Type[TContext], **kwargs: Any) -> TContext:
-        """Return instance of context, ignoring unknown kwargs.
+    def from_dict(cls: Type[TContext], field_dict: DictContext) -> TContext:
+        """Return instance of context, ignoring unknown keys in `field_dict`.
 
         Adapted from https://stackoverflow.com/a/55096964/260303.
         """
         return cls(
             **{
                 key: value
-                for key, value in kwargs.items()
+                for key, value in field_dict.items()
                 if key in inspect.signature(cls).parameters
             }
         )

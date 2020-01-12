@@ -1,3 +1,4 @@
+import copy
 import textwrap
 from pathlib import Path
 from typing import Any, Dict, Iterable, Mapping, TypeVar, Union, cast
@@ -36,6 +37,25 @@ def remap_dict(
             Any keys not in `key_mapping` are returned unchanged.
     """
     return {key_mapping.get(key, key): value for key, value in original_dict.items()}
+
+
+def merge_nested_dicts(
+    default: Mapping[str, Any], overwrite: Mapping[str, Any]
+) -> Dict[str, Any]:
+    """Return new dictionary from the combination of `default` and `overwrite`.
+
+    Dict values that are dictionaries themselves will be updated, whilst preserving
+    existing keys.
+
+    Adapted from `cookiecutter.config.merge_configs`.
+    """
+    new_dict: Dict[str, Any] = copy.deepcopy(cast(Dict[str, Any], default))
+
+    for k, v in overwrite.items():
+        merge_needed = isinstance(v, dict) and k in default
+        new_dict[k] = merge_nested_dicts(default[k], v) if merge_needed else v
+
+    return new_dict
 
 
 def indent(text: str, space_count: int) -> str:

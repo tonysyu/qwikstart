@@ -43,11 +43,9 @@ class BaseOperation(Generic[TContext, TOutput], abc.ABC):
 
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
-        if not context_class:
-            return cast(TContext, BaseContext.from_dict(**context_dict))
-
         context_dict = utils.remap_dict(context_dict, self.input_mapping)
-        return context_class.from_dict(**context_dict, **self.local_context)
+        merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
+        return context_class.from_dict(merged_dict)
 
     def post_run(self, output: TOutput) -> DictContext:
         if not output:
