@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, cast
 from unittest import TestCase
 
 from qwikstart.base_context import BaseContext, DictContext
@@ -49,6 +49,19 @@ class TestOperationHavingContextWithDict(TestCase):
         assert operation.run_context.template_variables == template_variables
         assert output["template_variables"] == template_variables
 
+    def test_mapping_temporarily_remaps_key_during_execution(self) -> None:
+        operation = FakeOperation(mapping={"vars": "template_variables"})
+        template_variables = {"some": "value"}
+        output = operation.execute(
+            {"execution_context": self.execution_context, "vars": template_variables}
+        )
+        # FIXME: Remove cast: mypy appears to think `operation.run_context` is `None`.
+        run_context = cast(ContextWithDict, operation.run_context)
+        # During exection, `vars` is remapped to `template_variables`:
+        assert run_context.template_variables == template_variables
+        # On return, `template_variables` is remapped back to `vars`:
+        assert output["vars"] == template_variables
+
     def test_input_mapping(self) -> None:
         operation = FakeOperation(input_mapping={"vars": "template_variables"})
         output = operation.execute(
@@ -86,5 +99,4 @@ class TestOperationHavingContextWithDict(TestCase):
                 "template_variables": {"a": 1},
             }
         )
-        expected_variables = {"a": 1, "b": 2}
-        assert output["template_variables"] == expected_variables
+        assert output["template_variables"] == {"a": 1, "b": 2}
