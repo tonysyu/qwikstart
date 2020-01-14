@@ -4,7 +4,12 @@ operations:
             prompts:
                 - name: "name"
                   default_value: "World"
+                - name: "target_dir"
+                  default_value: "./examples/output"
+                - name: "target_path"
+                  default_value: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"
+        output_mapping:
+            "template_variables.target_path": "target_path"
     add_file:
         local_context:
             template_path: "./templates/hello_world.txt"
-            target_path: "./examples/output/hello_world_with_prompt.txt"

@@ -4,6 +4,7 @@ from ..exceptions import RepoLoaderError, UserFacingError
 from ..parser import TaskDefinition, parse_task
 from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
 from ..tasks import Task
+from ..utils import full_class_name
 
 
 def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
@@ -13,7 +14,7 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
         raise UserFacingError(str(error)) from error
 
     if not loader.can_load():
-        msg = f"{loader.__class__.__name__}: Cannot load {loader.resolved_path}"
+        msg = f"{full_class_name(loader)}: Cannot load {loader.resolved_path}"
         raise UserFacingError(msg)
 
     task_data = loader.load_task_data()
