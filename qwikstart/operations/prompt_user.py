@@ -70,6 +70,7 @@ class Operation(BaseOperation[Context, Output]):
 
             response = read_user_variable(prompt)
             user_responses[prompt.name] = response
+            # Ensure that templates used for defaults can use the new variable.
             renderer.add_template_variable(prompt.name, response)
 
         output_name = context.output_dict_name
