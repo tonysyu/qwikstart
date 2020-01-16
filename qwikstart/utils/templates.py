@@ -62,6 +62,9 @@ class TemplateRenderer:
     def add_template_variable(self, key: str, value: Any) -> None:
         self.template_variables[key] = value
 
+    def update_template_variables(self, kwargs: Any) -> None:
+        self.template_variables.update(kwargs)
+
     @classmethod
     def from_context(cls: Type[TRenderer], context: TemplateContext) -> TRenderer:
         execution_context = context.execution_context
