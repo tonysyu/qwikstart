@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, Optional, Type, TypeVar
 
 import jinja2
 from typing_extensions import Protocol
@@ -64,6 +64,10 @@ class TemplateRenderer:
 
     def update_template_variables(self, kwargs: Any) -> None:
         self.template_variables.update(kwargs)
+
+    def add_template_filters(self, **kwargs: Callable[..., str]) -> None:
+        for name, filter_function in kwargs.items():
+            self._env.filters[name] = filter_function
 
     @classmethod
     def from_context(cls: Type[TRenderer], context: TemplateContext) -> TRenderer:

@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
+from termcolor import colored
+
 from ..base_context import BaseContext
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
@@ -22,4 +24,5 @@ class Operation(BaseOperation[Context, None]):
 
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)
+        renderer.add_template_filters(colored=colored)
         print(renderer.render_string(context.message))

@@ -1,6 +1,8 @@
 from typing import Any, Dict, Optional
 from unittest.mock import Mock, patch
 
+from termcolor import colored
+
 from qwikstart.operations import echo
 
 from .. import helpers
@@ -16,6 +18,10 @@ class TestEchoOperation:
             "Hello, {{ qwikstart.name }}!", template_variables={"name": "World"}
         )
         mock_print.assert_called_once_with("Hello, World!")
+
+    def test_template_string_with_colored_filter(self) -> None:
+        mock_print = self.echo("{{ 'Hello' | colored('green') }}")
+        mock_print.assert_called_once_with(colored("Hello", color="green"))
 
     def echo(
         self, message: str, template_variables: Optional[Dict[str, Any]] = None
