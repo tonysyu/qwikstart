@@ -1,7 +1,13 @@
 operations:
-    add_file:
+    prompt_user:
         local_context:
-            template_path: "./templates/hello_world.txt"
-            template_variables:
-                name: "World"
-            target_path: "./examples/output/hello_world.txt"
+            prompts:
+                - name: "name"
+                  default_value: "World"
+    echo:
+        local_context:
+            message: |
+
+                Hello {{ qwikstart.name }}!
+
+                {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
