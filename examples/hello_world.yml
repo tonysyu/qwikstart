@@ -1,16 +1,14 @@
 operations:
     prompt_user:
-        local_context:
-            prompts:
-                - name: "name"
-                  default_value: "World"
+        prompts:
+            - name: "name"
+              default_value: "World"
     echo:
-        local_context:
-            message: |
+        message: |
 
-                Hello {{ qwikstart.name }}!
+            Hello {{ qwikstart.name }}!
 
-                {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
+            {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
 
-                Please visit the documentation to learn more:
-                    https://qwikstart.readthedocs.io/en/latest/
+            Please visit the documentation to learn more:
+                https://qwikstart.readthedocs.io/

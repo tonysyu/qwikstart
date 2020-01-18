@@ -1,15 +1,12 @@
 operations:
     prompt_user:
-        local_context:
-            prompts:
-                - name: "name"
-                  default_value: "World"
-                - name: "target_dir"
-                  default_value: "."
+        prompts:
+            - name: "name"
+              default_value: "World"
+            - name: "target_dir"
+              default_value: "."
     define_context:
-        local_context:
-            context_defs:
-                target_path: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"
+        context_defs:
+            target_path: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"
     add_file:
-        local_context:
-            template_path: "./templates/hello_world.txt"
+        template_path: "./templates/hello_world.txt"

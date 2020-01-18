@@ -34,6 +34,13 @@ class TestParseOperation:
             local_context=context
         )
 
+    def test_operation_with_context_defined_as_top_level_parameter(self) -> None:
+        context = {"line": 42}
+        op_def: operations.UnparsedOperation = {"insert_text": context}
+        assert operations.parse_operation(op_def) == insert_text.Operation(
+            local_context=context
+        )
+
     def test_unknown_operation(self) -> None:
         with pytest.raises(TaskParserError):
             operations.parse_operation("undefined_operation")
