@@ -43,3 +43,12 @@ class TestRenderFileTree(TestCase):
         self.fs.create_file(template_path)
         renderer = self.get_template_renderer()
         assert isinstance(renderer.get_template(str(template_path)), jinja2.Template)
+
+    def test_meta_variables(self) -> None:
+        renderer = self.get_template_renderer()
+        renderer.template_variables = {
+            templates.TEMPLATE_VARIABLE_META_PREFIX: {
+                "target_dir": Path("."),
+                "source_dir": self.source_dir,
+            }
+        }

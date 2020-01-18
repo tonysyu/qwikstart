@@ -10,5 +10,9 @@ operations:
 
             {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
 
+            You're executing a simple qwikstart operation with the following metadata:
+                source_dir: {{ qwikstart._meta_.source_dir }}
+                target_dir: {{ qwikstart._meta_.target_dir }}
+
             Please visit the documentation to learn more:
                 https://qwikstart.readthedocs.io/
