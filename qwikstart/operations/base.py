@@ -3,7 +3,6 @@ from typing import Any, Dict, Generic, Mapping, Optional, TypeVar, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
-from ..exceptions import OperationDefinitionError
 
 __all__ = ["BaseOperation", "GenericOperation"]
 
@@ -22,18 +21,10 @@ class BaseOperation(Generic[TContext, TOutput], abc.ABC):
     def __init__(
         self,
         local_context: ContextData = None,
-        mapping: ContextMapping = None,
         input_mapping: ContextMapping = None,
         output_mapping: ContextMapping = None,
     ):
         self.local_context = local_context or {}
-
-        if mapping and (input_mapping or output_mapping):
-            msg = "`mapping` cannot be specified with input or output mappings"
-            raise OperationDefinitionError(msg)
-        if mapping:
-            input_mapping = mapping
-            output_mapping = {value: key for key, value in mapping.items()}
         self.input_mapping = input_mapping or {}
         self.output_mapping = output_mapping or {}
 

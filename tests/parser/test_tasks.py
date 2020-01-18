@@ -7,21 +7,21 @@ from qwikstart.tasks import Task
 
 class TestParseTask:
     def test_operation_list(self) -> None:
-        mapping = {"line_number": "line"}
+        input_mapping = {"line_number": "line"}
         task_definition: parser.TaskDefinition = {
-            "operations": [{"insert_text": {"mapping": mapping}}]
+            "operations": [{"insert_text": {"input_mapping": input_mapping}}]
         }
         assert parser.parse_task(task_definition) == Task(
             context={"execution_context": mock.ANY},
-            operations=[insert_text.Operation(mapping=mapping)],
+            operations=[insert_text.Operation(input_mapping=input_mapping)],
         )
 
     def test_operation_dict(self) -> None:
-        mapping = {"line_number": "line"}
+        input_mapping = {"line_number": "line"}
         task_definition: parser.TaskDefinition = {
-            "operations": {"insert_text": {"mapping": mapping}}
+            "operations": {"insert_text": {"input_mapping": input_mapping}}
         }
         assert parser.parse_task(task_definition) == Task(
             context={"execution_context": mock.ANY},
-            operations=[insert_text.Operation(mapping=mapping)],
+            operations=[insert_text.Operation(input_mapping=input_mapping)],
         )
