@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
+from typing import Any, Callable, Dict, Optional, Type, TypeVar
 
 import jinja2
 from typing_extensions import Protocol
