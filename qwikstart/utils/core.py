@@ -28,3 +28,8 @@ def full_class_name(obj: Any) -> str:
 def indent(text: str, space_count: int) -> str:
     """Return `text` indented by `space_count` spaces."""
     return textwrap.indent(text, " " * space_count)
+
+
+def resolve_path(path: Union[Path, str]) -> Path:
+    """Return resolved path object from `pathlib.Path` or string."""
+    return ensure_path(path).resolve()

@@ -1,13 +1,14 @@
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Type, TypeVar
+from typing import Any, Callable, Dict, Optional, Type, TypeVar, Union
 
 import jinja2
 from typing_extensions import Protocol
 
 from ..base_context import ExecutionContext
-from .core import ensure_path
+from .core import ensure_path, resolve_path
 
 DEFAULT_TEMPLATE_VARIABLE_PREFIX = "qwikstart"
+TEMPLATE_VARIABLE_META_PREFIX = "_meta_"
 TRenderer = TypeVar("TRenderer", bound="TemplateRenderer")
 
 
@@ -72,9 +73,15 @@ class TemplateRenderer:
     @classmethod
     def from_context(cls: Type[TRenderer], context: TemplateContext) -> TRenderer:
         execution_context = context.execution_context
+        meta_variables = {
+            TEMPLATE_VARIABLE_META_PREFIX: {
+                "source_dir": resolve_path(execution_context.source_dir),
+                "target_dir": resolve_path(execution_context.target_dir),
+            }
+        }
         return cls(
             template_loader=execution_context.get_template_loader(),
-            template_variables=context.template_variables,
+            template_variables={**meta_variables, **context.template_variables},
             template_variable_prefix=context.template_variable_prefix,
             source_dir=execution_context.source_dir,
         )
