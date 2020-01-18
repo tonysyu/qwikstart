@@ -1,11 +1,8 @@
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 from unittest import TestCase
 
-import pytest
-
 from qwikstart.base_context import BaseContext, DictContext
-from qwikstart.exceptions import OperationDefinitionError
 from qwikstart.operations.base import BaseOperation
 
 from .. import helpers
@@ -52,19 +49,6 @@ class TestOperationHavingContextWithDict(TestCase):
         assert operation.run_context.template_variables == template_variables
         assert output["template_variables"] == template_variables
 
-    def test_mapping_temporarily_remaps_key_during_execution(self) -> None:
-        operation = FakeOperation(mapping={"vars": "template_variables"})
-        template_variables = {"some": "value"}
-        output = operation.execute(
-            {"execution_context": self.execution_context, "vars": template_variables}
-        )
-        # FIXME: Remove cast: mypy appears to think `operation.run_context` is `None`.
-        run_context = cast(ContextWithDict, operation.run_context)
-        # During exection, `vars` is remapped to `template_variables`:
-        assert run_context.template_variables == template_variables
-        # On return, `template_variables` is remapped back to `vars`:
-        assert output["vars"] == template_variables
-
     def test_input_mapping(self) -> None:
         operation = FakeOperation(input_mapping={"vars": "template_variables"})
         output = operation.execute(
@@ -81,16 +65,6 @@ class TestOperationHavingContextWithDict(TestCase):
             }
         )
         assert output["output_vars"] == {"some": "value"}
-
-    def test_mapping_and_input_mapping_cannot_both_be_defined(self) -> None:
-        mapping = {"vars": "template_variables"}
-        with pytest.raises(OperationDefinitionError):
-            FakeOperation(mapping=mapping, input_mapping=mapping)
-
-    def test_mapping_and_output_mapping_cannot_both_be_defined(self) -> None:
-        mapping = {"vars": "template_variables"}
-        with pytest.raises(OperationDefinitionError):
-            FakeOperation(mapping=mapping, output_mapping=mapping)
 
     def test_local_context_takes_precedence(self) -> None:
         operation = FakeOperation(

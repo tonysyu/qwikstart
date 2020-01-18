@@ -13,10 +13,12 @@ class TestParseOperation:
         )
 
     def test_dict_definition(self) -> None:
-        mapping = {"line_number": "line"}
-        op_def: operations.UnparsedOperation = {"insert_text": {"mapping": mapping}}
+        input_mapping = {"line_number": "line"}
+        op_def: operations.UnparsedOperation = {
+            "insert_text": {"input_mapping": input_mapping}
+        }
         assert operations.parse_operation(op_def) == insert_text.Operation(
-            mapping=mapping
+            input_mapping=input_mapping
         )
 
     def test_tuple_definition(self) -> None:

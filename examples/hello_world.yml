@@ -11,3 +11,6 @@ operations:
                 Hello {{ qwikstart.name }}!
 
                 {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
+
+                Please visit the documentation to learn more:
+                    https://qwikstart.readthedocs.io/en/latest/
