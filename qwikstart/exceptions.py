@@ -22,8 +22,8 @@ class TaskParserError(QwikstartException):
     """Exception raised when parsing task definition fails."""
 
 
-class OperationError(QwikstartException):
-    """Exception raised during execution of operation."""
+class OperationError(UserFacingError):
+    """User-facing exception raised during execution of operation."""
 
 
 class OperationDefinitionError(QwikstartException):

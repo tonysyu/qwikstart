@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from ..base_context import BaseContext
-from ..utils.prompt import Prompt, read_user_variable
+from ..utils.prompt import create_prompt, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
 
@@ -64,7 +64,8 @@ class Operation(BaseOperation[Context, Output]):
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
         for prompt_dict in context.prompts:
-            prompt = Prompt(**prompt_dict)
+            prompt = create_prompt(**prompt_dict)
+
             if isinstance(prompt.default_value, str):
                 prompt.default_value = renderer.render_string(prompt.default_value)
 
