@@ -34,11 +34,13 @@ class Operation(BaseOperation[Context, None]):
 
         logger.info(f"Running command: {cmd}")
 
-        response = subprocess.run(  # type: ignore
+        response = subprocess.run(
             cmd,
             shell=isinstance(cmd, str),
-            capture_output=True,
-            # FIXME: Once Python 3.6 support is dropped use text, not universal_newlines
+            # FIXME: Once Python 3.6 support is dropped use capture_output=True
+            # instead of stdout/stderr and text instead of universal_newlines
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             universal_newlines=True,
         )
         response.check_returncode()
