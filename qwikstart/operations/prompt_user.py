@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from ..base_context import BaseContext
+from ..exceptions import OperationError
 from ..utils.prompt import Prompt, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
@@ -64,7 +65,8 @@ class Operation(BaseOperation[Context, Output]):
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
         for prompt_dict in context.prompts:
-            prompt = Prompt(**prompt_dict)
+            prompt = create_prompt(**prompt_dict)
+
             if isinstance(prompt.default_value, str):
                 prompt.default_value = renderer.render_string(prompt.default_value)
 
@@ -81,3 +83,26 @@ class Operation(BaseOperation[Context, Output]):
         )
 
         return {output_name: user_responses}
+
+
+def create_prompt(**prompt_kwargs: Any) -> Prompt:
+    """Return Prompt instance from attributes in dictionary.
+
+    This raises a user-facing OperationError if the Prompt is incorrectly defined.
+    """
+    try:
+        return Prompt(**prompt_kwargs)
+    except TypeError as error:
+        name = prompt_kwargs.get("name", None)
+        if not name:
+            msg = f"Prompt definition has no 'name': {prompt_kwargs}"
+            raise OperationError(msg) from error
+
+        # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+        # See https://github.com/python/mypy/issues/6568
+        known_keys = Prompt.__dataclass_fields__.keys()  # type:ignore
+        unknown_keys = set(prompt_kwargs.keys()).difference(known_keys)
+        if unknown_keys:
+            msg = f"Prompt definition for {name!r} has unknown keys: {unknown_keys}"
+            raise OperationError(msg) from error
+        raise

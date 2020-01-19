@@ -1,6 +1,9 @@
 from typing import Any, Dict, Optional
 from unittest.mock import patch
 
+import pytest
+
+from qwikstart.exceptions import OperationError
 from qwikstart.operations import prompt_user
 from qwikstart.utils.prompt import Prompt
 
@@ -34,6 +37,27 @@ class TestPromptUser:
         }
         output_context = execute_prompt_user(context, responses={"name": "World"})
         assert output_context["template_variables"]["message"] == "Hello World!"
+
+
+class TestCreatePrompt:
+    def test_name_only(self) -> None:
+        prompt = prompt_user.create_prompt(name="test")
+        assert prompt.name == "test"
+        assert prompt.default_value is None
+
+    def test_name_and_default(self) -> None:
+        prompt = prompt_user.create_prompt(name="test", default_value="hello")
+        assert prompt.name == "test"
+        assert prompt.default_value == "hello"
+
+    def test_name_missing_raises(self) -> None:
+        with pytest.raises(OperationError, match="Prompt definition has no 'name'"):
+            prompt_user.create_prompt()
+
+    def test_unknown_attribute_raises(self) -> None:
+        msg = "Prompt definition for 'test' has unknown keys:"
+        with pytest.raises(OperationError, match=msg):
+            prompt_user.create_prompt(name="test", unknown="value")
 
 
 def execute_prompt_user(
