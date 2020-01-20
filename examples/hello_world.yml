@@ -3,10 +3,15 @@ operations:
         prompts:
             - name: "name"
               default_value: "World"
+            - name: "greeting"
+              choices:
+                - "Hello"
+                - "Hi"
+                - "Howdy"
     echo:
         message: |
 
-            Hello {{ qwikstart.name }}!
+            {{ qwikstart.greeting }} {{ qwikstart.name }}!
 
             {{ 'Welcome to the qwikstart tool!' | colored("yellow") }}
 
