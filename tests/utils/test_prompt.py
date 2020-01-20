@@ -10,12 +10,17 @@ class TestCreatePrompt:
     def test_name_only(self) -> None:
         prompt = _prompt.create_prompt(name="test")
         assert prompt.name == "test"
-        assert prompt.default_value is None
+        assert prompt.default is None
 
     def test_name_and_default(self) -> None:
+        prompt = _prompt.create_prompt(name="test", default="hello")
+        assert prompt.name == "test"
+        assert prompt.default == "hello"
+
+    def test_deprecated_default_value_still_works(self) -> None:
         prompt = _prompt.create_prompt(name="test", default_value="hello")
         assert prompt.name == "test"
-        assert prompt.default_value == "hello"
+        assert prompt.default == "hello"
 
     def test_name_missing_raises(self) -> None:
         with pytest.raises(UserFacingError, match="Prompt definition has no 'name'"):

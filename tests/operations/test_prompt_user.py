@@ -19,17 +19,17 @@ class TestPromptUser:
     def test_use_default(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
-            "prompts": [{"name": "name", "default_value": "World"}],
+            "prompts": [{"name": "name", "default": "World"}],
         }
         output_context = execute_prompt_user(context)
         assert output_context["template_variables"]["name"] == "World"
 
-    def test_template_string_for_default_value(self) -> None:
+    def test_template_string_for_default(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),
             "prompts": [
                 {"name": "name"},
-                {"name": "message", "default_value": "Hello {{ qwikstart.name }}!"},
+                {"name": "message", "default": "Hello {{ qwikstart.name }}!"},
             ],
         }
         output_context = execute_prompt_user(context, responses={"name": "World"})
@@ -52,6 +52,6 @@ class MockReadUserVariable:
     def __call__(self, prompt: Prompt) -> Any:
         if prompt.name in self.responses:
             return self.responses[prompt.name]
-        if prompt.default_value is None:
+        if prompt.default is None:
             raise RuntimeError(f"No response or default for {prompt.name}")
-        return prompt.default_value
+        return prompt.default

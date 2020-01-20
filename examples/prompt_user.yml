@@ -2,9 +2,9 @@ operations:
     prompt_user:
         prompts:
             - name: "name"
-              default_value: "World"
+              default: "World"
             - name: "target_dir"
-              default_value: "."
+              default: "."
     define_context:
         context_defs:
             target_path: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"

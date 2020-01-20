@@ -11,7 +11,7 @@ from qwikstart.exceptions import UserFacingError
 @dataclass
 class Prompt:
     name: str
-    default_value: Optional[Any] = None
+    default: Optional[Any] = None
     choices: Optional[List[Any]] = None
 
 
@@ -20,6 +20,9 @@ def create_prompt(**prompt_kwargs: Any) -> Prompt:
 
     This raises a UserFacingError if the Prompt is incorrectly defined.
     """
+    # FIXME: Remove in v0.5; Support default_value for backwards compatibility
+    if "default_value" in prompt_kwargs:
+        prompt_kwargs["default"] = prompt_kwargs.pop("default_value")
     try:
         return Prompt(**prompt_kwargs)
     except TypeError as error:
@@ -48,7 +51,7 @@ def read_user_variable(prompt: Prompt) -> Any:
     """
     if prompt.choices:
         return read_user_choice(prompt)
-    return click.prompt(default_style(prompt.name), default=prompt.default_value)
+    return click.prompt(default_style(prompt.name), default=prompt.default)
 
 
 def read_user_choice(prompt: Prompt) -> Any:

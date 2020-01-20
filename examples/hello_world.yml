@@ -2,7 +2,7 @@ operations:
     prompt_user:
         prompts:
             - name: "name"
-              default_value: "World"
+              default: "World"
             - name: "greeting"
               choices:
                 - "Hello"
