@@ -20,14 +20,14 @@ CONTEXT_HELP = {
             List of dictionaries describing prompts for user inputs.
             Dictionary have the following keys:
                 - name: The name of the variable being defined.
-                - default_value: Optional default value of variable. Note that this
+                - default: Optional default value of variable. Note that this
                   can be defined as a template string, with variables defined in
                   previous prompts or from template variables in the context; e.g.:
 
                     - name: "name"
-                      default_value: "World"
+                      default: "World"
                     - name: "message"
-                      default_value: "Hello {{ name }}!"
+                      default: "Hello {{ name }}!"
         """
     )
 }
@@ -66,8 +66,8 @@ class Operation(BaseOperation[Context, Output]):
         for prompt_dict in context.prompts:
             prompt = create_prompt(**prompt_dict)
 
-            if isinstance(prompt.default_value, str):
-                prompt.default_value = renderer.render_string(prompt.default_value)
+            if isinstance(prompt.default, str):
+                prompt.default = renderer.render_string(prompt.default)
 
             response = read_user_variable(prompt)
             user_responses[prompt.name] = response
