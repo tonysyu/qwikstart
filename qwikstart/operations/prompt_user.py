@@ -1,9 +1,9 @@
 import logging
 import textwrap
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Type
 
-from ..base_context import BaseContext
+from ..base_context import BaseContext, DictContext, TContext
 from ..utils.prompt import create_prompt, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_INTRO = "Please enter the following information:"
 
 CONTEXT_HELP = {
-    "prompts": textwrap.dedent(
+    "inputs": textwrap.dedent(
         """
             List of dictionaries describing prompts for user inputs.
             Dictionary have the following keys:
@@ -32,7 +32,6 @@ CONTEXT_HELP = {
     )
 }
 
-
 # Output will be dict with single key, `Context.output_dict_name`, and dict
 # value w/ keys defined by `Context.prompts` mapping to user responses.
 Output = Dict[str, Dict[str, Any]]
@@ -40,7 +39,7 @@ Output = Dict[str, Dict[str, Any]]
 
 @dataclass(frozen=True)
 class Context(BaseContext):
-    prompts: List[Dict[str, Any]]
+    inputs: List[Dict[str, Any]]
     output_dict_name: str = "template_variables"
     introduction: str = DEFAULT_INTRO
     template_variables: Dict[str, Any] = field(default_factory=dict)
@@ -49,6 +48,16 @@ class Context(BaseContext):
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
         return CONTEXT_HELP.get(field_name)
+
+    @classmethod
+    def from_dict(cls: Type[TContext], field_dict: DictContext) -> TContext:
+        # FIXME: Remove in v0.5; Support prompts for backwards compatibility
+        if "prompts" in field_dict:
+            field_dict = {
+                "inputs": field_dict["prompts"],
+                **{k: v for k, v in field_dict.items() if k != "prompts"},
+            }
+        return super().from_dict(field_dict)  # type: ignore
 
 
 class Operation(BaseOperation[Context, Output]):
@@ -63,8 +72,8 @@ class Operation(BaseOperation[Context, Output]):
 
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
-        for prompt_dict in context.prompts:
-            prompt = create_prompt(**prompt_dict)
+        for input_description in context.inputs:
+            prompt = create_prompt(**input_description)
 
             if isinstance(prompt.default, str):
                 prompt.default = renderer.render_string(prompt.default)

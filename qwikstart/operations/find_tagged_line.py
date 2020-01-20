@@ -32,6 +32,6 @@ class Operation(BaseOperation[Context, Output]):
             for line_number, line in enumerate(f, 1):
                 if tag in line:
                     column = line.find(tag)
-                    return {"line": line_number, "column": column}
+                    return Output(line=line_number, column=column)
             else:
                 raise OperationError("Failed to find line tagged with {}")

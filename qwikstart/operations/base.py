@@ -13,7 +13,7 @@ TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
 
 
-class BaseOperation(Generic[TContext, TOutput], abc.ABC):
+class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     """An operation within a qwikstart `Task`"""
 
     name: str
