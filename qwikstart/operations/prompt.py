@@ -63,8 +63,8 @@ class Context(BaseContext):
 class Operation(BaseOperation[Context, Output]):
     """Operation to prompt user for inputs."""
 
-    name = "prompt_user"
-    aliases = ["prompt"]
+    name = "prompt"
+    aliases = ["prompt_user"]
 
     def run(self, context: Context) -> Output:
 

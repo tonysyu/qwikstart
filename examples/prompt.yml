@@ -1,5 +1,5 @@
 operations:
-    prompt_user:
+    prompt:
         inputs:
             - name: "name"
               default: "World"
