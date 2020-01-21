@@ -1,6 +1,6 @@
 operations:
-    prompt_user:
-        prompts:
+    prompt:
+        inputs:
             - name: "name"
               default: "World"
             - name: "greeting"

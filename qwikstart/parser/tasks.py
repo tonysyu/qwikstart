@@ -5,8 +5,7 @@ from typing_extensions import TypedDict
 
 from .. import base_context
 from ..tasks import Task
-from .core import get_operations_mapping
-from .operations import UnparsedOperation, parse_operation
+from .operations import UnparsedOperation, get_operations_mapping, parse_operation
 
 OperationsList = Union[List[UnparsedOperation], Dict[str, UnparsedOperation]]
 

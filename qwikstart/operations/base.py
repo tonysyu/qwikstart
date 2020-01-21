@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Dict, Generic, Mapping, Optional, TypeVar, cast
+from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
@@ -13,10 +13,11 @@ TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
 
 
-class BaseOperation(Generic[TContext, TOutput], abc.ABC):
+class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     """An operation within a qwikstart `Task`"""
 
     name: str
+    aliases: Optional[List[str]] = None
 
     def __init__(
         self,

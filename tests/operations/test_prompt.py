@@ -1,7 +1,7 @@
 from typing import Any, Dict, Optional
 from unittest.mock import patch
 
-from qwikstart.operations import prompt_user
+from qwikstart.operations import prompt as prompt_user
 from qwikstart.utils.prompt import Prompt
 
 from .. import helpers
@@ -9,36 +9,35 @@ from .. import helpers
 
 class TestPromptUser:
     def test_no_default(self) -> None:
-        context = {
-            "execution_context": helpers.get_execution_context(),
-            "prompts": [{"name": "name"}],
-        }
-        output_context = execute_prompt_user(context, responses={"name": "Tony"})
+        context = {"inputs": [{"name": "name"}]}
+        output_context = execute_prompt_op(context, responses={"name": "Tony"})
+        assert output_context["template_variables"]["name"] == "Tony"
+
+    def test_deprecated_prompts_still_works(self) -> None:
+        context = {"prompts": [{"name": "name"}]}
+        output_context = execute_prompt_op(context, responses={"name": "Tony"})
         assert output_context["template_variables"]["name"] == "Tony"
 
     def test_use_default(self) -> None:
-        context = {
-            "execution_context": helpers.get_execution_context(),
-            "prompts": [{"name": "name", "default": "World"}],
-        }
-        output_context = execute_prompt_user(context)
+        context = {"inputs": [{"name": "name", "default": "World"}]}
+        output_context = execute_prompt_op(context)
         assert output_context["template_variables"]["name"] == "World"
 
     def test_template_string_for_default(self) -> None:
         context = {
-            "execution_context": helpers.get_execution_context(),
-            "prompts": [
+            "inputs": [
                 {"name": "name"},
                 {"name": "message", "default": "Hello {{ qwikstart.name }}!"},
-            ],
+            ]
         }
-        output_context = execute_prompt_user(context, responses={"name": "World"})
+        output_context = execute_prompt_op(context, responses={"name": "World"})
         assert output_context["template_variables"]["message"] == "Hello World!"
 
 
-def execute_prompt_user(
+def execute_prompt_op(
     context: Dict[str, Any], responses: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
+    context.setdefault("execution_context", helpers.get_execution_context())
     mock_read_user_variable = MockReadUserVariable(responses=responses)
     prompt_op = prompt_user.Operation()
     with patch.object(prompt_user, "read_user_variable", new=mock_read_user_variable):
