@@ -1,8 +1,46 @@
+from typing import List
+from unittest.mock import Mock, patch
+
 import pytest
 
 from qwikstart.exceptions import TaskParserError
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.parser import operations
+
+
+# Ignore type: Mypy doesn't seem to like objects imported into a module.
+@patch.object(operations.BaseOperation, "__subclasses__")  # type: ignore
+class TestGetOperationsMapping:
+    def test_no_operations(self, mock_get_subclasses: Mock) -> None:
+        mock_get_subclasses.return_value = []
+        assert operations.get_operations_mapping() == {}
+
+    def test_one_operation(self, mock_get_subclasses: Mock) -> None:
+        class MockOperation:
+            name = "fake_op"
+            aliases: List[str] = []
+
+        mock_get_subclasses.return_value = [MockOperation]
+        assert operations.get_operations_mapping() == {"fake_op": MockOperation}
+
+    def test_operation_with_no_name_skipped(self, mock_get_subclasses: Mock) -> None:
+        class MockOperation:
+            name = "fake_op"
+            aliases: List[str] = []
+
+        mock_get_subclasses.return_value = [MockOperation]
+        assert operations.get_operations_mapping() == {"fake_op": MockOperation}
+
+    def test_operation_with_alias(self, mock_get_subclasses: Mock) -> None:
+        class MockOperation:
+            name = "fake_op"
+            aliases = ["fake_alias"]
+
+        mock_get_subclasses.return_value = [MockOperation]
+        assert operations.get_operations_mapping() == {
+            "fake_op": MockOperation,
+            "fake_alias": MockOperation,
+        }
 
 
 class TestParseOperation:

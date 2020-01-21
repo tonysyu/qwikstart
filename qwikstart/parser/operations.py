@@ -21,6 +21,12 @@ def get_operations_mapping() -> OperationMapping:
     operations = [op for op in BaseOperation.__subclasses__() if hasattr(op, "name")]
     op_mapping = {op.name: op for op in operations}
 
+    # Add any operations that have aliases to our mapping:
+    for op in operations:
+        if op.aliases:
+            for name in op.aliases:
+                op_mapping.setdefault(name, op)
+
     # FIXME: Cast to avoid mypy error due to use of Type with abstract baseclass
     # See https://github.com/python/mypy/issues/4717
     return cast(OperationMapping, op_mapping)
