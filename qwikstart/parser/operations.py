@@ -1,16 +1,29 @@
 import collections
-from typing import Any, Dict, NamedTuple, Optional, Tuple, Type, Union
+from typing import Any, Dict, NamedTuple, Optional, Tuple, Type, Union, cast
 
 from .. import utils
 from ..exceptions import TaskParserError
-from ..operations import GenericOperation
-from .core import OperationMapping, get_operations_mapping
+from ..operations import BaseOperation, GenericOperation
 
 __all__ = ["OperationDefinition", "parse_operation"]
 
 
+OperationMapping = Dict[str, Type[GenericOperation]]
 UnparsedOperation = Union[str, Dict[str, Dict[str, Any]], Tuple[str, Dict[str, Any]]]
 RESERVED_WORDS_OPERATION_CONFIG = {"local_context", "input_mapping", "output_mapping"}
+
+
+def get_operations_mapping() -> OperationMapping:
+    """Return mapping of known operation names to their respective operation classes."""
+    # FIXME: Each subclass of BaseOperation generates two subclasses: The actual
+    # subclass AND the `BaseOperation[TContext, TOutput]` used as superclass. Ignore
+    # operations without names to avoid these classes.
+    operations = [op for op in BaseOperation.__subclasses__() if hasattr(op, "name")]
+    op_mapping = {op.name: op for op in operations}
+
+    # FIXME: Cast to avoid mypy error due to use of Type with abstract baseclass
+    # See https://github.com/python/mypy/issues/4717
+    return cast(OperationMapping, op_mapping)
 
 
 class OperationDefinition(NamedTuple):
