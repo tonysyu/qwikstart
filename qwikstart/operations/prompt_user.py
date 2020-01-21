@@ -51,7 +51,7 @@ class Context(BaseContext):
 
     @classmethod
     def from_dict(cls: Type[TContext], field_dict: DictContext) -> TContext:
-        # FIXME: Remove in v0.5; Support prompts for backwards compatibility
+        # FIXME: Remove in v0.5; Support "prompts" for backwards compatibility
         if "prompts" in field_dict:
             field_dict = {
                 "inputs": field_dict["prompts"],
@@ -63,7 +63,8 @@ class Context(BaseContext):
 class Operation(BaseOperation[Context, Output]):
     """Operation to prompt user for inputs."""
 
-    name: str = "prompt_user"
+    name = "prompt_user"
+    aliases = ["prompt"]
 
     def run(self, context: Context) -> Output:
 
