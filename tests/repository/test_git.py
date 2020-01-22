@@ -19,11 +19,13 @@ class TestGitRepoLoader:
         with patch_git_repo_loader_dependencies() as mocks:
             git.GitRepoLoader(TEST_URL)
         mocks.download_git_repo.assert_not_called()
+        mocks.update_git_repo.assert_called_once_with(mocks.local_path)
 
     def test_download_required(self) -> None:
         with patch_git_repo_loader_dependencies(local_path_exists=False) as mocks:
             git.GitRepoLoader(TEST_URL)
         mocks.download_git_repo.assert_called_once_with(TEST_URL, mocks.local_path)
+        mocks.update_git_repo.assert_not_called()
 
     def test_resolved_path(self) -> None:
         with patch_git_repo_loader_dependencies(local_path="/my/path/to/qwikstart.yml"):
@@ -78,6 +80,7 @@ class MockGitRepoLoaderDependencies:
     local_path: Path
     local_loader: Mock
     download_git_repo: Mock
+    update_git_repo: Mock
 
 
 @contextmanager
@@ -101,8 +104,10 @@ def patch_git_repo_loader_dependencies(
     with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
         with patch.object(git, "get_local_repo_path", return_value=mock_path):
             with patch.object(git, "download_git_repo") as mock_download:
-                yield MockGitRepoLoaderDependencies(
-                    local_path=mock_path,
-                    local_loader=mock_loader,
-                    download_git_repo=mock_download,
-                )
+                with patch.object(git, "update_git_repo") as mock_update_repo:
+                    yield MockGitRepoLoaderDependencies(
+                        local_path=mock_path,
+                        local_loader=mock_loader,
+                        download_git_repo=mock_download,
+                        update_git_repo=mock_update_repo,
+                    )

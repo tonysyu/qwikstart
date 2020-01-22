@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import yaml
 
@@ -25,9 +25,8 @@ class LocalRepoLoader(BaseRepoLoader):
 
     file_loader = YamlFileLoader()
 
-    def __init__(self, path: str, root: Optional[Path] = None):
-        root = root or Path(".")
-        self._local_path = root.joinpath(path).resolve()
+    def __init__(self, path: str):
+        self._local_path = Path(path).resolve()
         if self._local_path.is_dir():
             self._local_path = self.resolved_path / QWIKSTART_TASK_DEFINITION_FILE
 
