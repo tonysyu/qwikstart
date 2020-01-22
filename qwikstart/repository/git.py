@@ -17,6 +17,8 @@ class GitRepoLoader(base.BaseRepoLoader):
         local_repo_path = get_local_repo_path(git_url)
         if not local_repo_path.exists():
             download_git_repo(git_url, local_repo_path)
+        else:
+            update_git_repo(local_repo_path)
 
         local_path = local_repo_path / path
         self._local_loader = local.LocalRepoLoader(str(local_path))
@@ -55,3 +57,7 @@ def download_git_repo(repo_url: str, local_path: Path) -> None:
         _git.Repo.clone_from(repo_url, str(local_path))
     except (_git.NoSuchPathError, _git.GitCommandError):
         raise RepoLoaderError(f"Could not load git repo: {repo_url}")
+
+
+def update_git_repo(local_path: Path) -> None:
+    _git.Repo(str(local_path)).remote().pull()
