@@ -49,7 +49,7 @@ def get_local_repo_path(url: str) -> Path:
     local_repo_path = parsed_url.hostname + str(parsed_url.path)
 
     config = get_user_config()
-    return config.qwikstart_cache / local_repo_path
+    return config.qwikstart_cache_path / local_repo_path
 
 
 def download_git_repo(repo_url: str, local_path: Path) -> None:
