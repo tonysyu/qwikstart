@@ -10,7 +10,7 @@ from qwikstart.config import get_user_config
 from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import git
 
-CACHE_DIR = get_user_config().qwikstart_cache
+CACHE_DIR = get_user_config().qwikstart_cache_path
 TEST_URL = "https://github.com/user/repo"
 
 

@@ -33,3 +33,22 @@ def indent(text: str, space_count: int) -> str:
 def resolve_path(path: Union[Path, str]) -> Path:
     """Return resolved path object from `pathlib.Path` or string."""
     return ensure_path(path).resolve()
+
+
+def get_dataclass_keys(dataclass: Any) -> Iterable[Any]:
+    assert_has_dataclass_fields(dataclass)
+    # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+    # See https://github.com/python/mypy/issues/6568
+    return dataclass.__dataclass_fields__.keys()  # type:ignore
+
+
+def get_dataclass_values(dataclass: Any) -> Iterable[Any]:
+    assert_has_dataclass_fields(dataclass)
+    # FIXME: Ignore mypy error when accessing __dataclass_fields__.
+    # See https://github.com/python/mypy/issues/6568
+    return dataclass.__dataclass_fields__.values()  # type:ignore
+
+
+def assert_has_dataclass_fields(dataclass: Any) -> None:
+    if not hasattr(dataclass, "__dataclass_fields__"):
+        raise TypeError("Expected dataclass with attribute '__dataclass_fields__'")
