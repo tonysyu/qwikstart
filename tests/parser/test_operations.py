@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, Dict, List, Tuple
 from unittest.mock import Mock, patch
 
 import pytest
@@ -82,3 +82,41 @@ class TestParseOperation:
     def test_unknown_operation(self) -> None:
         with pytest.raises(TaskParserError):
             operations.parse_operation("undefined_operation")
+
+
+class TestNormalizeOpDefinition:
+    def test_empty_dict_not_supported(self) -> None:
+        error_msg = "Operation definition with dict should only have a single key"
+        with pytest.raises(TaskParserError, match=error_msg):
+            operations.normalize_op_definition({})
+
+    def test_dict_with_multiple_keys_not_supported(self) -> None:
+        op_def_with_too_many_keys: Dict[str, Any] = {"op1": {}, "op2": {}}
+        error_msg = "Operation definition with dict should only have a single key"
+        with pytest.raises(TaskParserError, match=error_msg):
+            operations.normalize_op_definition(op_def_with_too_many_keys)
+
+    def test_tuple_of_one_not_supported(self) -> None:
+        op_def_with_only_a_name = tuple(["name-of-op"])
+        error_msg = "Operation definition with sequence should only have two items"
+        with pytest.raises(TaskParserError, match=error_msg):
+            # Ignore typing since we're intentionally passing an incompatible tuple
+            operations.normalize_op_definition(op_def_with_only_a_name)  # type: ignore
+
+    def test_tuple_of_more_than_two_not_supported(self) -> None:
+        op_def_with_bad_tuple: Tuple[str, Dict[str, Any], str] = (
+            "name-of-op",
+            {},
+            "unsupported-third-argument",
+        )
+        error_msg = "Operation definition with sequence should only have two items"
+        with pytest.raises(TaskParserError, match=error_msg):
+            # Ignore typing since we're intentionally passing an incompatible tuple
+            operations.normalize_op_definition(op_def_with_bad_tuple)  # type: ignore
+
+    def test_invalid_op_def_type(self) -> None:
+        invalid_op_def_type = True
+        error_msg = "Could not parse operation definition: True"
+        with pytest.raises(TaskParserError, match=error_msg):
+            # Ignore typing since we're intentionally passing an incompatible tuple
+            operations.normalize_op_definition(invalid_op_def_type)  # type: ignore

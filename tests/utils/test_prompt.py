@@ -59,6 +59,9 @@ class TestGetParamType:
     def test_explicit_bool_uppercase(self) -> None:
         assert _prompt.get_param_type(name="fake", type="BOOL") == click.types.BOOL
 
+    def test_explicit_bool_type(self) -> None:
+        assert _prompt.get_param_type(name="fake", type=bool) == click.types.BOOL
+
     def test_unknown_type(self) -> None:
         with pytest.raises(UserFacingError, match="Unknown type 'bad' for prompt fake"):
             _prompt.get_param_type(name="fake", type="bad")

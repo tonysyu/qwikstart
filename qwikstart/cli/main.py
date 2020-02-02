@@ -10,7 +10,7 @@ from .resolver import resolve_task
 
 @click.group()
 def cli() -> None:
-    pass
+    pass  # pragma: no cover
 
 
 @cli.command()
@@ -54,4 +54,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    cli()
+    cli()  # pragma: no cover

@@ -76,12 +76,7 @@ def parse_operation(
     return operation_class(**op_def.parsed_config)
 
 
-def normalize_op_definition(
-    op_def: UnparsedOperation, op_mapping: Optional[OperationMapping] = None
-) -> OperationDefinition:
-    if op_mapping is None:
-        op_mapping = get_operations_mapping()
-
+def normalize_op_definition(op_def: UnparsedOperation) -> OperationDefinition:
     if isinstance(op_def, str):
         return OperationDefinition(name=op_def, config={})
     elif isinstance(op_def, collections.abc.Mapping):
@@ -99,5 +94,4 @@ def normalize_op_definition(
                 f", but given {op_def}"
             )
         return OperationDefinition(*op_def)
-    else:
-        raise TaskParserError(f"Could not parse operation definition: {op_def}")
+    raise TaskParserError(f"Could not parse operation definition: {op_def}")

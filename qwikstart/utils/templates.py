@@ -15,15 +15,15 @@ TRenderer = TypeVar("TRenderer", bound="TemplateRenderer")
 class TemplateContext(Protocol):
     @property
     def execution_context(self) -> ExecutionContext:
-        pass
+        pass  # pragma: no cover
 
     @property
     def template_variables(self) -> Dict[str, Any]:
-        pass
+        pass  # pragma: no cover
 
     @property
     def template_variable_prefix(self) -> str:
-        pass
+        pass  # pragma: no cover
 
 
 class TemplateRenderer:

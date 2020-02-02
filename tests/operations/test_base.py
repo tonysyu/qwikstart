@@ -87,3 +87,8 @@ class TestOperationHavingContextWithDict(TestCase):
             }
         )
         assert output["template_variables"] == {"a": 1, "b": 2}
+
+    def test_repr(self) -> None:
+        operation = FakeOperation()
+        args = "local_context={}, input_mapping={}, output_mapping={}"
+        assert repr(operation) == f"tests.operations.test_base.FakeOperation({args})"
