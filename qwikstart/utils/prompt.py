@@ -5,6 +5,7 @@ from typing import Any, List, Optional
 import click
 import click.types
 
+from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 
 
@@ -13,6 +14,7 @@ class Prompt:
     name: str
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
+    param_type: Optional[click.types.ParamType] = None
 
 
 def create_prompt(**prompt_kwargs: Any) -> Prompt:
@@ -23,22 +25,42 @@ def create_prompt(**prompt_kwargs: Any) -> Prompt:
     # FIXME: Remove in v0.5; Support default_value for backwards compatibility
     if "default_value" in prompt_kwargs:
         prompt_kwargs["default"] = prompt_kwargs.pop("default_value")
+
+    name = prompt_kwargs.get("name")
+    if not name:
+        msg = f"Prompt definition has no 'name': {prompt_kwargs}"
+        raise UserFacingError(msg)
+
+    prompt_kwargs["param_type"] = get_param_type(**prompt_kwargs)
     try:
         return Prompt(**prompt_kwargs)
     except TypeError as error:
-        name = prompt_kwargs.get("name", None)
-        if not name:
-            msg = f"Prompt definition has no 'name': {prompt_kwargs}"
-            raise UserFacingError(msg) from error
-
-        # FIXME: Ignore mypy error when accessing __dataclass_fields__.
-        # See https://github.com/python/mypy/issues/6568
-        known_keys = Prompt.__dataclass_fields__.keys()  # type:ignore
+        known_keys = utils.get_dataclass_keys(Prompt)
         unknown_keys = set(prompt_kwargs.keys()).difference(known_keys)
         if unknown_keys:
             msg = f"Prompt definition for {name!r} has unknown keys: {unknown_keys}"
             raise UserFacingError(msg) from error
         raise
+
+
+_PROMPT_TYPE_MAPPING = {"bool": click.types.BOOL, bool: click.types.BOOL}
+
+
+def get_param_type(**prompt_kwargs: Any) -> Optional[click.types.ParamType]:
+    name = prompt_kwargs["name"]
+    explicit_type = prompt_kwargs.get("type")
+    if explicit_type:
+        if isinstance(explicit_type, str):
+            explicit_type = explicit_type.lower()
+        if explicit_type not in _PROMPT_TYPE_MAPPING:
+            raise UserFacingError(f"Unknown type {explicit_type!r} for prompt {name}")
+        return _PROMPT_TYPE_MAPPING[explicit_type]
+
+    default_type = type(prompt_kwargs.get("default"))
+    if default_type in _PROMPT_TYPE_MAPPING:
+        return _PROMPT_TYPE_MAPPING[default_type]
+
+    return None
 
 
 def read_user_variable(prompt: Prompt) -> Any:
@@ -51,7 +73,9 @@ def read_user_variable(prompt: Prompt) -> Any:
     """
     if prompt.choices:
         return read_user_choice(prompt)
-    return click.prompt(default_style(prompt.name), default=prompt.default)
+    return click.prompt(
+        default_style(prompt.name), default=prompt.default, type=prompt.param_type
+    )
 
 
 def read_user_choice(prompt: Prompt) -> Any:
