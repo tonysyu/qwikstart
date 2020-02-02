@@ -7,7 +7,7 @@ debugging of these tests will need to be done with normal `pdb`.
 """
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import jinja2
 from pyfakefs.fake_filesystem_unittest import TestCase
@@ -32,12 +32,16 @@ class TestRenderFileTree(TestCase):
         template_variables: Optional[Dict[str, Any]] = None,
         source_dir: Optional[Path] = None,
         target_dir: Optional[Path] = None,
+        ignore_patterns: Optional[List[str]] = None,
     ) -> None:
         renderer = templates.TemplateRenderer(
             jinja2.FileSystemLoader("/"), template_variables=template_variables
         )
         generator = filesystem.FileTreeGenerator(
-            source_dir or self.source_dir, target_dir or self.target_dir, renderer
+            source_dir or self.source_dir,
+            target_dir or self.target_dir,
+            renderer,
+            ignore_patterns or [],
         )
         generator.copy()
 
@@ -125,3 +129,43 @@ class TestRenderFileTree(TestCase):
 
         with open(self.target_dir / "test.txt") as f:
             assert f.read() == "Hello, World!"
+
+    def test_ignore_single_file(self) -> None:
+        self.fs.create_file(self.source_dir / "ignore.txt")
+        self.render_source_directory_to_target_directory(ignore_patterns=["ignore.txt"])
+
+        assert not os.listdir(self.target_dir)
+
+    def test_ignore_file_in_sub_directory(self) -> None:
+        self.fs.create_file(self.source_dir / "subdirectory/ignore.txt")
+        self.render_source_directory_to_target_directory(
+            ignore_patterns=["subdirectory/ignore.txt"]
+        )
+        assert os.listdir(self.target_dir) == ["subdirectory"]
+
+
+class TestFnmatchesToRegex:
+    def test_exact_match(self) -> None:
+        pattern = filesystem.fnmatches_to_regex(["exact-match"])
+        assert pattern.match("exact-match")
+        assert not pattern.match("match")
+        assert not pattern.match("exact")
+
+    def test_matches_one_of_two(self) -> None:
+        pattern = filesystem.fnmatches_to_regex(["one", "two"])
+        assert pattern.match("one")
+        assert pattern.match("two")
+
+    def test_match_any_in_directory(self) -> None:
+        pattern = filesystem.fnmatches_to_regex([r"match_dir/*"])
+        assert pattern.match("match_dir/fake.txt")
+
+    def test_match_file_extension(self) -> None:
+        pattern = filesystem.fnmatches_to_regex([r"*.txt"])
+        assert pattern.match("match.txt")
+        assert not pattern.match("ignore.py")
+
+    def test_empty_list_should_not_match_anything(self) -> None:
+        pattern = filesystem.fnmatches_to_regex([])
+        assert not pattern.match("")
+        assert not pattern.match("hello")

@@ -1,7 +1,10 @@
+import fnmatch
 import logging
 import os
+import re
 import shutil
 from pathlib import Path
+from typing import Iterable, List, Optional, Pattern
 
 from binaryornot.check import is_binary
 
@@ -10,14 +13,24 @@ from .templates import TemplateRenderer
 logger = logging.getLogger(__name__)
 
 
+MATCH_NOTHING = re.compile("(?!.*)")
+
+
 class FileTreeGenerator:
-    def __init__(self, source_dir: Path, target_dir: Path, renderer: TemplateRenderer):
+    def __init__(
+        self,
+        source_dir: Path,
+        target_dir: Path,
+        renderer: TemplateRenderer,
+        ignore_patterns: Optional[List[str]] = None,
+    ):
         if not target_dir.exists():
             target_dir.mkdir()
 
         self.target_dir = target_dir
         self.source_dir = source_dir.resolve()
         self.renderer = renderer
+        self.ignore_pattern = fnmatches_to_regex(ignore_patterns)
 
         # Keep a mapping between source directories and target directories.
         # This simplifies resolution of rendered directory names.
@@ -39,6 +52,9 @@ class FileTreeGenerator:
     ) -> None:
         # Render source_filename since it may be a template:
         tgt_path = target_root / self.renderer.render_string(source_filename)
+
+        if self.ignore_pattern.match(source_filename):
+            return
 
         src_path = Path(source_root, source_filename)
         if is_binary(str(src_path)):
@@ -62,3 +78,33 @@ class FileTreeGenerator:
 
         tgt_path.mkdir(exist_ok=True)
         logger.debug(f"Created directory {tgt_path}")
+
+
+def fnmatches_to_regex(
+    patterns: Optional[Iterable[str]], case_insensitive: bool = False, flags: int = 0
+) -> Pattern[str]:
+    """Return a compiled regex Convert fnmatch patterns to that matches any of them.
+
+    Slashes are always converted to match either slash or backslash, for
+    Windows support, even when running elsewhere.
+
+    Args:
+        partial: If True, then the pattern will match if the target string starts with
+            the pattern. Otherwise, it must match the entire string.
+
+    Adapted from coveragepy's `fnmatches_to_regex`.
+    See https://github.com/nedbat/coveragepy/blob/master/coverage/files.py
+    """
+    if not patterns:
+        return MATCH_NOTHING
+    regexes = (fnmatch.translate(pattern) for pattern in patterns)
+    # Python3.7 fnmatch translates "/" as "/". Before that, it translates as "\/",
+    # so we have to deal with maybe a backslash.
+    regexes = (re.sub(r"\\?/", r"[\\\\/]", regex) for regex in regexes)
+
+    return re.compile(join_regex(regexes), flags=flags)
+
+
+def join_regex(regexes: Iterable[str]) -> str:
+    """Combine a list of regexes into one that matches any of them."""
+    return "|".join("(?:%s)" % r for r in regexes)
