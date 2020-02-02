@@ -23,6 +23,9 @@ class TestPromptUser:
         output_context = execute_prompt_op(context)
         assert output_context["template_variables"]["name"] == "World"
 
+    def test_help(self) -> None:
+        assert prompt_user.Context.help("inputs") == prompt_user.CONTEXT_HELP["inputs"]
+
     def test_template_string_for_default(self) -> None:
         context = {
             "inputs": [

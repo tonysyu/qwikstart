@@ -75,6 +75,13 @@ class TestDownloadGitRepo:
             git.download_git_repo("/this/is/not/a/url", CACHE_DIR.joinpath("new"))
 
 
+class TestUpdateGitRepo:
+    @patch.object(git._git, "Repo")
+    def test_repo_initialized_with_string(self, repo_class: Mock) -> None:
+        git.update_git_repo(Path("/path/to/local/repo"))
+        repo_class.assert_called_once_with("/path/to/local/repo")
+
+
 @dataclass(frozen=True)
 class MockGitRepoLoaderDependencies:
     local_path: Path

@@ -77,7 +77,7 @@ def remap_dict(
         elif original_key in new_dict:
             value = new_dict.pop(original_key)
         else:
-            continue
+            continue  # pragma: no cover
 
         if nested_key_separator in new_key:
             set_nested_dict_value(new_dict, new_key, value)
