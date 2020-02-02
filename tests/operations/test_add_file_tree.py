@@ -16,12 +16,20 @@ class TestAddFileTree:
             "execution_context": helpers.get_execution_context(target_dir=target_dir),
             "template_dir": template_dir,
             "target_dir": target_dir,
+            "ignore": [],
         }
 
         with patch.object(add_file_tree, "FileTreeGenerator") as mock_gen:
             add_file_tree_op.execute(context)
 
         # FileTreeGenerator should be initialized:
-        mock_gen.assert_called_once_with(template_dir, target_dir, ANY)
+        mock_gen.assert_called_once_with(
+            template_dir, target_dir, ANY, ignore_patterns=[]
+        )
         # The FileTreeGenerator instance's copy method should be called:
         mock_gen.return_value.copy.assert_called_once()
+
+    def test_help(self) -> None:
+        assert (
+            add_file_tree.Context.help("ignore") == add_file_tree.CONTEXT_HELP["ignore"]
+        )
