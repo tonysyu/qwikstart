@@ -2,7 +2,7 @@ from typing import Any, Dict, Optional
 from unittest.mock import patch
 
 from qwikstart.operations import prompt as prompt_user
-from qwikstart.utils.prompt import Prompt
+from qwikstart.utils.prompt import PromptSpec
 
 from .. import helpers
 
@@ -51,7 +51,7 @@ class MockReadUserVariable:
     def __init__(self, responses: Optional[Dict[str, Any]]):
         self.responses = responses or {}
 
-    def __call__(self, prompt: Prompt) -> Any:
+    def __call__(self, prompt: PromptSpec) -> Any:
         if prompt.name in self.responses:
             return self.responses[prompt.name]
         if prompt.default is None:

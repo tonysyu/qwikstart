@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
 
 from ..base_context import BaseContext, DictContext, TContext
-from ..utils.prompt import create_prompt, read_user_variable
+from ..utils.prompt import create_prompt_spec, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
 
@@ -74,15 +74,15 @@ class Operation(BaseOperation[Context, Output]):
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
         for input_description in context.inputs:
-            prompt = create_prompt(**input_description)
+            prompt_spec = create_prompt_spec(**input_description)
 
-            if isinstance(prompt.default, str):
-                prompt.default = renderer.render_string(prompt.default)
+            if isinstance(prompt_spec.default, str):
+                prompt_spec.default = renderer.render_string(prompt_spec.default)
 
-            response = read_user_variable(prompt)
-            user_responses[prompt.name] = response
+            response = read_user_variable(prompt_spec)
+            user_responses[prompt_spec.name] = response
             # Ensure that templates used for defaults can use the new variable.
-            renderer.add_template_variable(prompt.name, response)
+            renderer.add_template_variable(prompt_spec.name, response)
 
         output_name = context.output_dict_name
         logger.debug(f"Responses recorded to {output_name}:")

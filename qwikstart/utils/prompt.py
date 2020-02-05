@@ -10,17 +10,19 @@ from qwikstart.exceptions import UserFacingError
 
 
 @dataclass
-class Prompt:
+class PromptSpec:
+    """Data class used to specify input prompts."""
+
     name: str
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
     param_type: Optional[click.types.ParamType] = None
 
 
-def create_prompt(**prompt_kwargs: Any) -> Prompt:
-    """Return Prompt instance from attributes in dictionary.
+def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
+    """Return PromptSpec instance from attributes in dictionary.
 
-    This raises a UserFacingError if the Prompt is incorrectly defined.
+    This raises a UserFacingError if the PromptSpec is incorrectly defined.
     """
     # FIXME: Remove in v0.5; Support default_value for backwards compatibility
     if "default_value" in prompt_kwargs:
@@ -28,17 +30,19 @@ def create_prompt(**prompt_kwargs: Any) -> Prompt:
 
     name = prompt_kwargs.get("name")
     if not name:
-        msg = f"Prompt definition has no 'name': {prompt_kwargs}"
+        msg = f"PromptSpec definition has no 'name': {prompt_kwargs}"
         raise UserFacingError(msg)
 
     prompt_kwargs["param_type"] = get_param_type(**prompt_kwargs)
+    # Remove "type" (used by `get_param_type`) to avoid unknown key error:
+    prompt_kwargs.pop("type", None)
     try:
-        return Prompt(**prompt_kwargs)
+        return PromptSpec(**prompt_kwargs)
     except TypeError as error:
-        known_keys = utils.get_dataclass_keys(Prompt)
+        known_keys = utils.get_dataclass_keys(PromptSpec)
         unknown_keys = set(prompt_kwargs.keys()).difference(known_keys)
         if unknown_keys:
-            msg = f"Prompt definition for {name!r} has unknown keys: {unknown_keys}"
+            msg = f"PromptSpec definition for {name!r} has unknown keys: {unknown_keys}"
             raise UserFacingError(msg) from error
         raise
 
@@ -63,7 +67,7 @@ def get_param_type(**prompt_kwargs: Any) -> Optional[click.types.ParamType]:
     return None
 
 
-def read_user_variable(prompt: Prompt) -> Any:
+def read_user_variable(prompt_spec: PromptSpec) -> Any:
     """Prompt user for variable and return the entered value or given default.
 
     Adapted from `cookiecutter.prompt`
@@ -71,14 +75,16 @@ def read_user_variable(prompt: Prompt) -> Any:
 
     For more info, see https://click.palletsprojects.com/en/7.x/api/#click.prompt
     """
-    if prompt.choices:
-        return read_user_choice(prompt)
+    if prompt_spec.choices:
+        return read_user_choice(prompt_spec)
     return click.prompt(
-        default_style(prompt.name), default=prompt.default, type=prompt.param_type
+        default_style(prompt_spec.name),
+        default=prompt_spec.default,
+        type=prompt_spec.param_type,
     )
 
 
-def read_user_choice(prompt: Prompt) -> Any:
+def read_user_choice(prompt_spec: PromptSpec) -> Any:
     """Prompt user to choose from several options for the given variable.
 
     The first item will be returned if no input provided.
@@ -86,7 +92,7 @@ def read_user_choice(prompt: Prompt) -> Any:
     Adapted from `cookiecutter.prompt`
     (see https://github.com/cookiecutter/cookiecutter).
     """
-    choices = prompt.choices
+    choices = prompt_spec.choices
     if not isinstance(choices, list):
         msg = f"Choices for prompt must be list but given {type(choices)}: {choices!r}"
         raise UserFacingError(msg)
@@ -101,7 +107,7 @@ def read_user_choice(prompt: Prompt) -> Any:
     choice_lines = ["{} - {}".format(*c) for c in choice_map.items()]
     display = os.linesep.join(
         (
-            "Select {}:".format(prompt.name),
+            "Select {}:".format(prompt_spec.name),
             os.linesep.join(choice_lines),
             "Choose from {}".format(", ".join(numeric_choices)),
         )
