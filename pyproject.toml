@@ -42,6 +42,7 @@ binaryornot = "^0.4.4"
 colorlog = "^4.0.2"
 termcolor = "^1.1.0"
 gitpython = "^3.0.5"
+prompt-toolkit = "^3.0.3"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"

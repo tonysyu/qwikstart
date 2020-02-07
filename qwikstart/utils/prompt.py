@@ -8,6 +8,8 @@ import click.types
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 
+from . import input_types
+
 
 @dataclass
 class PromptSpec:
@@ -102,7 +104,6 @@ def read_user_choice(prompt_spec: PromptSpec) -> Any:
 
     choice_map = {"{}".format(i): value for i, value in enumerate(choices, 1)}
     numeric_choices = choice_map.keys()
-    default = "1"
 
     choice_lines = ["{} - {}".format(*c) for c in choice_map.items()]
     display = os.linesep.join(
@@ -113,9 +114,8 @@ def read_user_choice(prompt_spec: PromptSpec) -> Any:
         )
     )
 
-    user_choice = click.prompt(
-        display, type=click.Choice(numeric_choices), default=default, show_choices=False
-    )
+    input_type = input_types.NumberRange(1, len(choices))
+    user_choice = input_type.raw_prompt(display)
     return choice_map[user_choice]
 
 

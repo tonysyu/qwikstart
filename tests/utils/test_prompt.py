@@ -101,7 +101,7 @@ class TestReadUserVariable:
         prompt_spec.param_type == click.types.BOOL
 
 
-@patch.object(_prompt.click, "prompt")  # type: ignore
+@patch.object(_prompt.input_types, "ptk_prompt")
 class TestReadUserChoice:
     def test_select_choice(self, click_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greet", choices=["Hi", "Hello"])
