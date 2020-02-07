@@ -93,7 +93,7 @@ class TestReadUserVariable:
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
-            "test: ", default=False, completer=None, validator=ANY
+            "test (y/n): ", default="n", completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 

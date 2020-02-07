@@ -1,9 +1,9 @@
+"""
+Input prompts to request data from users.
+"""
 import os
 from dataclasses import dataclass
 from typing import Any, List, Optional, Type
-
-import click
-import click.types
 
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError

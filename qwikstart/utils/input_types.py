@@ -1,3 +1,8 @@
+"""
+Low-level input types using `prompt_toolkit` to request input.
+
+Higher-level functionality should be put in `prompt` module.
+"""
 import abc
 from typing import Any, Generic, Optional, TypeVar, cast
 
@@ -12,6 +17,7 @@ class InputType(Generic[T]):
 
     error_msg: str = "Input does not pass validation"
     completer: Optional[Completer] = None
+    default_prefix: str = ": "
 
     @property
     def validator(self) -> Validator:
@@ -24,7 +30,11 @@ class InputType(Generic[T]):
     def cast(self, input_text: str) -> T:
         return cast(T, input_text)
 
-    def raw_prompt(self, message: str, suffix: str = ": ", **prompt_kwargs: Any) -> str:
+    def raw_prompt(
+        self, message: str, suffix: Optional[str] = None, **prompt_kwargs: Any
+    ) -> str:
+        if suffix is None:
+            suffix = self.default_prefix
         return ptk_prompt(  # type: ignore
             message + suffix,
             completer=self.completer,
@@ -66,6 +76,15 @@ class StringInput(InputType[str]):
 
 class BoolInput(InputType[bool]):
     error_msg: str = "Response must be 'y' or 'n'"
+    default_prefix: str = " (y/n): "
+
+    def raw_prompt(
+        self, message: str, suffix: Optional[str] = None, **prompt_kwargs: Any
+    ) -> str:
+        default = prompt_kwargs.get("default")
+        if isinstance(default, bool):
+            prompt_kwargs["default"] = "y" if default else "n"
+        return super().raw_prompt(message, suffix=suffix, **prompt_kwargs)
 
     def is_valid(self, text: str) -> bool:
         return text.lower() in ("y", "n")

@@ -45,6 +45,12 @@ class TestStringInput:
         string_input = input_types.StringInput()
         assert string_input.is_valid("") is False
 
+    @patch.object(input_types, "ptk_prompt", return_value="hi")
+    def test_prompt_prefix(self, ptk_prompt: Mock) -> None:
+        string_input = input_types.StringInput()
+        assert string_input.prompt("Input", suffix="> ")
+        ptk_prompt.assert_called_once_with("Input> ", completer=None, validator=ANY)
+
     def test_whitespace_treated_as_empty_response(self) -> None:
         string_input = input_types.StringInput()
         assert string_input.is_valid("\t") is False
