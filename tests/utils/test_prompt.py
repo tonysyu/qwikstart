@@ -1,11 +1,11 @@
-from unittest.mock import Mock, patch
+from unittest.mock import ANY, Mock, patch
 
-import click.types
 import pytest
 
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 from qwikstart.utils import prompt as _prompt
+from qwikstart.utils.input_types import BoolInput, StringInput
 
 PROMPT_ATTRS = utils.get_dataclass_keys(_prompt.PromptSpec)
 
@@ -15,6 +15,7 @@ class TestCreatePromptSpec:
         prompt_spec = _prompt.create_prompt_spec(name="test")
         assert prompt_spec.name == "test"
         assert prompt_spec.default is None
+        assert prompt_spec.input_type == StringInput
 
     def test_name_and_default(self) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", default="hello")
@@ -47,21 +48,21 @@ class TestCreatePromptSpec:
 
 
 class TestGetParamType:
-    def test_unknown_type_returns_none(self) -> None:
-        assert _prompt.get_param_type(name="any") is None
+    def test_unknown_type_returns_string_input(self) -> None:
+        assert _prompt.get_param_type(name="any") is StringInput
 
     def test_bool_based_on_default(self) -> None:
-        assert _prompt.get_param_type(name="fake", default=True) == click.types.BOOL
-        assert _prompt.get_param_type(name="fake", default=False) == click.types.BOOL
+        assert _prompt.get_param_type(name="fake", default=True) is BoolInput
+        assert _prompt.get_param_type(name="fake", default=False) is BoolInput
 
     def test_explicit_bool(self) -> None:
-        assert _prompt.get_param_type(name="fake", type="bool") == click.types.BOOL
+        assert _prompt.get_param_type(name="fake", type="bool") is BoolInput
 
     def test_explicit_bool_uppercase(self) -> None:
-        assert _prompt.get_param_type(name="fake", type="BOOL") == click.types.BOOL
+        assert _prompt.get_param_type(name="fake", type="BOOL") is BoolInput
 
     def test_explicit_bool_type(self) -> None:
-        assert _prompt.get_param_type(name="fake", type=bool) == click.types.BOOL
+        assert _prompt.get_param_type(name="fake", type=bool) is BoolInput
 
     def test_unknown_type(self) -> None:
         with pytest.raises(UserFacingError, match="Unknown type 'bad' for prompt fake"):
@@ -69,55 +70,55 @@ class TestGetParamType:
 
 
 @patch.object(_prompt, "read_user_choice")
-@patch.object(_prompt.click, "prompt")  # type: ignore
+@patch.object(_prompt.input_types, "ptk_prompt")
 class TestReadUserVariable:
-    def test_call_click_prompt(self, click_prompt: Mock, read_choice: Mock) -> None:
+    def test_call_ptk_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test")
         _prompt.read_user_variable(prompt_spec)
 
-        click_prompt.assert_called_once_with(
-            _prompt.default_style("test"), default=None, type=None
+        ptk_prompt.assert_called_once_with(
+            "test: ", default=None, completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 
-    def test_call_read_choice(self, click_prompt: Mock, read_choice: Mock) -> None:
+    def test_call_read_choice(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greet", choices=["Hi", "Hello"])
         _prompt.read_user_variable(prompt_spec)
 
         read_choice.assert_called_once_with(prompt_spec)
-        click_prompt.assert_not_called()
+        ptk_prompt.assert_not_called()
 
-    def test_infer_boolean_prompt(self, click_prompt: Mock, read_choice: Mock) -> None:
+    def test_infer_boolean_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", default=False)
         _prompt.read_user_variable(prompt_spec)
 
-        click_prompt.assert_called_once_with(
-            _prompt.default_style("test"), default=False, type=click.types.BOOL
+        ptk_prompt.assert_called_once_with(
+            "test: ", default=False, completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 
-    def test_explicit_type(self, click_prompt: Mock, read_choice: Mock) -> None:
+    def test_explicit_type(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", type="bool")
-        prompt_spec.param_type == click.types.BOOL
+        prompt_spec.input_type is BoolInput
 
 
 @patch.object(_prompt.input_types, "ptk_prompt")
 class TestReadUserChoice:
-    def test_select_choice(self, click_prompt: Mock) -> None:
+    def test_select_choice(self, ptk_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greet", choices=["Hi", "Hello"])
 
-        click_prompt.return_value = "1"
+        ptk_prompt.return_value = "1"
         assert _prompt.read_user_choice(prompt_spec) == "Hi"
 
-        click_prompt.return_value = "2"
+        ptk_prompt.return_value = "2"
         assert _prompt.read_user_choice(prompt_spec) == "Hello"
 
-    def test_string_choices_raises_type_error(self, click_prompt: Mock) -> None:
+    def test_string_choices_raises_type_error(self, ptk_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greeting", choices="Hi, Hello")
         with pytest.raises(UserFacingError, match="Choices for prompt must be list"):
             _prompt.read_user_choice(prompt_spec)
 
-    def test_empty_choices_raises_value_error(self, click_prompt: Mock) -> None:
+    def test_empty_choices_raises_value_error(self, ptk_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greeting", choices=[])
         with pytest.raises(UserFacingError, match="Choices for prompt cannot be empty"):
             _prompt.read_user_choice(prompt_spec)

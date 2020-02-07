@@ -1,6 +1,6 @@
 import os
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Type
 
 import click
 import click.types
@@ -18,7 +18,7 @@ class PromptSpec:
     name: str
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
-    param_type: Optional[click.types.ParamType] = None
+    input_type: Type[input_types.InputType[Any]] = input_types.StringInput
 
 
 def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
@@ -35,11 +35,11 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
         msg = f"PromptSpec definition has no 'name': {prompt_kwargs}"
         raise UserFacingError(msg)
 
-    prompt_kwargs["param_type"] = get_param_type(**prompt_kwargs)
+    param_type = get_param_type(**prompt_kwargs)
     # Remove "type" (used by `get_param_type`) to avoid unknown key error:
     prompt_kwargs.pop("type", None)
     try:
-        return PromptSpec(**prompt_kwargs)
+        return PromptSpec(input_type=param_type, **prompt_kwargs)
     except TypeError as error:
         known_keys = utils.get_dataclass_keys(PromptSpec)
         unknown_keys = set(prompt_kwargs.keys()).difference(known_keys)
@@ -49,10 +49,10 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
         raise
 
 
-_PROMPT_TYPE_MAPPING = {"bool": click.types.BOOL, bool: click.types.BOOL}
+_PROMPT_TYPE_MAPPING = {"bool": input_types.BoolInput, bool: input_types.BoolInput}
 
 
-def get_param_type(**prompt_kwargs: Any) -> Optional[click.types.ParamType]:
+def get_param_type(**prompt_kwargs: Any) -> Type[input_types.InputType[Any]]:
     name = prompt_kwargs["name"]
     explicit_type = prompt_kwargs.get("type")
     if explicit_type:
@@ -66,7 +66,7 @@ def get_param_type(**prompt_kwargs: Any) -> Optional[click.types.ParamType]:
     if default_type in _PROMPT_TYPE_MAPPING:
         return _PROMPT_TYPE_MAPPING[default_type]
 
-    return None
+    return input_types.StringInput
 
 
 def read_user_variable(prompt_spec: PromptSpec) -> Any:
@@ -79,10 +79,8 @@ def read_user_variable(prompt_spec: PromptSpec) -> Any:
     """
     if prompt_spec.choices:
         return read_user_choice(prompt_spec)
-    return click.prompt(
-        default_style(prompt_spec.name),
-        default=prompt_spec.default,
-        type=prompt_spec.param_type,
+    return prompt_spec.input_type().prompt(
+        prompt_spec.name, default=prompt_spec.default
     )
 
 
@@ -117,7 +115,3 @@ def read_user_choice(prompt_spec: PromptSpec) -> Any:
     input_type = input_types.NumberRange(1, len(choices))
     user_choice = input_type.raw_prompt(display)
     return choice_map[user_choice]
-
-
-def default_style(message: str) -> str:
-    return click.style(message, fg="green")

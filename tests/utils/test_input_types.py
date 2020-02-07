@@ -38,3 +38,43 @@ class TestNumberRange:
     def test_prompt_response_cast_to_int(self, ptk_prompt: Mock) -> None:
         number_range = input_types.NumberRange(1, 5)
         assert number_range.prompt("Enter number") == 3
+
+
+class TestStringInput:
+    def test_empty_response_not_allowed_by_default(self) -> None:
+        string_input = input_types.StringInput()
+        assert string_input.is_valid("") is False
+
+    def test_whitespace_treated_as_empty_response(self) -> None:
+        string_input = input_types.StringInput()
+        assert string_input.is_valid("\t") is False
+
+    def test_empty_response_allowed(self) -> None:
+        string_input = input_types.StringInput(allow_empty_response=True)
+        assert string_input.is_valid("") is True
+
+
+class TestBoolInput:
+    def test_y_is_valid(self) -> None:
+        bool_input = input_types.BoolInput()
+        assert bool_input.is_valid("y") is True
+        assert bool_input.is_valid("Y") is True
+
+    def test_n_is_valid(self) -> None:
+        bool_input = input_types.BoolInput()
+        assert bool_input.is_valid("n") is True
+        assert bool_input.is_valid("N") is True
+
+    def test_empty_string_is_not_valid(self) -> None:
+        bool_input = input_types.BoolInput()
+        assert bool_input.is_valid("") is False
+
+    @patch.object(input_types, "ptk_prompt", return_value="y")
+    def test_y_maps_to_true(self, ptk_prompt: Mock) -> None:
+        bool_input = input_types.BoolInput()
+        assert bool_input.prompt("Confirm") is True
+
+    @patch.object(input_types, "ptk_prompt", return_value="n")
+    def test_n_maps_to_false(self, ptk_prompt: Mock) -> None:
+        bool_input = input_types.BoolInput()
+        assert bool_input.prompt("Confirm") is False

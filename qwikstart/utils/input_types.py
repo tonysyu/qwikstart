@@ -52,3 +52,23 @@ class NumberRange(InputType[int]):
 
     def cast(self, input_text: str) -> int:
         return int(input_text)
+
+
+class StringInput(InputType[str]):
+    error_msg: str = "Input cannot be empty"
+
+    def __init__(self, allow_empty_response: bool = False):
+        self.allow_empty_response = allow_empty_response
+
+    def is_valid(self, text: str) -> bool:
+        return bool(text.strip() or self.allow_empty_response)
+
+
+class BoolInput(InputType[bool]):
+    error_msg: str = "Response must be 'y' or 'n'"
+
+    def is_valid(self, text: str) -> bool:
+        return text.lower() in ("y", "n")
+
+    def cast(self, input_text: str) -> bool:
+        return input_text.lower() == "y"
