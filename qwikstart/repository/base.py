@@ -16,5 +16,5 @@ class BaseRepoLoader(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def resolved_path(self) -> Path:
+    def spec_path(self) -> Path:
         """Return local path to qwikstart repo."""

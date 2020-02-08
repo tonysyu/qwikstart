@@ -27,10 +27,10 @@ class TestGitRepoLoader:
         mocks.download_git_repo.assert_called_once_with(TEST_URL, mocks.local_path)
         mocks.update_git_repo.assert_not_called()
 
-    def test_resolved_path(self) -> None:
+    def test_spec_path(self) -> None:
         with patch_git_repo_loader_dependencies(local_path="/my/path/to/qwikstart.yml"):
             loader = git.GitRepoLoader(TEST_URL)
-        assert loader.resolved_path == "/my/path/to/qwikstart.yml"
+        assert loader.spec_path == "/my/path/to/qwikstart.yml"
 
     def test_can_load_spec(self) -> None:
         with patch_git_repo_loader_dependencies(can_load_spec=False):
@@ -104,7 +104,7 @@ def patch_git_repo_loader_dependencies(
     )
 
     mock_loader = Mock(
-        resolved_path=local_path,
+        spec_path=local_path,
         can_load_spec=Mock(return_value=can_load_spec),
         load_raw_task_spec=Mock(return_value=data or {}),
     )

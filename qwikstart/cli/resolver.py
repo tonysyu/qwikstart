@@ -14,13 +14,13 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
         raise UserFacingError(str(error)) from error
 
     if not loader.can_load_spec():
-        msg = f"{full_class_name(loader)}: Cannot load {loader.resolved_path}"
+        msg = f"{full_class_name(loader)}: Cannot load {loader.spec_path}"
         raise UserFacingError(msg)
 
     task_spec = loader.load_raw_task_spec()
     # FIXME: We should check whether the data has the required keys.
     task_definition = cast(TaskDefinition, task_spec)
-    return parse_task(task_definition, loader.resolved_path)
+    return parse_task(task_definition, loader.spec_path)
 
 
 def get_repo_loader(task_path: str, repo_url: Optional[str] = None) -> BaseRepoLoader:

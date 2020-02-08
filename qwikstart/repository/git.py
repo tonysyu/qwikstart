@@ -24,8 +24,8 @@ class GitRepoLoader(base.BaseRepoLoader):
         self._local_loader = local.LocalRepoLoader(str(local_path))
 
     @property
-    def resolved_path(self) -> Path:
-        return self._local_loader.resolved_path
+    def spec_path(self) -> Path:
+        return self._local_loader.spec_path
 
     def can_load_spec(self) -> bool:
         return self._local_loader.can_load_spec()
