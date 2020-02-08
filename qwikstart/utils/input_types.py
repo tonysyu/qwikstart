@@ -7,7 +7,7 @@ import abc
 from typing import Any, Generic, Optional, TypeVar, cast
 
 from prompt_toolkit import prompt as ptk_prompt
-from prompt_toolkit.completion import Completer
+from prompt_toolkit.completion import Completer, PathCompleter
 from prompt_toolkit.validation import Validator
 
 T = TypeVar("T", covariant=True)
@@ -72,6 +72,10 @@ class StringInput(InputType[str]):
 
     def is_valid(self, text: str) -> bool:
         return bool(text.strip() or self.allow_empty_response)
+
+
+class PathInput(StringInput):
+    completer = PathCompleter()
 
 
 class BoolInput(InputType[bool]):

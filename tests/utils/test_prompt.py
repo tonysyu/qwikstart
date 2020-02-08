@@ -73,12 +73,11 @@ class TestGetParamType:
 @patch.object(_prompt.input_types, "ptk_prompt")
 class TestReadUserVariable:
     def test_call_ptk_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
+        ptk_prompt.return_value = "hello"
         prompt_spec = _prompt.create_prompt_spec(name="test")
-        _prompt.read_user_variable(prompt_spec)
+        assert _prompt.read_user_variable(prompt_spec) == "hello"
 
-        ptk_prompt.assert_called_once_with(
-            "test: ", default=None, completer=None, validator=ANY
-        )
+        ptk_prompt.assert_called_once_with("test: ", completer=None, validator=ANY)
         read_choice.assert_not_called()
 
     def test_call_read_choice(self, ptk_prompt: Mock, read_choice: Mock) -> None:

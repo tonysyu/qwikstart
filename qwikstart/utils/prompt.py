@@ -49,7 +49,11 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
         raise
 
 
-_PROMPT_TYPE_MAPPING = {"bool": input_types.BoolInput, bool: input_types.BoolInput}
+_PROMPT_TYPE_MAPPING = {
+    "bool": input_types.BoolInput,
+    bool: input_types.BoolInput,
+    "path": input_types.PathInput,
+}
 
 
 def get_param_type(**prompt_kwargs: Any) -> Type[input_types.InputType[Any]]:
@@ -79,9 +83,12 @@ def read_user_variable(prompt_spec: PromptSpec) -> Any:
     """
     if prompt_spec.choices:
         return read_user_choice(prompt_spec)
-    return prompt_spec.input_type().prompt(
-        prompt_spec.name, default=prompt_spec.default
-    )
+
+    input_type = prompt_spec.input_type()
+    # Cannot pass `default=None` in some cases due to autocompletion.
+    if prompt_spec.default is None:
+        return input_type.prompt(prompt_spec.name)
+    return input_type.prompt(prompt_spec.name, default=prompt_spec.default)
 
 
 def read_user_choice(prompt_spec: PromptSpec) -> Any:

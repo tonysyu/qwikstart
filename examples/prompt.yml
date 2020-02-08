@@ -5,6 +5,7 @@ operations:
               default: "World"
             - name: "target_dir"
               default: "."
+              type: "path"
     define_context:
         context_defs:
             target_path: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"
