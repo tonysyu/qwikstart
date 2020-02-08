@@ -30,8 +30,8 @@ class GitRepoLoader(base.BaseRepoLoader):
     def can_load(self) -> bool:
         return self._local_loader.can_load()
 
-    def load_task_data(self) -> Dict[str, Any]:
-        return self._local_loader.load_task_data()
+    def load_raw_task_spec(self) -> Dict[str, Any]:
+        return self._local_loader.load_raw_task_spec()
 
 
 def resolve_git_url(url: str) -> str:

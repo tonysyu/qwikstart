@@ -37,10 +37,10 @@ class TestGitRepoLoader:
             loader = git.GitRepoLoader(TEST_URL)
         assert loader.can_load() is False
 
-    def test_load_task_data(self) -> None:
+    def test_load_raw_task_spec(self) -> None:
         with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
             loader = git.GitRepoLoader(TEST_URL)
-        assert loader.load_task_data() == {"greeting": "Hello"}
+        assert loader.load_raw_task_spec() == {"greeting": "Hello"}
 
 
 class TestResolveGitUrl:
@@ -106,7 +106,7 @@ def patch_git_repo_loader_dependencies(
     mock_loader = Mock(
         resolved_path=local_path,
         can_load=Mock(return_value=can_load),
-        load_task_data=Mock(return_value=data or {}),
+        load_raw_task_spec=Mock(return_value=data or {}),
     )
     with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
         with patch.object(git, "get_local_repo_path", return_value=mock_path):

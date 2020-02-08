@@ -40,7 +40,7 @@ class LocalRepoLoader(BaseRepoLoader):
     def _can_load_file(self) -> bool:
         return self.file_loader.can_load(self.resolved_path)
 
-    def load_task_data(self) -> Dict[str, Any]:
+    def load_raw_task_spec(self) -> Dict[str, Any]:
         if not self.can_load():
             raise RepoLoaderError(f"Cannot load {self.resolved_path!r}")
         return self.file_loader.load(self.resolved_path)
