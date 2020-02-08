@@ -11,11 +11,11 @@ class QwikstartException(Exception):
 
 
 class RepoLoaderError(QwikstartException):
-    """Exception raised when loading task definition fails."""
+    """Exception raised when loading task specification fails."""
 
 
 class TaskParserError(QwikstartException):
-    """Exception raised when parsing task definition fails."""
+    """Exception raised when parsing task specification fails."""
 
 
 class OperationDefinitionError(QwikstartException):

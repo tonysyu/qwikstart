@@ -6,7 +6,7 @@ import yaml
 from ..exceptions import RepoLoaderError
 from .base import BaseRepoLoader
 
-QWIKSTART_TASK_DEFINITION_FILE = "qwikstart.yml"
+QWIKSTART_TASK_SPEC_FILE = "qwikstart.yml"
 
 
 class YamlFileLoader:
@@ -28,7 +28,7 @@ class LocalRepoLoader(BaseRepoLoader):
     def __init__(self, path: str):
         self._local_path = Path(path).resolve()
         if self._local_path.is_dir():
-            self._local_path = self.spec_path / QWIKSTART_TASK_DEFINITION_FILE
+            self._local_path = self.spec_path / QWIKSTART_TASK_SPEC_FILE
 
     @property
     def spec_path(self) -> Path:

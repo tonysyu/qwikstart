@@ -10,25 +10,23 @@ from .operations import UnparsedOperation, get_operations_mapping, parse_operati
 OperationsList = Union[List[UnparsedOperation], Dict[str, UnparsedOperation]]
 
 
-class TaskDefinition(TypedDict, total=False):
+class TaskSpec(TypedDict, total=False):
     context: Dict[str, Any]
     operations: OperationsList
 
 
-def parse_task(
-    task_definition: TaskDefinition, source_path: Optional[Path] = None
-) -> Task:
-    """Return task parsed from a task definition dictionary."""
-    normalize_context(task_definition, source_path)
+def parse_task(task_spec: TaskSpec, source_path: Optional[Path] = None) -> Task:
+    """Return task parsed from a task specification dictionary."""
+    normalize_context(task_spec, source_path)
 
     known_operations = get_operations_mapping()
 
     operations = [
         parse_operation(op_def, known_operations)
-        for op_def in normalize_operations_list(task_definition["operations"])
+        for op_def in normalize_operations_list(task_spec["operations"])
     ]
 
-    return Task(context=task_definition["context"], operations=operations)
+    return Task(context=task_spec["context"], operations=operations)
 
 
 def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str, Any]]:
@@ -38,12 +36,10 @@ def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str,
     return [{op_name: op_config} for op_name, op_config in operations_list.items()]
 
 
-def normalize_context(
-    task_definition: TaskDefinition, source_path: Optional[Path] = None
-) -> None:
-    task_definition.setdefault("context", {})
+def normalize_context(task_spec: TaskSpec, source_path: Optional[Path] = None) -> None:
+    task_spec.setdefault("context", {})
     source_dir = source_path.parent if source_path else Path(".")
-    task_definition["context"].setdefault(
+    task_spec["context"].setdefault(
         "execution_context",
         base_context.ExecutionContext(source_dir=source_dir, target_dir=Path(".")),
     )
