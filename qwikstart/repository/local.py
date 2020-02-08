@@ -34,13 +34,13 @@ class LocalRepoLoader(BaseRepoLoader):
     def resolved_path(self) -> Path:
         return self._local_path
 
-    def can_load(self) -> bool:
-        return self.resolved_path.is_file() and self._can_load_file()
+    def can_load_spec(self) -> bool:
+        return self.resolved_path.is_file() and self._can_load_spec_file()
 
-    def _can_load_file(self) -> bool:
+    def _can_load_spec_file(self) -> bool:
         return self.file_loader.can_load(self.resolved_path)
 
     def load_raw_task_spec(self) -> Dict[str, Any]:
-        if not self.can_load():
+        if not self.can_load_spec():
             raise RepoLoaderError(f"Cannot load {self.resolved_path!r}")
         return self.file_loader.load(self.resolved_path)

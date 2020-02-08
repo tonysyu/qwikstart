@@ -13,7 +13,7 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
     except RepoLoaderError as error:
         raise UserFacingError(str(error)) from error
 
-    if not loader.can_load():
+    if not loader.can_load_spec():
         msg = f"{full_class_name(loader)}: Cannot load {loader.resolved_path}"
         raise UserFacingError(msg)
 

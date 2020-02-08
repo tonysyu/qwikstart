@@ -7,7 +7,7 @@ class BaseRepoLoader(abc.ABC):
     """Base class for loader for qwikstart task repos."""
 
     @abc.abstractmethod
-    def can_load(self) -> bool:
+    def can_load_spec(self) -> bool:
         """Return true if this loader can load the qwikstart task spec."""
 
     @abc.abstractmethod

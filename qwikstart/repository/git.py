@@ -27,8 +27,8 @@ class GitRepoLoader(base.BaseRepoLoader):
     def resolved_path(self) -> Path:
         return self._local_loader.resolved_path
 
-    def can_load(self) -> bool:
-        return self._local_loader.can_load()
+    def can_load_spec(self) -> bool:
+        return self._local_loader.can_load_spec()
 
     def load_raw_task_spec(self) -> Dict[str, Any]:
         return self._local_loader.load_raw_task_spec()
