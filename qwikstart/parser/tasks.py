@@ -68,7 +68,7 @@ def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str,
 
 def normalize_context(task_spec: TaskSpec, source_path: Optional[Path] = None) -> None:
     task_spec.setdefault("context", {})
-    source_dir = source_path.parent if source_path else Path(".")
+    source_dir = source_path if source_path else Path(".")
     task_spec["context"].setdefault(
         "execution_context",
         base_context.ExecutionContext(source_dir=source_dir, target_dir=Path(".")),

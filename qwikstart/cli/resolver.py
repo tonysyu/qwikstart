@@ -20,7 +20,7 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
     raw_task_spec = loader.load_raw_task_spec()
     # FIXME: We should check whether the data has the required keys.
     task_spec = cast(TaskSpec, raw_task_spec)
-    return parse_task(task_spec, loader.spec_path)
+    return parse_task(task_spec, loader.repo_path)
 
 
 def get_repo_loader(task_path: str, repo_url: Optional[str] = None) -> BaseRepoLoader:

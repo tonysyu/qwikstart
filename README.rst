@@ -1,5 +1,5 @@
-qwikstart: Code injector for fun and profit
-===========================================
+qwikstart: Code generator for fun and profit
+============================================
 
 .. default-role:: literal
 

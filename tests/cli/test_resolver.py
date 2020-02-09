@@ -19,14 +19,14 @@ class TestResolveTask:
         mock_loader = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
-        mock_parse_task.assert_called_once_with(data, FAKE_PATH)
+        mock_parse_task.assert_called_once_with(data, FAKE_PATH.parent)
 
     def test_resolve_directory(self) -> None:
         data = {"name": "fake_task"}
         mock_loader = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
-        mock_parse_task.assert_called_once_with(data, FAKE_PATH)
+        mock_parse_task.assert_called_once_with(data, FAKE_PATH.parent)
 
     def test_not_found(self) -> None:
         mock_loader = create_mock_repo_loader(data={}, can_load_spec=False)
@@ -65,8 +65,10 @@ def patch_resolve_task_dependencies(mock_loader: Mock) -> Mock:
 def create_mock_repo_loader(
     data: Dict[str, Any], can_load_spec: bool = True, task_path: str = FAKE_PATH_STR
 ) -> Any:
+    spec_path = Path(task_path)
     return Mock(
-        spec_path=Path(task_path),
+        spec_path=spec_path,
+        repo_path=spec_path.parent,
         load_raw_task_spec=Mock(return_value=data),
         can_load_spec=Mock(return_value=can_load_spec),
     )

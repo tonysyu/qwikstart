@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -27,3 +29,8 @@ class TestLocalRepoLoader(TestCase):
         assert not loader.can_load_spec()
         with pytest.raises(RepoLoaderError):
             loader.load_raw_task_spec()
+
+    def test_repo_path_defaults_to_spec_path_parent(self) -> None:
+        self.fs.create_file("/path/to/file.txt")
+        loader = local.LocalRepoLoader("/path/to/file.txt")
+        assert loader.repo_path == Path("/path/to")
