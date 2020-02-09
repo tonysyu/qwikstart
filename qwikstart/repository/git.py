@@ -1,12 +1,15 @@
+import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, NamedTuple, Optional
 
-import git as _git
+import git as gitlib
 
 from ..config import get_user_config
 from ..exceptions import RepoLoaderError
 from . import base, local
+
+logger = logging.getLogger(__name__)
 
 # Git url regex adapted from https://stackoverflow.com/a/22312124/260303
 RX_GIT_URL_PREFIX = r"(?P<prefix>(git|ssh|http(s)?))"
@@ -75,15 +78,18 @@ def get_local_repo_path(url: str) -> Path:
         raise RepoLoaderError(f"Cannot load from repo with no hostname: {url!r}")
 
     config = get_user_config()
-    return config.qwikstart_cache_path / git_url.path
+    return config.repo_cache_path / git_url.path
 
 
 def download_git_repo(repo_url: str, local_path: Path) -> None:
+    logger.debug(f"Downloading qwikstart repo from {repo_url}")
     try:
-        _git.Repo.clone_from(repo_url, str(local_path))
-    except (_git.NoSuchPathError, _git.GitCommandError):
+        gitlib.Repo.clone_from(repo_url, str(local_path))
+    except (gitlib.NoSuchPathError, gitlib.GitCommandError):
         raise RepoLoaderError(f"Could not load git repo: {repo_url}")
+    logger.debug(f"Downloaded qwikstart repo from {repo_url} to {local_path}")
 
 
 def update_git_repo(local_path: Path) -> None:
-    _git.Repo(str(local_path)).remote().pull()
+    logger.debug(f"Updating qwikstart repo at {local_path}")
+    gitlib.Repo(str(local_path)).remote().pull()

@@ -5,14 +5,14 @@ Configuration
 Custom configuration for qwikstart is specified using a yaml file named
 `~/.qwikstart/config.yml`. The following sections details expected configuration values:
 
-`qwikstart_cache`
+`repo_cache`
 =================
 
 Default:
 
 .. code-block:: yaml
 
-    qwikstart_cache:
+    repo_cache:
         "~/.qwikstart/cached_repos"
 
 Directory where cached qwikstart repos are stored.

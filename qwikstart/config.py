@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 QWIKSTART_CONFIG_FILE = Path("~/.qwikstart/config.yml").expanduser()
 
 DEFAULT_CONFIG_DICT: Dict[str, Any] = {
-    "qwikstart_cache": "~/.qwikstart/cached_repos",
+    "repo_cache": "~/.qwikstart/cached_repos",
     "git_abbreviations": {
         "gh": "https://github.com/{0}",
         "gl": "https://gitlab.com/{0}",
@@ -24,12 +24,12 @@ DEFAULT_CONFIG_DICT: Dict[str, Any] = {
 
 @dataclass(frozen=True)
 class Config:
-    qwikstart_cache: str
+    repo_cache: str
     git_abbreviations: Dict[str, str]
 
     @property
-    def qwikstart_cache_path(self) -> Path:
-        return Path(self.qwikstart_cache).expanduser()
+    def repo_cache_path(self) -> Path:
+        return Path(self.repo_cache).expanduser()
 
 
 def get_user_config() -> Config:
