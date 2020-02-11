@@ -6,6 +6,7 @@ import pytest
 from qwikstart.exceptions import TaskParserError
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.parser import operations
+from qwikstart.repository import OperationSpec
 
 
 # Ignore type: Mypy doesn't seem to like objects imported into a module.
@@ -75,29 +76,25 @@ class TestParseOperation:
 
     def test_dict_definition(self) -> None:
         input_mapping = {"line_number": "line"}
-        op_def: operations.UnparsedOperation = {
-            "insert_text": {"input_mapping": input_mapping}
-        }
+        op_def: OperationSpec = {"insert_text": {"input_mapping": input_mapping}}
         assert operations.parse_operation(op_def) == insert_text.Operation(
             input_mapping=input_mapping
         )
 
     def test_tuple_definition(self) -> None:
-        op_def: operations.UnparsedOperation = ("insert_text", {})
+        op_def: OperationSpec = ("insert_text", {})
         assert operations.parse_operation(op_def) == insert_text.Operation()
 
     def test_operation_with_local_context(self) -> None:
         context = {"line": 42}
-        op_def: operations.UnparsedOperation = {
-            "insert_text": {"local_context": context}
-        }
+        op_def: OperationSpec = {"insert_text": {"local_context": context}}
         assert operations.parse_operation(op_def) == insert_text.Operation(
             local_context=context
         )
 
     def test_operation_with_context_defined_as_top_level_parameter(self) -> None:
         context = {"line": 42}
-        op_def: operations.UnparsedOperation = {"insert_text": context}
+        op_def: OperationSpec = {"insert_text": context}
         assert operations.parse_operation(op_def) == insert_text.Operation(
             local_context=context
         )

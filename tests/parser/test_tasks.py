@@ -5,13 +5,14 @@ import pytest
 from qwikstart.exceptions import TaskParserError
 from qwikstart.operations import insert_text
 from qwikstart.parser import tasks
+from qwikstart.repository import TaskSpec
 from qwikstart.tasks import Task
 
 
 class TestParseTask:
     def test_operation_list(self) -> None:
         input_mapping = {"line_number": "line"}
-        task_spec: tasks.TaskSpec = {
+        task_spec: TaskSpec = {
             "operations": [{"insert_text": {"input_mapping": input_mapping}}]
         }
         assert tasks.parse_task(task_spec) == Task(
@@ -21,7 +22,7 @@ class TestParseTask:
 
     def test_operation_dict(self) -> None:
         input_mapping = {"line_number": "line"}
-        task_spec: tasks.TaskSpec = {
+        task_spec: TaskSpec = {
             "operations": {"insert_text": {"input_mapping": input_mapping}}
         }
         assert tasks.parse_task(task_spec) == Task(
@@ -39,7 +40,7 @@ class TestParseTask:
 
     def test_steps(self) -> None:
         input_mapping = {"line_number": "line"}
-        task_spec: tasks.TaskSpec = {
+        task_spec: TaskSpec = {
             "steps": {"Step 1": {"name": "insert_text", "input_mapping": input_mapping}}
         }
         expected_operation = insert_text.Operation(
@@ -51,7 +52,7 @@ class TestParseTask:
 
     @patch.object(tasks, "logger")
     def test_both_steps_and_operations_defined(self, logger: Mock) -> None:
-        task_spec: tasks.TaskSpec = {
+        task_spec: TaskSpec = {
             "steps": {"Step 1": {"name": "insert_text"}},
             "operations": {"completely_ignored": {}},
         }

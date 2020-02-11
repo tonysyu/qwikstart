@@ -1,8 +1,8 @@
 from typing import Optional, cast
 
 from ..exceptions import RepoLoaderError, UserFacingError
-from ..parser import TaskSpec, parse_task
-from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
+from ..parser import parse_task
+from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader, TaskSpec
 from ..tasks import Task
 from ..utils import full_class_name
 

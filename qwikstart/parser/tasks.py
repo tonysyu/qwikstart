@@ -1,29 +1,18 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
-
-from typing_extensions import TypedDict
+from typing import Any, Dict, List, Optional
 
 from .. import base_context
 from ..exceptions import TaskParserError
+from ..repository import OperationsList, TaskSpec
 from ..tasks import Task
 from .operations import (
-    UnparsedOperation,
     get_operations_mapping,
     parse_operation,
     parse_operation_from_step,
 )
 
 logger = logging.getLogger(__name__)
-
-OperationsList = Union[List[UnparsedOperation], Dict[str, UnparsedOperation]]
-
-
-class TaskSpec(TypedDict, total=False):
-    context: Dict[str, Any]
-    steps: Dict[str, Dict[str, Any]]
-    # FIXME: `operations` should be deprecated in favor of `steps`
-    operations: OperationsList
 
 
 def parse_task(task_spec: TaskSpec, source_path: Optional[Path] = None) -> Task:
