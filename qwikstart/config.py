@@ -3,10 +3,9 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
-
 from . import utils
 from .exceptions import ConfigurationError
+from .utils import io
 
 logger = logging.getLogger(__name__)
 
@@ -49,18 +48,17 @@ def get_user_config() -> Config:
 
 def load_custom_config_file() -> Dict[str, Any]:
     if QWIKSTART_CONFIG_FILE.exists():
-        with QWIKSTART_CONFIG_FILE.open() as f:
-            logger.debug(f"Loading user config from {QWIKSTART_CONFIG_FILE}")
-            user_config = yaml.safe_load(f)
+        logger.debug(f"Loading user config from {QWIKSTART_CONFIG_FILE}")
+        user_config = io.load_yaml_file(QWIKSTART_CONFIG_FILE)
 
-            if not user_config:
-                return {}
+        if not user_config:
+            return {}
 
-            if not isinstance(user_config, dict):
-                msg = f"Expected {QWIKSTART_CONFIG_FILE} to contain a dictionary."
-                raise ConfigurationError(msg)
+        if not isinstance(user_config, dict):
+            msg = f"Expected {QWIKSTART_CONFIG_FILE} to contain a dictionary."
+            raise ConfigurationError(msg)
 
-            return user_config
+        return user_config
 
     logger.debug(f"No user config found at {QWIKSTART_CONFIG_FILE}")
     return {}
