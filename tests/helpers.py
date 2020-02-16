@@ -1,5 +1,6 @@
 import io
 import os
+import stat
 from contextlib import contextmanager
 from pathlib import Path
 from textwrap import dedent
@@ -37,3 +38,9 @@ def read_file_path(file_path: Path) -> str:
     """Return text read from `file_path`."""
     with file_path.open() as f:
         return f.read()
+
+
+def filemode(filename: Path) -> int:
+    """Return a file's mode as an octal that should match the input to `os.chmod`."""
+    file_stat = os.stat(str(filename))
+    return stat.S_IMODE(file_stat.st_mode)
