@@ -65,6 +65,9 @@ class FileTreeGenerator:
                 f.write(self.renderer.render(str(src_path)))
             logger.debug(f"Rendered template from {src_path} to {tgt_path}")
 
+        # Copy file mode (i.e. permissions) of `src_path` to `tgt_path`
+        shutil.copymode(src_path, tgt_path)
+
     def _ensure_dir_exists(
         self, source_subdir: str, source_root: Path, target_root: Path
     ) -> None:

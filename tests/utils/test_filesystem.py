@@ -14,6 +14,8 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.utils import filesystem, templates
 
+from ..helpers import filemode
+
 
 class TestRenderFileTree(TestCase):
     def setUp(self) -> None:
@@ -56,6 +58,12 @@ class TestRenderFileTree(TestCase):
         assert os.listdir(self.target_dir) == ["test.txt"]
         with open(self.target_dir / "test.txt") as f:
             assert f.read() == "test"
+
+    def test_copy_file_permissions(self) -> None:
+        self.fs.create_file(self.source_dir / "test.txt")
+        os.chmod(self.source_dir / "test.txt", 0o777)
+        self.render_source_directory_to_target_directory()
+        assert filemode(self.target_dir / "test.txt") == 0o777
 
     def test_copy_binary_file(self) -> None:
         data = bytes([123, 3, 255, 0, 100])

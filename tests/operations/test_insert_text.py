@@ -1,5 +1,9 @@
+import os
+from pathlib import Path
 from textwrap import dedent
 from typing import Any
+
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.base_context import DictContext
 from qwikstart.operations import insert_text
@@ -7,7 +11,33 @@ from qwikstart.operations import insert_text
 from .. import helpers
 
 
-class TestTextInject:
+class TestInsertTextFakeFS(TestCase):
+    def setUp(self) -> None:
+        self.setUpPyfakefs()
+        self.file_path = Path("/path/to/test.txt")
+
+    def test_insert(self) -> None:
+        self.fs.create_file(self.file_path, contents="Hello")
+        assert self.insert_on_first_line("New Line") == "New Line\nHello"
+
+    def test_file_permissions_not_changed(self) -> None:
+        self.fs.create_file(self.file_path, contents="Hello")
+        os.chmod(self.file_path, 0o777)
+        assert self.insert_on_first_line("New Line") == "New Line\nHello"
+        assert helpers.filemode(self.file_path) == 0o777
+
+    def insert_on_first_line(self, text: str) -> str:
+        context = {
+            "execution_context": helpers.get_execution_context(),
+            "text": text,
+            "line": 0,
+            "column": 0,
+            "file_path": self.file_path,
+        }
+        return insert_text_and_return_file_text(context)
+
+
+class TestInsertText:
     def test_insert_line(self) -> None:
         context = {
             "execution_context": helpers.get_execution_context(),

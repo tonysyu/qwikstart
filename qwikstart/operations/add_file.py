@@ -1,4 +1,5 @@
 import logging
+import shutil
 import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -44,4 +45,9 @@ class Operation(BaseOperation[Context, None]):
         renderer = TemplateRenderer.from_context(context)
         with ensure_path(context.target_path).open("w") as f:
             f.write(renderer.render(context.template_path))
+
+        # Copy file mode (i.e. permissions) of template to target file.
+        resolved_template_path = renderer.resolve_template_path(context.template_path)
+        shutil.copymode(resolved_template_path, context.target_path)
+
         logger.info(f"Wrote file to {context.target_path}")

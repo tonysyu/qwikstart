@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -13,16 +14,19 @@ class TestAddFile(TestCase):
         self.setUpPyfakefs()
 
     def test_no_variables(self) -> None:
-        rendered_string = self.render_template("Fake template content")
-        assert rendered_string == "Fake template content"
+        template_path = self.create_template("Fake template content")
+        output_path = self.render_template(template_path)
+        assert helpers.read_file_path(output_path) == "Fake template content"
 
     def test_variables(self) -> None:
-        rendered_string = self.render_template(
-            """Hello, {{ qwikstart.name }}!""", template_variables={"name": "World"}
+        template_path = self.create_template("""Hello, {{ qwikstart.name }}!""")
+        output_path = self.render_template(
+            template_path, template_variables={"name": "World"}
         )
-        assert rendered_string == "Hello, World!"
+        assert helpers.read_file_path(output_path) == "Hello, World!"
 
-    def test_file_system_template(self) -> None:
+    def test_real_template_file(self) -> None:
+        # Configure execution and pyfakefs to use real templates directory:
         execution_context = helpers.get_execution_context(
             source_dir=helpers.TEMPLATES_DIR
         )
@@ -40,26 +44,30 @@ class TestAddFile(TestCase):
         add_file_op.execute(context)
         assert helpers.read_file_path(output_file) == "Hello, World!"
 
+    def test_copy_file_permissions(self) -> None:
+        template_path = self.create_template("Hello")
+        os.chmod(template_path, 0o777)
+        output_path = self.render_template(template_path)
+        assert helpers.filemode(output_path) == 0o777
+
+    def create_template(self, template_string: str) -> Path:
+        path = Path("/source/test.txt")
+        self.fs.create_file(path, contents=template_string)
+        return path
+
     def render_template(
-        self, template_string: str, template_variables: Optional[Dict[str, Any]] = None
-    ) -> str:
-        """Return rendered string given a template and optional variables."""
+        self, template_path: Path, template_variables: Optional[Dict[str, Any]] = None
+    ) -> Path:
         template_variables = template_variables or {}
-        source_dir = Path("/source")
-
-        template_path = "test.txt"
-        self.fs.create_file(source_dir / "test.txt", contents=template_string)
-
         output_file = Path("output.txt")
-
         context = {
-            "execution_context": helpers.get_execution_context(source_dir=source_dir),
+            "execution_context": helpers.get_execution_context(),
             "target_path": output_file,
-            "template_path": template_path,
+            "template_path": str(template_path),
             "template_variables": template_variables,
         }
 
         add_file_op = add_file.Operation()
         add_file_op.execute(context)
 
-        return helpers.read_file_path(output_file)
+        return output_file
