@@ -53,6 +53,8 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
 _PROMPT_TYPE_MAPPING = {
     "bool": input_types.BoolInput,
     bool: input_types.BoolInput,
+    "int": input_types.IntegerInput,
+    int: input_types.IntegerInput,
     "path": input_types.PathInput,
 }
 

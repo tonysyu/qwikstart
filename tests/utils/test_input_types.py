@@ -5,6 +5,26 @@ from prompt_toolkit.validation import Validator
 from qwikstart.utils import input_types
 
 
+class TestIntegerInput:
+    def test_valid(self) -> None:
+        integer_input = input_types.IntegerInput()
+        assert integer_input.is_valid("1") is True
+        assert integer_input.is_valid("-1") is True
+
+    def test_empty_string_is_not_valid(self) -> None:
+        assert input_types.IntegerInput().is_valid("") is False
+
+    def test_cast(self) -> None:
+        assert input_types.IntegerInput().is_valid("1") == 1
+
+    @patch.object(input_types, "logger")
+    def test_unknown_kwargs_logs_warning(self, logger: Mock) -> None:
+        input_types.IntegerInput(bad_kwarg="hi")
+        logger.warning.assert_called_once_with(
+            "Unknown keyword arguments for %s: %s", "IntegerInput", "bad_kwarg"
+        )
+
+
 class TestNumberRange:
     def test_inclusive_range_is_valid(self) -> None:
         number_range = input_types.NumberRange(1, 5)
