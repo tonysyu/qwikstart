@@ -23,11 +23,12 @@ class InputType(Generic[T]):
     default_prefix: str = ": "
 
     def __init__(self, **kwargs: Any):
-        logger.warning(
-            "Unknown keyword arguments for %s: %s",
-            self.__class__.__name__,
-            kwargs.keys(),
-        )
+        if kwargs:
+            logger.warning(
+                "Unknown keyword arguments for %s: %s",
+                self.__class__.__name__,
+                kwargs.keys(),
+            )
 
     @property
     def validator(self) -> Validator:
