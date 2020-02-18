@@ -23,11 +23,12 @@ class InputType(Generic[T]):
     default_prefix: str = ": "
 
     def __init__(self, **kwargs: Any):
-        logger.warning(
-            "Unknown keyword arguments for %s: %s",
-            self.__class__.__name__,
-            kwargs.keys(),
-        )
+        if kwargs:
+            logger.warning(
+                "Unknown keyword arguments for %s: %s",
+                self.__class__.__name__,
+                ", ".join(kwargs.keys()),
+            )
 
     @property
     def validator(self) -> Validator:
@@ -57,7 +58,27 @@ class InputType(Generic[T]):
         return self.cast(value)
 
 
-class NumberRange(InputType[int]):
+class IntegerInput(InputType[int]):
+    def is_valid(self, text: str) -> bool:
+        try:
+            self.cast(text)
+        except ValueError:
+            return False
+        return True
+
+    def cast(self, input_text: str) -> int:
+        return int(input_text)
+
+    def raw_prompt(
+        self, message: str, suffix: Optional[str] = None, **prompt_kwargs: Any
+    ) -> str:
+        default = prompt_kwargs.get("default")
+        if isinstance(default, int):
+            prompt_kwargs["default"] = str(default)
+        return super().raw_prompt(message, suffix=suffix, **prompt_kwargs)
+
+
+class NumberRange(IntegerInput):
     def __init__(self, min_value: int, max_value: int, **kwargs: Any):
         super().__init__(**kwargs)
         self.min = min_value
@@ -70,9 +91,6 @@ class NumberRange(InputType[int]):
         except ValueError:
             return False
         return self.min <= number <= self.max
-
-    def cast(self, input_text: str) -> int:
-        return int(input_text)
 
 
 class StringInput(InputType[str]):

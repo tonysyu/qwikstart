@@ -1,3 +1,4 @@
+from typing import Any, Type
 from unittest.mock import ANY, Mock, patch
 
 import pytest
@@ -5,7 +6,7 @@ import pytest
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 from qwikstart.utils import prompt as _prompt
-from qwikstart.utils.input_types import BoolInput, StringInput
+from qwikstart.utils.input_types import BoolInput, IntegerInput, InputType, StringInput
 
 PROMPT_ATTRS = utils.get_dataclass_keys(_prompt.PromptSpec)
 
@@ -51,18 +52,29 @@ class TestGetParamType:
     def test_unknown_type_returns_string_input(self) -> None:
         assert _prompt.get_param_type(name="any") is StringInput
 
-    def test_bool_based_on_default(self) -> None:
-        assert _prompt.get_param_type(name="fake", default=True) is BoolInput
-        assert _prompt.get_param_type(name="fake", default=False) is BoolInput
+    # FIXME: Add mypy stub for pytest parametrize
+    @pytest.mark.parametrize("typespec,input_class", [  # type: ignore
+        ("bool", BoolInput),
+        ("BOOL", BoolInput),
+        (bool, BoolInput),
+        ("int", IntegerInput),
+        (int, IntegerInput),
+    ])
+    def test_explicit_type(
+        self, typespec: Any, input_class: Type[InputType[Any]]
+    ) -> None:
+        assert _prompt.get_param_type(name="fake", type=typespec) is input_class
 
-    def test_explicit_bool(self) -> None:
-        assert _prompt.get_param_type(name="fake", type="bool") is BoolInput
-
-    def test_explicit_bool_uppercase(self) -> None:
-        assert _prompt.get_param_type(name="fake", type="BOOL") is BoolInput
-
-    def test_explicit_bool_type(self) -> None:
-        assert _prompt.get_param_type(name="fake", type=bool) is BoolInput
+    # FIXME: Add mypy stub for pytest parametrize
+    @pytest.mark.parametrize("default,input_class", [  # type: ignore
+        (True, BoolInput),
+        (False, BoolInput),
+        (42, IntegerInput),
+    ])
+    def test_type_based_on_default(
+        self, default: Any, input_class: Type[InputType[Any]]
+    ) -> None:
+        assert _prompt.get_param_type(name="fake", default=default) is input_class
 
     def test_unknown_type(self) -> None:
         with pytest.raises(UserFacingError, match="Unknown type 'bad' for prompt fake"):
@@ -87,12 +99,21 @@ class TestReadUserVariable:
         read_choice.assert_called_once_with(prompt_spec)
         ptk_prompt.assert_not_called()
 
-    def test_infer_boolean_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
+    def test_boolean_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", default=False)
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
             "test (y/n): ", default="n", completer=None, validator=ANY
+        )
+        read_choice.assert_not_called()
+
+    def test_integer_prompt(self, ptk_prompt: Mock, read_choice: Mock) -> None:
+        prompt_spec = _prompt.create_prompt_spec(name="port", default=8000)
+        _prompt.read_user_variable(prompt_spec)
+
+        ptk_prompt.assert_called_once_with(
+            "port: ", default="8000", completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 
