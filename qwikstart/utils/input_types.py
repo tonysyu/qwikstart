@@ -4,11 +4,14 @@ Low-level input types using `prompt_toolkit` to request input.
 Higher-level functionality should be put in `prompt` module.
 """
 import abc
+import logging
 from typing import Any, Generic, Optional, TypeVar, cast
 
 from prompt_toolkit import prompt as ptk_prompt
 from prompt_toolkit.completion import Completer, PathCompleter
 from prompt_toolkit.validation import Validator
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar("T", covariant=True)
 
@@ -18,6 +21,13 @@ class InputType(Generic[T]):
     error_msg: str = "Input does not pass validation"
     completer: Optional[Completer] = None
     default_prefix: str = ": "
+
+    def __init__(self, **kwargs: Any):
+        logger.warning(
+            "Unknown keyword arguments for %s: %s",
+            self.__class__.__name__,
+            kwargs.keys(),
+        )
 
     @property
     def validator(self) -> Validator:
@@ -48,7 +58,8 @@ class InputType(Generic[T]):
 
 
 class NumberRange(InputType[int]):
-    def __init__(self, min_value: int, max_value: int):
+    def __init__(self, min_value: int, max_value: int, **kwargs: Any):
+        super().__init__(**kwargs)
         self.min = min_value
         self.max = max_value
         self.error_msg = f"This input must be number between {self.min} and {self.max}"
@@ -67,11 +78,12 @@ class NumberRange(InputType[int]):
 class StringInput(InputType[str]):
     error_msg: str = "Input cannot be empty"
 
-    def __init__(self, allow_empty_response: bool = False):
-        self.allow_empty_response = allow_empty_response
+    def __init__(self, allow_empty: bool = False, **kwargs: Any):
+        super().__init__(**kwargs)
+        self.allow_empty = allow_empty
 
     def is_valid(self, text: str) -> bool:
-        return bool(text.strip() or self.allow_empty_response)
+        return bool(text.strip() or self.allow_empty)
 
 
 class PathInput(StringInput):

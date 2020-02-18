@@ -2,8 +2,8 @@
 Input prompts to request data from users.
 """
 import os
-from dataclasses import dataclass
-from typing import Any, List, Optional, Type
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Type
 
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
@@ -19,6 +19,7 @@ class PromptSpec:
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
     input_type: Type[input_types.InputType[Any]] = input_types.StringInput
+    input_config: Dict[str, Any] = field(default_factory=dict)
 
 
 def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
@@ -84,7 +85,7 @@ def read_user_variable(prompt_spec: PromptSpec) -> Any:
     if prompt_spec.choices:
         return read_user_choice(prompt_spec)
 
-    input_type = prompt_spec.input_type()
+    input_type = prompt_spec.input_type(**prompt_spec.input_config)
     # Cannot pass `default=None` in some cases due to autocompletion.
     if prompt_spec.default is None:
         return input_type.prompt(prompt_spec.name)

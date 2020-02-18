@@ -56,7 +56,7 @@ class TestStringInput:
         assert string_input.is_valid("\t") is False
 
     def test_empty_response_allowed(self) -> None:
-        string_input = input_types.StringInput(allow_empty_response=True)
+        string_input = input_types.StringInput(allow_empty=True)
         assert string_input.is_valid("") is True
 
 
