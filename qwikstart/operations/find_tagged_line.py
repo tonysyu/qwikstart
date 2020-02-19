@@ -36,4 +36,5 @@ class Operation(BaseOperation[Context, Output]):
                     column = line.find(tag)
                     return Output(line=line_number, column=column)
             else:
-                raise OperationError("Failed to find line tagged with {}")
+                msg = f"Failed to find line in {file_path} tagged with {tag!r}"
+                raise OperationError(msg)
