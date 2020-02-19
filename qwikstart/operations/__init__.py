@@ -1,6 +1,7 @@
 from . import (
     add_file,
     add_file_tree,
+    append_text,
     define_context,
     echo,
     find_tagged_line,
@@ -14,6 +15,7 @@ __all__ = [
     "GenericOperation",
     "add_file",
     "add_file_tree",
+    "append_text",
     "define_context",
     "echo",
     "find_tagged_line",
