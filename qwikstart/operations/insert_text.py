@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from ..base_context import BaseContext
-from ..utils import indent
+from ..utils import ensure_path, indent
 from .base import BaseOperation
 
 __all__ = ["Operation"]
@@ -25,7 +25,7 @@ class Operation(BaseOperation[Context, None]):
     name: str = "insert_text"
 
     def run(self, context: Context) -> None:
-        file_path = context.file_path
+        file_path = ensure_path(context.file_path)
 
         with file_path.open() as f:
             contents = f.readlines()

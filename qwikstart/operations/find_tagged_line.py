@@ -5,6 +5,7 @@ from typing_extensions import TypedDict
 
 from ..base_context import BaseContext
 from ..exceptions import OperationError
+from ..utils import ensure_path
 from .base import BaseOperation
 
 __all__ = ["Context", "Operation", "Output"]
@@ -28,7 +29,8 @@ class Operation(BaseOperation[Context, Output]):
 
     def run(self, context: Context) -> Output:
         tag = context.tag
-        with context.file_path.open() as f:
+        file_path = ensure_path(context.file_path)
+        with file_path.open() as f:
             for line_number, line in enumerate(f, 1):
                 if tag in line:
                     column = line.find(tag)
