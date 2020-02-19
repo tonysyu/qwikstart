@@ -6,7 +6,7 @@ import pytest
 from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 from qwikstart.utils import prompt as _prompt
-from qwikstart.utils.input_types import BoolInput, IntegerInput, InputType, StringInput
+from qwikstart.utils.input_types import BoolInput, InputType, IntegerInput, StringInput
 
 PROMPT_ATTRS = utils.get_dataclass_keys(_prompt.PromptSpec)
 
@@ -53,24 +53,26 @@ class TestGetParamType:
         assert _prompt.get_param_type(name="any") is StringInput
 
     # FIXME: Add mypy stub for pytest parametrize
-    @pytest.mark.parametrize("typespec,input_class", [  # type: ignore
-        ("bool", BoolInput),
-        ("BOOL", BoolInput),
-        (bool, BoolInput),
-        ("int", IntegerInput),
-        (int, IntegerInput),
-    ])
+    @pytest.mark.parametrize(  # type: ignore
+        "typespec,input_class",
+        [
+            ("bool", BoolInput),
+            ("BOOL", BoolInput),
+            (bool, BoolInput),
+            ("int", IntegerInput),
+            (int, IntegerInput),
+        ],
+    )
     def test_explicit_type(
         self, typespec: Any, input_class: Type[InputType[Any]]
     ) -> None:
         assert _prompt.get_param_type(name="fake", type=typespec) is input_class
 
     # FIXME: Add mypy stub for pytest parametrize
-    @pytest.mark.parametrize("default,input_class", [  # type: ignore
-        (True, BoolInput),
-        (False, BoolInput),
-        (42, IntegerInput),
-    ])
+    @pytest.mark.parametrize(  # type: ignore
+        "default,input_class",
+        [(True, BoolInput), (False, BoolInput), (42, IntegerInput)],
+    )
     def test_type_based_on_default(
         self, default: Any, input_class: Type[InputType[Any]]
     ) -> None:
