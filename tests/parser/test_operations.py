@@ -43,6 +43,30 @@ class TestGetOperationsMapping:
         }
 
 
+class TestParseOperationFromStep:
+    def test_success(self) -> None:
+        input_mapping = {"line_number": "line"}
+        op_def = {"name": "insert_text", "input_mapping": input_mapping}
+        op = operations.parse_operation_from_step(op_def)
+        assert op == insert_text.Operation(input_mapping=input_mapping)
+
+    def test_custom_operation_mapping(self) -> None:
+        mock_operation = Mock()
+        op_def = {"name": "custom"}
+        known_ops = {"custom": Mock(return_value=mock_operation)}
+        # Ignore typing: Avoid overhead of properly mocking `known_operations`.
+        op = operations.parse_operation_from_step(op_def, known_ops)  # type: ignore
+        assert op == mock_operation
+
+    def test_unknown_operation(self) -> None:
+        with pytest.raises(TaskParserError):
+            operations.parse_operation_from_step({"name": "undefined_operation"})
+
+    def test_operation_with_no_name(self) -> None:
+        with pytest.raises(TaskParserError):
+            operations.parse_operation_from_step({})
+
+
 class TestParseOperation:
     def test_string_definition(self) -> None:
         assert (
