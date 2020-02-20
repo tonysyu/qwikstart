@@ -1,9 +1,12 @@
 from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, Optional
 from unittest import TestCase
+from unittest.mock import Mock, patch
+
+import pytest
 
 from qwikstart.base_context import BaseContext, DictContext
-from qwikstart.operations.base import BaseOperation
+from qwikstart.operations import base
 
 from .. import helpers
 
@@ -13,7 +16,7 @@ class ContextWithDict(BaseContext):
     template_variables: Dict[str, Any] = field(default_factory=dict)
 
 
-class FakeOperation(BaseOperation[ContextWithDict, DictContext]):
+class FakeOperation(base.BaseOperation[ContextWithDict, DictContext]):
     name: str = "fake-operation"
 
     def __init__(self, **kwargs: Any) -> None:
@@ -23,6 +26,13 @@ class FakeOperation(BaseOperation[ContextWithDict, DictContext]):
     def run(self, context: ContextWithDict) -> DictContext:
         self.run_context = context
         return asdict(context)
+
+
+class ErrorOperation(base.BaseOperation[ContextWithDict, DictContext]):
+    name: str = "error-operation"
+
+    def run(self, context: ContextWithDict) -> DictContext:
+        raise Exception("Error raised for testing purposes")
 
 
 class TestOperationHavingContextWithDict(TestCase):
@@ -92,3 +102,27 @@ class TestOperationHavingContextWithDict(TestCase):
         operation = FakeOperation()
         args = "local_context={}, input_mapping={}, output_mapping={}"
         assert repr(operation) == f"tests.operations.test_base.FakeOperation({args})"
+
+    @patch.object(base, "logger")
+    def test_log_success_if_description_defined(self, logger: Mock) -> None:
+        operation = FakeOperation(description="Step 1")
+        operation.execute({"execution_context": self.execution_context})
+        logger.info.assert_called_once_with(f"Step 1: {base.SUCCESS_MARK}")
+
+    @patch.object(base, "logger")
+    def test_log_error_if_description_defined(self, logger: Mock) -> None:
+        operation = ErrorOperation(description="Step 1")
+        with pytest.raises(Exception):
+            operation.execute({"execution_context": self.execution_context})
+        logger.error.assert_called_once_with(f"Step 1: {base.FAILURE_MARK}")
+
+    @patch.object(base, "logger")
+    def test_log_success_not_called_without_description(self, logger: Mock) -> None:
+        FakeOperation().execute({"execution_context": self.execution_context})
+        logger.info.assert_not_called()
+
+    @patch.object(base, "logger")
+    def test_log_error_not_called_without_description(self, logger: Mock) -> None:
+        with pytest.raises(Exception):
+            ErrorOperation().execute({"execution_context": self.execution_context})
+        logger.error.assert_not_called()

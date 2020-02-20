@@ -1,4 +1,5 @@
 import abc
+import logging
 from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, cast
 
 from .. import utils
@@ -6,11 +7,15 @@ from ..base_context import BaseContext, DictContext
 
 __all__ = ["BaseOperation", "GenericOperation"]
 
+logger = logging.getLogger(__name__)
 
 ContextData = Optional[Mapping[str, Any]]
 ContextMapping = Optional[Mapping[str, str]]
 TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
+
+SUCCESS_MARK = "\N{HEAVY CHECK MARK}"
+FAILURE_MARK = "\N{HEAVY BALLOT X}"
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -24,10 +29,12 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         local_context: ContextData = None,
         input_mapping: ContextMapping = None,
         output_mapping: ContextMapping = None,
+        description: str = "",
     ):
         self.local_context = local_context or {}
         self.input_mapping = input_mapping or {}
         self.output_mapping = output_mapping or {}
+        self.description = description
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
@@ -48,7 +55,15 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
 
     def execute(self, original_context: DictContext) -> Dict[str, Any]:
         context = self.pre_run(original_context)
-        output = self.run(context)
+        try:
+            output = self.run(context)
+        except Exception:
+            if self.description:
+                logger.error(f"{self.description}: {FAILURE_MARK}")
+            raise
+        else:
+            if self.description:
+                logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
         return {**original_context, **output_dict}
 
