@@ -7,6 +7,7 @@ from . import (
     find_tagged_line,
     insert_text,
     prompt,
+    search_and_replace,
 )
 from .base import BaseOperation, GenericOperation
 
@@ -21,4 +22,5 @@ __all__ = [
     "find_tagged_line",
     "insert_text",
     "prompt",
+    "search_and_replace",
 ]
