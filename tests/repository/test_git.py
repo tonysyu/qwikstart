@@ -14,6 +14,26 @@ CACHE_DIR = get_user_config().qwikstart_cache_path
 TEST_URL = "https://github.com/user/repo"
 
 
+class TestParseGitUrl:
+    def test_https_url(self) -> None:
+        git_url = self.parse_git_url("https://github.com/tonysyu/qwikstart")
+        assert git_url.prefix == "https"
+        assert git_url.separator == "://"
+        assert git_url.path == "github.com/tonysyu/qwikstart"
+
+    def test_git_ssh(self) -> None:
+        git_url = self.parse_git_url("git@github.com:tonysyu/qwikstart.git")
+        assert git_url.prefix == "git"
+        assert git_url.separator == "@"
+        assert git_url.path == "github.com/tonysyu/qwikstart.git"
+
+    def parse_git_url(self, url: str) -> git.GitUrl:
+        # Ensure that we get a non-None value to avoid mypy errors about non-checking.
+        git_url = git.parse_git_url(url)
+        assert git_url is not None
+        return git_url
+
+
 class TestGitRepoLoader:
     def test_download_not_required(self) -> None:
         with patch_git_repo_loader_dependencies() as mocks:

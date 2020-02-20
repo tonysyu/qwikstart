@@ -1,12 +1,39 @@
+import re
 from pathlib import Path
-from typing import Any, Dict
-from urllib.parse import urlparse
+from typing import Any, Dict, NamedTuple, Optional
 
 import git as _git
 
 from ..config import get_user_config
 from ..exceptions import RepoLoaderError
 from . import base, local
+
+# Git url regex adapted from https://stackoverflow.com/a/22312124/260303
+RX_GIT_URL_PREFIX = r"(?P<prefix>(git|ssh|http(s)?))"
+RX_GIT_URL_SEPARATOR = r"(?P<separator>(:|@)(//)?)"
+RX_GIT_URL_PATH = r"(?P<path>([\w\.@\:/\-~]+)(\.git)?(/)?)"
+RX_GIT_URL = re.compile(RX_GIT_URL_PREFIX + RX_GIT_URL_SEPARATOR + RX_GIT_URL_PATH)
+
+
+class GitUrl(NamedTuple):
+    prefix: str
+    separator: str
+    raw_path: str
+
+    @property
+    def path(self) -> str:
+        return self.raw_path.replace(":", "/")
+
+
+def parse_git_url(url: str) -> Optional[GitUrl]:
+    match = RX_GIT_URL.match(url)
+    if not match:
+        return None
+    parts = match.groupdict()
+    # Ignore typing: mypy can't detect keys in `groupdict`.
+    return GitUrl(
+        prefix=parts["prefix"], separator=parts["separator"], raw_path=parts["path"]
+    )
 
 
 class GitRepoLoader(base.BaseRepoLoader):
@@ -43,13 +70,12 @@ def resolve_git_url(url: str) -> str:
 
 
 def get_local_repo_path(url: str) -> Path:
-    parsed_url = urlparse(url)
-    if parsed_url.hostname is None:
+    git_url = parse_git_url(url)
+    if git_url is None:
         raise RepoLoaderError(f"Cannot load from repo with no hostname: {url!r}")
-    local_repo_path = parsed_url.hostname + str(parsed_url.path)
 
     config = get_user_config()
-    return config.qwikstart_cache_path / local_repo_path
+    return config.qwikstart_cache_path / git_url.path
 
 
 def download_git_repo(repo_url: str, local_path: Path) -> None:
