@@ -15,6 +15,7 @@ class Context(BaseContext):
     message: str
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
+    display_step_description: bool = False
 
 
 class Operation(BaseOperation[Context, None]):
