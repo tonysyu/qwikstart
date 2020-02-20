@@ -19,9 +19,7 @@ class TestAppendText(TestCase):
 
     def test_append_to_existing(self) -> None:
         self.fs.create_file(self.file_path, contents="First line")
-        os.chmod(self.file_path, 0o777)
         assert self.append("New line") == "First line\nNew line"
-        assert helpers.filemode(self.file_path) == 0o777
 
     def test_file_permissions_not_changed(self) -> None:
         self.fs.create_file(self.file_path)
