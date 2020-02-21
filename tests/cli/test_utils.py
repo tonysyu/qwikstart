@@ -2,8 +2,11 @@ from dataclasses import Field, dataclass, field, make_dataclass
 from typing import Any, List, Tuple, Type, TypeVar, Union, cast
 from unittest.mock import patch
 
+import pytest
+
 from qwikstart.base_context import BaseContext
 from qwikstart.cli import utils
+from qwikstart.parser import get_operations_mapping
 from qwikstart.utils import first
 
 FAKE_OP_NAME = "fake_operation"
@@ -91,6 +94,13 @@ class TestGetOperationHelp:
         context_var = first(op_help.required_context)
         assert context_var.description == "Additional info about field."
 
+    # FIXME: Add mypy stub for pytest parametrize
+    @pytest.mark.parametrize("op_name", get_operations_mapping().keys())  # type: ignore
+    def test_all_operations(self, op_name: str) -> None:
+        # Sanity check to ensure `get_operation_help doesn't error out on any operations
+        op_help = utils.get_operation_help(op_name)
+        assert isinstance(op_help, utils.OperationHelp)
+
 
 def get_op_help_from_context_class(context_class: T) -> utils.OperationHelp:
     """Mock `utils.get_operation_help` return help for fake operation"""
@@ -101,6 +111,10 @@ def get_op_help_from_context_class(context_class: T) -> utils.OperationHelp:
         @classmethod
         def get_context_class(cls) -> T:
             return context_class
+
+        @classmethod
+        def get_output_class(cls) -> None:
+            return None
 
     return get_op_help_from_fake_operation(FakeOperation)
 

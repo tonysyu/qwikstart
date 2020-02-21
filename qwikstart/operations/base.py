@@ -86,5 +86,9 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def get_context_class(cls) -> TContext:
         return cast(TContext, cls.run.__annotations__["context"])
 
+    @classmethod
+    def get_output_class(cls) -> TOutput:
+        return cast(TOutput, cls.run.__annotations__["return"])
+
 
 GenericOperation = BaseOperation[BaseContext, Optional[DictContext]]

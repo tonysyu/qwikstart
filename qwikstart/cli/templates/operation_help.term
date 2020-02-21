@@ -20,9 +20,16 @@
 {% endfor -%}
 {% endif -%}
 
-{% if op_help.required_context -%}
+{% if op_help.optional_context -%}
 {{ "Optional context:" }}
 {% for context_var in op_help.optional_context %}
     {{ render_context_var(context_var) }}
+{% endfor -%}
+{% endif -%}
+
+{% if op_help.output_annotations -%}
+{{ "Output:" }}
+{% for output_var in op_help.output_annotations %}
+    {{ render_context_var(output_var) }}
 {% endfor -%}
 {% endif -%}

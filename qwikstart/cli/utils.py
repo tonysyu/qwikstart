@@ -2,12 +2,15 @@ import dataclasses
 import os.path as pth
 import textwrap
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Type
 
 from jinja2 import Environment, FileSystemLoader
 from termcolor import colored
 
+from qwikstart.operations import BaseOperation
+
 from ..parser import get_operations_mapping
+from ..utils import get_dataclass_values
 
 __all__ = ["get_operation_help", "OperationHelp"]
 
@@ -27,7 +30,7 @@ def indent(text: str, level: int = 1) -> str:
 
 
 @dataclasses.dataclass(frozen=True)
-class ContextVar:
+class Variable:
     name: str
     annotation: Any
     default: Any = dataclasses.MISSING
@@ -42,8 +45,9 @@ class ContextVar:
 class OperationHelp:
     name: str
     docstring: Optional[str]
-    required_context: List[ContextVar]
-    optional_context: List[ContextVar]
+    required_context: List[Variable]
+    optional_context: List[Variable]
+    output_annotations: List[Variable] = dataclasses.field(default_factory=list)
 
 
 def get_operation_help(op_name: str) -> OperationHelp:
@@ -53,11 +57,9 @@ def get_operation_help(op_name: str) -> OperationHelp:
     context_class = operation.get_context_class()
     required_context = []
     optional_context = []
-    # FIXME: Ignore mypy error when accessing __dataclass_fields__.
-    # See https://github.com/python/mypy/issues/6568
-    for field in context_class.__dataclass_fields__.values():  # type:ignore
+    for field in get_dataclass_values(context_class):
         if field.name != "execution_context":
-            context_var = ContextVar(
+            context_var = Variable(
                 name=field.name,
                 annotation=field.type,
                 default=_get_default(field),
@@ -73,6 +75,7 @@ def get_operation_help(op_name: str) -> OperationHelp:
         docstring=operation.__doc__,
         required_context=required_context,
         optional_context=optional_context,
+        output_annotations=get_output_annotations(operation),
     )
 
 
@@ -87,3 +90,22 @@ def _get_default(field: dataclasses.Field) -> Any:  # type:ignore
         # See https://github.com/python/mypy/issues/6910
         else field.default_factory  # type:ignore
     )
+
+
+def get_output_annotations(operation: Type[BaseOperation[Any, Any]]) -> List[Variable]:
+    output_class = operation.get_output_class()
+    if hasattr(output_class, "__annotations__"):
+        return [
+            Variable(name=name, annotation=value, default=dataclasses.MISSING)
+            for name, value in output_class.__annotations__.items()
+        ]
+    elif hasattr(output_class, "items"):
+        return [
+            Variable(
+                name="<multiple>",
+                annotation=Any,
+                default=dataclasses.MISSING,
+                description="This operation can define arbitrary output values.",
+            )
+        ]
+    return []
