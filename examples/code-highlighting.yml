@@ -1,0 +1,35 @@
+steps:
+    "Display python":
+        name: echo
+        highlight: "python"
+        display_step_description: true
+        message: |
+            def greetings():
+                print("Hello world!")
+    "Display javascript":
+        name: echo
+        highlight: "javascript"
+        display_step_description: true
+        message: |
+            function greetings() {
+                alert("Hello world!");
+            }
+    "Display html":
+        name: echo
+        highlight: "javascript"
+        display_step_description: true
+        message: |
+            <html>
+                <body>
+                    <h1>Hello world</h1>
+                </body>
+            </html>
+    "Display css":
+        name: echo
+        highlight: "css"
+        display_step_description: true
+        message: |
+            p {
+              font-family: verdana;
+              font-size: 20px;
+            }

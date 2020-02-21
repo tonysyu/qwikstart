@@ -1,6 +1,11 @@
+import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
+from pygments import highlight
+from pygments.formatters import TerminalFormatter
+from pygments.lexers import get_lexer_by_name
+from pygments.util import ClassNotFound
 from termcolor import colored
 
 from ..base_context import BaseContext
@@ -9,6 +14,10 @@ from .base import BaseOperation
 
 __all__ = ["Operation"]
 
+logger = logging.getLogger(__name__)
+
+PYGMENTS_FORMATTER = TerminalFormatter()
+
 
 @dataclass(frozen=True)
 class Context(BaseContext):
@@ -16,6 +25,7 @@ class Context(BaseContext):
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
     display_step_description: bool = False
+    highlight: str = ""
 
 
 class Operation(BaseOperation[Context, None]):
@@ -26,4 +36,13 @@ class Operation(BaseOperation[Context, None]):
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)
         renderer.add_template_filters(colored=colored)
-        print(renderer.render_string(context.message))
+        message = renderer.render_string(context.message)
+        if context.highlight:
+            try:
+                lexer = get_lexer_by_name(context.highlight)
+            except ClassNotFound:
+                logger.warning(f"No highlighter found for {context.highlight!r}")
+            else:
+                print(highlight(message, lexer, PYGMENTS_FORMATTER))
+                return
+        print(message)
