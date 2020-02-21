@@ -10,7 +10,12 @@ __all__ = ["OperationDefinition", "parse_operation"]
 
 OperationMapping = Dict[str, Type[GenericOperation]]
 UnparsedOperation = Union[str, Dict[str, Dict[str, Any]], Tuple[str, Dict[str, Any]]]
-RESERVED_WORDS_OPERATION_CONFIG = {"local_context", "input_mapping", "output_mapping"}
+RESERVED_WORDS_OPERATION_CONFIG = {
+    "local_context",
+    "input_mapping",
+    "output_mapping",
+    "description",
+}
 
 
 def get_operations_mapping() -> OperationMapping:
@@ -46,6 +51,7 @@ class OperationDefinition(NamedTuple):
         local_context = self.config.get("local_context", {})
         input_mapping = self.config.get("input_mapping")
         output_mapping = self.config.get("output_mapping")
+        description = self.config.get("description", "")
         local_context.update(
             {
                 key: value
@@ -57,7 +63,26 @@ class OperationDefinition(NamedTuple):
             "local_context": local_context,
             "input_mapping": input_mapping,
             "output_mapping": output_mapping,
+            "description": description,
         }
+
+
+def parse_operation_from_step(
+    op_spec: Dict[str, Any],
+    known_operations: Optional[Dict[str, Type[GenericOperation]]] = None,
+) -> GenericOperation:
+    if known_operations is None:
+        known_operations = get_operations_mapping()
+
+    op_name = op_spec.pop("name", None)
+    if not op_name:
+        raise TaskParserError(f"Operation definition has no name: {op_spec}")
+    elif op_name not in known_operations:
+        raise TaskParserError(f"Could not find operation named '{op_name}'")
+
+    op_def = OperationDefinition(name=op_name, config=op_spec)
+    operation_class = known_operations[op_name]
+    return operation_class(**op_def.parsed_config)
 
 
 def parse_operation(

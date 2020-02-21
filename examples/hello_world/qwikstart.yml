@@ -1,5 +1,6 @@
-operations:
-    add_file:
+steps:
+    "Write hello-world file to disk":
+        name: add_file
         template_path: "../templates/hello_world.txt"
         template_variables:
             name: "World"

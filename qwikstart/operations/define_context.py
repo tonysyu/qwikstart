@@ -13,6 +13,7 @@ class Context(BaseContext):
     context_defs: Dict[str, Any]
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
+    display_step_description: bool = False
 
 
 class Operation(BaseOperation[Context, Dict[str, Any]]):

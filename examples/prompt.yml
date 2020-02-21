@@ -1,13 +1,16 @@
-operations:
-    prompt:
+steps:
+    "Prompt for required args":
+        name: prompt
         inputs:
             - name: "name"
               default: "World"
             - name: "target_dir"
               default: "."
               type: "path"
-    define_context:
+    "Define `target_path` based on prompts":
+        name: define_context
         context_defs:
             target_path: "{{ qwikstart.target_dir }}/hello_world_with_prompt.txt"
-    add_file:
+    "Write hello_world file":
+        name: add_file
         template_path: "./templates/hello_world.txt"

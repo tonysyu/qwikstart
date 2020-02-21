@@ -1,13 +1,16 @@
-operations:
-    prompt:
+steps:
+    "Prompt for target path":
+        name: prompt
         inputs:
             - name: "target_dir"
               default: "."
               type: "path"
-    define_context:
+    "Define target directory":
+        name: define_context
         context_defs:
             target_dir: "{{ qwikstart.target_dir }}/copy-file-tree"
-    add_file_tree:
+    "Add files from `templates/copy-file-tree`":
+        name: add_file_tree
         template_dir: "templates/copy-file-tree"
         template_variables:
             name: "World"
