@@ -26,14 +26,8 @@ class Operation(BaseOperation[Context, None]):
 
     def run(self, context: Context) -> None:
         file_path = ensure_path(context.file_path)
-
-        with file_path.open() as f:
-            contents = f.readlines()
-
-        contents.insert(context.line, self.get_text(context))
-
-        with file_path.open("w") as f:
-            f.writelines(contents)
+        text = self.get_text(context)
+        insert_text_in_file(file_path, context.line, text)
 
     def get_text(self, context: Context) -> str:
         text = context.text
@@ -42,3 +36,13 @@ class Operation(BaseOperation[Context, None]):
 
         text += context.line_ending
         return text
+
+
+def insert_text_in_file(file_path: Path, line_number: int, text: str) -> None:
+    with file_path.open() as f:
+        contents = f.readlines()
+
+    contents.insert(line_number, text)
+
+    with file_path.open("w") as f:
+        f.writelines(contents)

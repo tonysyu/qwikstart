@@ -28,13 +28,16 @@ class Operation(BaseOperation[Context, Output]):
     name: str = "find_tagged_line"
 
     def run(self, context: Context) -> Output:
-        tag = context.tag
         file_path = ensure_path(context.file_path)
-        with file_path.open() as f:
-            for line_number, line in enumerate(f, 1):
-                if tag in line:
-                    column = line.find(tag)
-                    return Output(line=line_number, column=column)
-            else:
-                msg = f"Failed to find line in {file_path} tagged with {tag!r}"
-                raise OperationError(msg)
+        return find_tagged_line_in_file(file_path, context.tag)
+
+
+def find_tagged_line_in_file(file_path: Path, tag: str) -> Output:
+    with file_path.open() as f:
+        for line_number, line in enumerate(f, 1):
+            if tag in line:
+                column = line.find(tag)
+                return Output(line=line_number, column=column)
+        else:
+            msg = f"Failed to find line in {file_path} tagged with {tag!r}"
+            raise OperationError(msg)
