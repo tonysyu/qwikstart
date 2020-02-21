@@ -54,8 +54,7 @@ class TestParseOperationFromStep:
         mock_operation = Mock()
         op_def = {"name": "custom"}
         known_ops = {"custom": Mock(return_value=mock_operation)}
-        # Ignore typing: Avoid overhead of properly mocking `known_operations`.
-        op = operations.parse_operation_from_step(op_def, known_ops)  # type: ignore
+        op = operations.parse_operation_from_step(op_def, known_ops)
         assert op == mock_operation
 
     def test_unknown_operation(self) -> None:
