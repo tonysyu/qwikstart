@@ -15,10 +15,10 @@ class TestGetUserConfig:
         mock_load_file.return_value = {}
         assert config.get_user_config() == DEFAULT_CONFIG
 
-    def test_override_qwikstart_cache(self, mock_load_file: Mock) -> None:
-        mock_load_file.return_value = {"qwikstart_cache": "fake/path/to/cache"}
+    def test_override_repo_cache(self, mock_load_file: Mock) -> None:
+        mock_load_file.return_value = {"repo_cache": "fake/path/to/cache"}
         user_config = config.get_user_config()
-        assert user_config.qwikstart_cache == "fake/path/to/cache"
+        assert user_config.repo_cache == "fake/path/to/cache"
 
     def test_add_git_abbreviation(self, mock_load_file: Mock) -> None:
         mock_load_file.return_value = {

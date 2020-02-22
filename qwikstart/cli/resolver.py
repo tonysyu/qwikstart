@@ -1,8 +1,8 @@
 from typing import Optional, cast
 
 from ..exceptions import RepoLoaderError, UserFacingError
-from ..parser import TaskSpec, parse_task
-from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
+from ..parser import parse_task
+from ..repository import BaseRepoLoader, GitRepoLoader, LocalRepoLoader, TaskSpec
 from ..tasks import Task
 from ..utils import full_class_name
 
@@ -17,10 +17,9 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
         msg = f"{full_class_name(loader)}: Cannot load {loader.spec_path}"
         raise UserFacingError(msg)
 
-    raw_task_spec = loader.load_raw_task_spec()
     # FIXME: We should check whether the data has the required keys.
-    task_spec = cast(TaskSpec, raw_task_spec)
-    return parse_task(task_spec, loader.spec_path)
+    task_spec = cast(TaskSpec, loader.task_spec)
+    return parse_task(task_spec, loader.repo_path)
 
 
 def get_repo_loader(task_path: str, repo_url: Optional[str] = None) -> BaseRepoLoader:

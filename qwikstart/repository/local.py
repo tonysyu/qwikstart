@@ -1,9 +1,8 @@
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
-
 from ..exceptions import RepoLoaderError
+from ..utils import io
 from .base import BaseRepoLoader
 
 QWIKSTART_TASK_SPEC_FILE = "qwikstart.yml"
@@ -16,8 +15,7 @@ class YamlFileLoader:
         return file_path.suffix in self.known_extensions
 
     def load(self, file_path: Path) -> Dict[str, Any]:
-        with open(file_path) as f:
-            return yaml.safe_load(f)
+        return io.load_yaml_file(file_path)
 
 
 class LocalRepoLoader(BaseRepoLoader):
@@ -40,7 +38,8 @@ class LocalRepoLoader(BaseRepoLoader):
     def _can_load_spec_file(self) -> bool:
         return self.file_loader.can_load(self.spec_path)
 
-    def load_raw_task_spec(self) -> Dict[str, Any]:
+    @property
+    def task_spec(self) -> Dict[str, Any]:
         if not self.can_load_spec():
             raise RepoLoaderError(f"Cannot load {self.spec_path!r}")
         return self.file_loader.load(self.spec_path)

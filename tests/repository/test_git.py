@@ -10,7 +10,7 @@ from qwikstart.config import get_user_config
 from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import git
 
-CACHE_DIR = get_user_config().qwikstart_cache_path
+CACHE_DIR = get_user_config().repo_cache_path
 TEST_URL = "https://github.com/user/repo"
 
 
@@ -57,10 +57,10 @@ class TestGitRepoLoader:
             loader = git.GitRepoLoader(TEST_URL)
         assert loader.can_load_spec() is False
 
-    def test_load_raw_task_spec(self) -> None:
+    def test_task_spec(self) -> None:
         with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
             loader = git.GitRepoLoader(TEST_URL)
-        assert loader.load_raw_task_spec() == {"greeting": "Hello"}
+        assert loader.task_spec == {"greeting": "Hello"}
 
 
 class TestResolveGitUrl:
@@ -94,9 +94,15 @@ class TestDownloadGitRepo:
         with pytest.raises(RepoLoaderError):
             git.download_git_repo("/this/is/not/a/url", CACHE_DIR.joinpath("new"))
 
+    @patch.object(git.gitlib, "Repo")
+    def test_success(self, repo_class: Mock) -> None:
+        output_dir = CACHE_DIR.joinpath("new")
+        git.download_git_repo("/fake/repo", output_dir)
+        repo_class.clone_from("/fake/repo", str(output_dir))
+
 
 class TestUpdateGitRepo:
-    @patch.object(git._git, "Repo")
+    @patch.object(git.gitlib, "Repo")
     def test_repo_initialized_with_string(self, repo_class: Mock) -> None:
         git.update_git_repo(Path("/path/to/local/repo"))
         repo_class.assert_called_once_with("/path/to/local/repo")
@@ -126,7 +132,7 @@ def patch_git_repo_loader_dependencies(
     mock_loader = Mock(
         spec_path=local_path,
         can_load_spec=Mock(return_value=can_load_spec),
-        load_raw_task_spec=Mock(return_value=data or {}),
+        task_spec=data,
     )
     with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
         with patch.object(git, "get_local_repo_path", return_value=mock_path):
