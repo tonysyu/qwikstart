@@ -1,14 +1,23 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 from ..base_context import BaseContext
 from ..utils import ensure_path, indent
 from .base import BaseOperation
-from .find_tagged_line import find_tagged_line_in_file
-from .insert_text import insert_text_in_file
+from .find_tagged_line import TAG_HELP, find_tagged_line_in_file
+from .insert_text import LINE_ENDING_HELP, TEXT_HELP, insert_text_in_file
+from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+CONTEXT_HELP = {
+    "file_path": FILE_PATH_HELP,
+    "tag": TAG_HELP,
+    "text": TEXT_HELP,
+    "line_ending": LINE_ENDING_HELP,
+}
 
 
 @dataclass(frozen=True)
@@ -18,6 +27,10 @@ class Context(BaseContext):
     text: str
     line_ending: str = os.linesep
     match_indent: bool = True
+
+    @classmethod
+    def help(cls, field_name: str) -> Optional[str]:
+        return CONTEXT_HELP.get(field_name)
 
 
 class Operation(BaseOperation[Context, None]):

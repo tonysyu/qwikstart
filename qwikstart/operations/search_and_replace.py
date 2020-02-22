@@ -1,12 +1,21 @@
 import re
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 from ..base_context import BaseContext
 from ..utils import ensure_path
 from .base import BaseOperation
+from .utils import FILE_PATH_HELP
 
 __all__ = ["Context", "Operation"]
+
+CONTEXT_HELP = {
+    "file_path": FILE_PATH_HELP,
+    "search": "Text to search for in file.",
+    "replace": "Text used to replace text matching `search`.",
+    "use_regex": "Use `re.sub` instead of `str.replace`.",
+}
 
 
 @dataclass(frozen=True)
@@ -16,9 +25,13 @@ class Context(BaseContext):
     replace: str
     use_regex: bool = False
 
+    @classmethod
+    def help(cls, field_name: str) -> Optional[str]:
+        return CONTEXT_HELP.get(field_name)
+
 
 class Operation(BaseOperation[Context, None]):
-    """Operation for searching for text and replacing """
+    """Operation for searching for text and replacing it with new text."""
 
     name: str = "search_and_replace"
 

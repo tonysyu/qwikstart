@@ -9,6 +9,7 @@ from ..base_context import BaseContext
 from ..utils import ensure_path
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
+from .utils import TEMPLATE_VARIABLE_PREFIX_HELP
 
 __all__ = ["Operation"]
 
@@ -18,9 +19,16 @@ CONTEXT_HELP = {
     "target_path": textwrap.dedent(
         """
             File path where rendered template will be saved. This will be relative to
-            the `target_dir` (default '.') specified in the execution context.
+            the current working directory.
         """
-    )
+    ),
+    "template_path": textwrap.dedent(
+        """
+            Path to template file relative qwikstart repo directory, which is typically
+            the directory containing the `qwikstart.yml` file.
+        """
+    ),
+    "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
 }
 
 

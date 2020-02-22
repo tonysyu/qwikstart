@@ -7,6 +7,7 @@ from ..base_context import BaseContext, DictContext, TContext
 from ..utils.prompt import create_prompt_spec, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
+from .utils import TEMPLATE_VARIABLE_PREFIX_HELP
 
 __all__ = ["Operation"]
 
@@ -27,9 +28,12 @@ CONTEXT_HELP = {
                     - name: "name"
                       default: "World"
                     - name: "message"
-                      default: "Hello {{ name }}!"
+                      default: "Hello {{ qwikstart.name }}!"
         """
-    )
+    ),
+    "output_name_dict": "Dictionary in context where input responses will be added.",
+    "introduction": "Message to user before prompting for inputs.",
+    "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
 }
 
 # Output will be dict with single key, `Context.output_dict_name`, and dict
@@ -62,7 +66,11 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Output]):
-    """Operation to prompt user for inputs."""
+    """Operation to prompt user for input values.
+
+    The input values will be added to a dictionary in the context with a name matching
+    `output_dict_name`.
+    """
 
     name = "prompt"
     aliases = ["prompt_user"]

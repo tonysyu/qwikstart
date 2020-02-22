@@ -1,22 +1,38 @@
 import os
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Optional
 
 from ..base_context import BaseContext
 from ..utils import ensure_path, indent
 from .base import BaseOperation
+from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+TEXT_HELP = "Text that will be inserted."
+LINE_ENDING_HELP = "Text appended to the end of inserted text."
+CONTEXT_HELP = {
+    "file_path": FILE_PATH_HELP,
+    "text": TEXT_HELP,
+    "line": "Line number where text will be inserted.",
+    "column": "Column where the text will be inserted.",
+    "line_ending": LINE_ENDING_HELP,
+}
 
 
 @dataclass(frozen=True)
 class Context(BaseContext):
+    file_path: Path
     text: str
     line: int
     column: int
-    file_path: Path
     line_ending: str = os.linesep
     match_indent: bool = True
+
+    @classmethod
+    def help(cls, field_name: str) -> Optional[str]:
+        return CONTEXT_HELP.get(field_name)
 
 
 class Operation(BaseOperation[Context, None]):

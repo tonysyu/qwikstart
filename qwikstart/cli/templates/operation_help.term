@@ -1,11 +1,13 @@
 {%- macro render_context_var(context_var) -%}
     {{ context_var.name | colored("green") }}
         {{ "type" | colored("yellow") }}: {{ context_var.annotation }}
-        {% if not context_var.is_required -%}
+        {%- if not context_var.is_required %}
         {{ "default" | colored("yellow") }}: {{ context_var.default }}
         {%- endif -%}
         {%- if context_var.description -%}
-            {{ context_var.description | indent(2) }}
+            {# Comment to add newline to output. N #}
+
+{{ context_var.description | indent(2) }}
         {%- endif -%}
 {%- endmacro -%}
 
@@ -14,15 +16,22 @@
 {{ op_help.docstring }}
 
 {% if op_help.required_context -%}
-{{ "Required context:" }}
+{{ "Required context:" | colored("cyan") }}
 {% for context_var in op_help.required_context %}
     {{ render_context_var(context_var) }}
 {% endfor -%}
 {% endif -%}
 
-{% if op_help.required_context -%}
-{{ "Optional context:" }}
+{% if op_help.optional_context -%}
+{{ "Optional context:" | colored("cyan") }}
 {% for context_var in op_help.optional_context %}
     {{ render_context_var(context_var) }}
+{% endfor -%}
+{% endif -%}
+
+{% if op_help.output_annotations -%}
+{{ "Output:" | colored("cyan") }}
+{% for output_var in op_help.output_annotations %}
+    {{ render_context_var(output_var) }}
 {% endfor -%}
 {% endif -%}
