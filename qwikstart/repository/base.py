@@ -10,8 +10,9 @@ class BaseRepoLoader(abc.ABC):
     def can_load_spec(self) -> bool:
         """Return true if this loader can load the qwikstart task spec."""
 
+    @property
     @abc.abstractmethod
-    def load_raw_task_spec(self) -> Dict[str, Any]:
+    def task_spec(self) -> Dict[str, Any]:
         """Return raw task specification loaded from qwikstart repo."""
 
     @property

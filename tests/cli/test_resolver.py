@@ -69,6 +69,6 @@ def create_mock_repo_loader(
     return Mock(
         spec_path=spec_path,
         repo_path=spec_path.parent,
-        load_raw_task_spec=Mock(return_value=data),
+        task_spec=data,
         can_load_spec=Mock(return_value=can_load_spec),
     )

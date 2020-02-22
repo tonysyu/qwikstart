@@ -17,9 +17,8 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
         msg = f"{full_class_name(loader)}: Cannot load {loader.spec_path}"
         raise UserFacingError(msg)
 
-    raw_task_spec = loader.load_raw_task_spec()
     # FIXME: We should check whether the data has the required keys.
-    task_spec = cast(TaskSpec, raw_task_spec)
+    task_spec = cast(TaskSpec, loader.task_spec)
     return parse_task(task_spec, loader.repo_path)
 
 
