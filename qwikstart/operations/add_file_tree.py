@@ -8,18 +8,33 @@ from ..base_context import BaseContext
 from ..utils.filesystem import FileTreeGenerator
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
+from .utils import TEMPLATE_VARIABLE_PREFIX_HELP
 
 __all__ = ["Operation"]
 
 logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
+    "template_dir": textwrap.dedent(
+        """
+            Path to directory containing template files. This path is relative to the
+            qwikstart repo directory, which is typically the directory containing the
+            `qwikstart.yml` file.
+        """
+    ),
+    "target_dir": textwrap.dedent(
+        """
+            Directory where files from `template_dir` will be written. This is relative
+            to the current working directory.
+        """
+    ),
+    "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
     "ignore": textwrap.dedent(
         """
             List of file patterns to ignore from source directory. Unix-shell-style
             wildcards are accepted. See https://docs.python.org/3/library/fnmatch.html
         """
-    )
+    ),
 }
 
 

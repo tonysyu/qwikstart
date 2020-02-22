@@ -10,7 +10,7 @@ from termcolor import colored
 from qwikstart.operations import BaseOperation
 
 from ..parser import get_operations_mapping
-from ..utils import get_dataclass_values
+from ..utils import get_dataclass_values, strip_empty_lines
 
 __all__ = ["get_operation_help", "OperationHelp"]
 
@@ -63,7 +63,7 @@ def get_operation_help(op_name: str) -> OperationHelp:
                 name=field.name,
                 annotation=field.type,
                 default=_get_default(field),
-                description=context_class.help(field.name),
+                description=strip_empty_lines(context_class.help(field.name)),
             )
             if context_var.is_required:
                 required_context.append(context_var)
@@ -84,7 +84,7 @@ def get_operation_help(op_name: str) -> OperationHelp:
 # Using `Field[Any]` runtime error: TypeError: 'type' object is not subscriptable
 def _get_default(field: dataclasses.Field) -> Any:  # type:ignore
     return (
-        field.default
+        repr(field.default)
         if field.default is not dataclasses.MISSING
         # FIXME: Ignore mypy error when accessing callable attribute.
         # See https://github.com/python/mypy/issues/6910

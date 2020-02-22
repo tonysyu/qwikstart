@@ -1,6 +1,7 @@
 import logging
+import textwrap
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pygments import highlight
 from pygments.formatters import TerminalFormatter
@@ -11,12 +12,23 @@ from termcolor import colored
 from ..base_context import BaseContext
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
+from .utils import TEMPLATE_VARIABLE_PREFIX_HELP
 
 __all__ = ["Operation"]
 
 logger = logging.getLogger(__name__)
 
 PYGMENTS_FORMATTER = TerminalFormatter()
+
+CONTEXT_HELP = {
+    "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
+    "highlight": textwrap.dedent(
+        """
+            Name of language used for syntax highlighting using `pygments` library.
+            See https://pygments.org/docs/lexers/
+        """
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -26,6 +38,10 @@ class Context(BaseContext):
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
     display_step_description: bool = False
     highlight: str = ""
+
+    @classmethod
+    def help(cls, field_name: str) -> Optional[str]:
+        return CONTEXT_HELP.get(field_name)
 
 
 class Operation(BaseOperation[Context, None]):

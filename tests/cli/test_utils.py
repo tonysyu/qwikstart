@@ -63,7 +63,7 @@ class TestGetOperationHelp:
         op_help = get_op_help_from_context_class(context_class)
 
         context_var = first(op_help.optional_context)
-        assert context_var.default == "default"
+        assert context_var.default == "'default'"
 
     def test_default_factory(self) -> None:
         context_class = make_context(
