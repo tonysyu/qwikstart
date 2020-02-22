@@ -6,7 +6,7 @@ Custom configuration for qwikstart is specified using a yaml file named
 `~/.qwikstart/config.yml`. The following sections details expected configuration values:
 
 `repo_cache`
-=================
+============
 
 Default:
 
