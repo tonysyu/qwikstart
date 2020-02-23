@@ -28,13 +28,6 @@ class TestResolveTask:
             resolver.resolve_task(FAKE_PATH_STR)
         mock_parse_task.assert_called_once_with(data, FAKE_PATH.parent)
 
-    def test_not_found(self) -> None:
-        mock_loader = create_mock_repo_loader(data={}, can_load_spec=False)
-        with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
-            with pytest.raises(UserFacingError):
-                resolver.resolve_task(FAKE_PATH_STR)
-        mock_parse_task.assert_not_called()
-
     def test_loader_error(self) -> None:
         error = RepoLoaderError("fake error")
         with patch.object(resolver, "get_repo_loader", side_effect=error):
@@ -63,12 +56,7 @@ def patch_resolve_task_dependencies(mock_loader: Mock) -> Mock:
 
 
 def create_mock_repo_loader(
-    data: Dict[str, Any], can_load_spec: bool = True, task_path: str = FAKE_PATH_STR
+    data: Dict[str, Any], task_path: str = FAKE_PATH_STR
 ) -> Any:
     spec_path = Path(task_path)
-    return Mock(
-        spec_path=spec_path,
-        repo_path=spec_path.parent,
-        task_spec=data,
-        can_load_spec=Mock(return_value=can_load_spec),
-    )
+    return Mock(spec_path=spec_path, repo_path=spec_path.parent, task_spec=data)

@@ -57,9 +57,6 @@ class GitRepoLoader(base.BaseRepoLoader):
     def spec_path(self) -> Path:
         return self._local_loader.spec_path
 
-    def can_load_spec(self) -> bool:
-        return self._local_loader.can_load_spec()
-
     @property
     def task_spec(self) -> Dict[str, Any]:
         return self._local_loader.task_spec

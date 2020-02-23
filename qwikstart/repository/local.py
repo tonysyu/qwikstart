@@ -32,7 +32,7 @@ class LocalRepoLoader(BaseRepoLoader):
     def spec_path(self) -> Path:
         return self._local_path
 
-    def can_load_spec(self) -> bool:
+    def _can_load_spec(self) -> bool:
         return self.spec_path.is_file() and self._can_load_spec_file()
 
     def _can_load_spec_file(self) -> bool:
@@ -40,6 +40,6 @@ class LocalRepoLoader(BaseRepoLoader):
 
     @property
     def task_spec(self) -> Dict[str, Any]:
-        if not self.can_load_spec():
+        if not self._can_load_spec():
             raise RepoLoaderError(f"Cannot load {self.spec_path!r}")
         return self.file_loader.load(self.spec_path)
