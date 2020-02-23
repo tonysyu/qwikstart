@@ -1,10 +1,24 @@
+import abc
 from pathlib import Path
 from typing import Any, Dict
 
 from ..exceptions import RepoLoaderError
 from ..utils import io
-from .base import BaseRepoLoader
 from .core import QWIKSTART_TASK_SPEC_FILE
+
+
+class BaseRepoLoader(abc.ABC):
+    """Base class for loader for qwikstart task repos."""
+
+    @property
+    @abc.abstractmethod
+    def task_spec(self) -> Dict[str, Any]:
+        """Return raw task specification loaded from qwikstart repo."""
+
+    @property
+    @abc.abstractmethod
+    def repo_path(self) -> Path:
+        """Return local path to qwikstart repo."""
 
 
 class YamlFileLoader:

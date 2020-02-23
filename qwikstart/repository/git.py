@@ -7,7 +7,7 @@ import git as gitlib
 
 from ..config import get_user_config
 from ..exceptions import RepoLoaderError
-from . import base, loaders
+from . import loaders
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def parse_git_url(url: str) -> Optional[GitUrl]:
     )
 
 
-class GitRepoLoader(base.BaseRepoLoader):
+class GitRepoLoader(loaders.BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
 
     def __init__(self, git_url: str, path: str = ""):
