@@ -7,7 +7,7 @@ import git as gitlib
 
 from ..config import get_user_config
 from ..exceptions import RepoLoaderError
-from . import base, local
+from . import base, loaders
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +44,7 @@ class GitRepoLoader(base.BaseRepoLoader):
 
     def __init__(self, git_url: str, path: str = ""):
         local_path = sync_git_repo_locally(git_url) / path
-        self._local_loader = local.LocalRepoLoader(str(local_path))
+        self._local_loader = loaders.LocalRepoLoader(str(local_path))
 
     @property
     def task_spec(self) -> Dict[str, Any]:

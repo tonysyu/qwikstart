@@ -121,7 +121,7 @@ def patch_git_repo_loader_dependencies(
     mock_loader = Mock(repo_path=repo_path, task_spec=data)
 
     mock_sync = Mock(return_value=repo_path)
-    with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
+    with patch.object(git.loaders, "LocalRepoLoader", return_value=mock_loader):
         with patch.object(git, "sync_git_repo_locally", new=mock_sync):
             yield MockGitRepoLoaderDependencies(
                 repo_path=repo_path, local_loader=mock_loader, sync_git_repo=mock_sync
