@@ -52,11 +52,6 @@ class TestGitRepoLoader:
             loader = git.GitRepoLoader(TEST_URL)
         assert loader.spec_path == "/my/path/to/qwikstart.yml"
 
-    def test_can_load_spec(self) -> None:
-        with patch_git_repo_loader_dependencies(can_load_spec=False):
-            loader = git.GitRepoLoader(TEST_URL)
-        assert loader.can_load_spec() is False
-
     def test_task_spec(self) -> None:
         with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
             loader = git.GitRepoLoader(TEST_URL)
@@ -120,7 +115,6 @@ class MockGitRepoLoaderDependencies:
 def patch_git_repo_loader_dependencies(
     local_path: str = "/path/to/qwikstart.yml",
     local_path_exists: bool = True,
-    can_load_spec: bool = True,
     data: Optional[Dict[str, Any]] = None,
 ) -> Iterator[MockGitRepoLoaderDependencies]:
     mock_path = MagicMock(
@@ -129,11 +123,7 @@ def patch_git_repo_loader_dependencies(
         exists=Mock(return_value=local_path_exists),
     )
 
-    mock_loader = Mock(
-        spec_path=local_path,
-        can_load_spec=Mock(return_value=can_load_spec),
-        task_spec=data,
-    )
+    mock_loader = Mock(spec_path=local_path, task_spec=data)
     with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
         with patch.object(git, "get_local_repo_path", return_value=mock_path):
             with patch.object(git, "download_git_repo") as mock_download:

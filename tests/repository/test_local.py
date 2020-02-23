@@ -14,19 +14,16 @@ class TestLocalRepoLoader(TestCase):
     def test_resolve_file(self) -> None:
         self.fs.create_file("/path/to/file.yml", contents='{"a": 1}')
         loader = local.LocalRepoLoader("/path/to/file.yml")
-        assert loader.can_load_spec()
         assert loader.task_spec == {"a": 1}
 
     def test_resolve_directory(self) -> None:
         self.fs.create_file("/path/containing/qwikstart.yml", contents='{"a": 1}')
         loader = local.LocalRepoLoader("/path/containing/")
-        assert loader.can_load_spec()
         assert loader.task_spec == {"a": 1}
 
     def test_unknown_file_type(self) -> None:
         self.fs.create_file("/path/to/file.txt", contents='{"a": 1}')
         loader = local.LocalRepoLoader("/path/to/file.txt")
-        assert not loader.can_load_spec()
         with pytest.raises(RepoLoaderError):
             loader.task_spec
 
