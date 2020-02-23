@@ -34,18 +34,6 @@ class TestParseGitUrl:
         return git_url
 
 
-class TestGitRepoLoader:
-    def test_task_spec(self) -> None:
-        with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
-            loader = git.GitRepoLoader(TEST_URL)
-        assert loader.task_spec == {"greeting": "Hello"}
-
-    def test_repo_path(self) -> None:
-        with patch_git_repo_loader_dependencies() as mocks:
-            loader = git.GitRepoLoader(TEST_URL)
-        assert loader.repo_path == mocks.repo_path
-
-
 class TestSyncGitRepoLocally:
     def test_download_not_required(self) -> None:
         with patch_sync_git_repo_dependencies() as mocks:
@@ -103,29 +91,6 @@ class TestUpdateGitRepo:
     def test_repo_initialized_with_string(self, repo_class: Mock) -> None:
         git.update_git_repo(Path("/path/to/local/repo"))
         repo_class.assert_called_once_with("/path/to/local/repo")
-
-
-@dataclass(frozen=True)
-class MockGitRepoLoaderDependencies:
-    repo_path: Path
-    local_loader: Mock
-    sync_git_repo: Mock
-
-
-@contextmanager
-def patch_git_repo_loader_dependencies(
-    repo_path: Path = Path("/path/to/repo"),
-    local_path_exists: bool = True,
-    data: Optional[Dict[str, Any]] = None,
-) -> Iterator[MockGitRepoLoaderDependencies]:
-    mock_loader = Mock(repo_path=repo_path, task_spec=data)
-
-    mock_sync = Mock(return_value=repo_path)
-    with patch.object(git.loaders, "LocalRepoLoader", return_value=mock_loader):
-        with patch.object(git, "sync_git_repo_locally", new=mock_sync):
-            yield MockGitRepoLoaderDependencies(
-                repo_path=repo_path, local_loader=mock_loader, sync_git_repo=mock_sync
-            )
 
 
 @dataclass(frozen=True)

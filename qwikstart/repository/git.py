@@ -1,13 +1,12 @@
 import logging
 import re
 from pathlib import Path
-from typing import Any, Dict, NamedTuple, Optional
+from typing import NamedTuple, Optional
 
 import git as gitlib
 
 from ..config import get_user_config
 from ..exceptions import RepoLoaderError
-from . import loaders
 
 logger = logging.getLogger(__name__)
 
@@ -37,23 +36,6 @@ def parse_git_url(url: str) -> Optional[GitUrl]:
     return GitUrl(
         prefix=parts["prefix"], separator=parts["separator"], raw_path=parts["path"]
     )
-
-
-class GitRepoLoader(loaders.BaseRepoLoader):
-    """Loader for qwikstart task repos stored in git repos."""
-
-    def __init__(self, git_url: str, path: str = ""):
-        local_path = sync_git_repo_locally(git_url) / path
-        self._local_loader = loaders.LocalRepoLoader(str(local_path))
-
-    @property
-    def task_spec(self) -> Dict[str, Any]:
-        return self._local_loader.task_spec
-
-    @property
-    def repo_path(self) -> Path:
-        """Return local path to qwikstart repo."""
-        return self._local_loader.repo_path
 
 
 def sync_git_repo_locally(git_url: str) -> Path:

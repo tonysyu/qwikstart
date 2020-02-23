@@ -4,6 +4,7 @@ from typing import Any, Dict
 
 from ..exceptions import RepoLoaderError
 from ..utils import io
+from . import git
 from .core import QWIKSTART_TASK_SPEC_FILE
 
 
@@ -57,3 +58,20 @@ class LocalRepoLoader(BaseRepoLoader):
 
     def _can_load_spec_file(self) -> bool:
         return self.file_loader.can_load(self._spec_path)
+
+
+class GitRepoLoader(BaseRepoLoader):
+    """Loader for qwikstart task repos stored in git repos."""
+
+    def __init__(self, git_url: str, path: str = ""):
+        local_path = git.sync_git_repo_locally(git_url) / path
+        self._local_loader = LocalRepoLoader(str(local_path))
+
+    @property
+    def task_spec(self) -> Dict[str, Any]:
+        return self._local_loader.task_spec
+
+    @property
+    def repo_path(self) -> Path:
+        """Return local path to qwikstart repo."""
+        return self._local_loader.repo_path
