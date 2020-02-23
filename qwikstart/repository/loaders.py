@@ -2,6 +2,8 @@ import abc
 from pathlib import Path
 from typing import Any, Dict
 
+import yaml
+
 from ..exceptions import RepoLoaderError
 from ..utils import io
 from . import git
@@ -22,20 +24,8 @@ class BaseRepoLoader(abc.ABC):
         """Return local path to qwikstart repo."""
 
 
-class YamlFileLoader:
-    known_extensions = {".yaml", ".yml"}
-
-    def can_load(self, file_path: Path) -> bool:
-        return file_path.suffix in self.known_extensions
-
-    def load(self, file_path: Path) -> Dict[str, Any]:
-        return io.load_yaml_file(file_path)
-
-
 class LocalRepoLoader(BaseRepoLoader):
     """Loader for qwikstart task repos stored on the local filesystem."""
-
-    file_loader = YamlFileLoader()
 
     def __init__(self, path: str):
         self._spec_path = Path(path).resolve()
@@ -44,20 +34,15 @@ class LocalRepoLoader(BaseRepoLoader):
 
     @property
     def task_spec(self) -> Dict[str, Any]:
-        if not self._can_load_spec():
-            raise RepoLoaderError(f"Cannot load {self._spec_path!r}")
-        return self.file_loader.load(self._spec_path)
+        try:
+            return io.load_yaml_file(self._spec_path)
+        except yaml.YAMLError as error:
+            raise RepoLoaderError(f"Cannot load {self._spec_path!r}") from error
 
     @property
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
         return self._spec_path.parent
-
-    def _can_load_spec(self) -> bool:
-        return self._spec_path.is_file() and self._can_load_spec_file()
-
-    def _can_load_spec_file(self) -> bool:
-        return self.file_loader.can_load(self._spec_path)
 
 
 class GitRepoLoader(BaseRepoLoader):

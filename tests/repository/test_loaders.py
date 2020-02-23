@@ -28,7 +28,7 @@ class TestLocalRepoLoader(TestCase):
         assert loader.task_spec == {"a": 1}
 
     def test_unknown_file_type(self) -> None:
-        self.fs.create_file("/path/to/file.txt", contents='{"a": 1}')
+        self.fs.create_file("/path/to/file.txt", contents="this: is: invalid")
         loader = loaders.LocalRepoLoader("/path/to/file.txt")
         with pytest.raises(RepoLoaderError):
             loader.task_spec
