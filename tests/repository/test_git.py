@@ -35,27 +35,29 @@ class TestParseGitUrl:
 
 
 class TestGitRepoLoader:
-    def test_download_not_required(self) -> None:
-        with patch_git_repo_loader_dependencies() as mocks:
-            git.GitRepoLoader(TEST_URL)
-        mocks.download_git_repo.assert_not_called()
-        mocks.update_git_repo.assert_called_once_with(mocks.local_path)
-
-    def test_download_required(self) -> None:
-        with patch_git_repo_loader_dependencies(local_path_exists=False) as mocks:
-            git.GitRepoLoader(TEST_URL)
-        mocks.download_git_repo.assert_called_once_with(TEST_URL, mocks.local_path)
-        mocks.update_git_repo.assert_not_called()
-
-    def test_spec_path(self) -> None:
-        with patch_git_repo_loader_dependencies(local_path="/my/path/to/qwikstart.yml"):
-            loader = git.GitRepoLoader(TEST_URL)
-        assert loader.spec_path == "/my/path/to/qwikstart.yml"
-
     def test_task_spec(self) -> None:
         with patch_git_repo_loader_dependencies(data={"greeting": "Hello"}):
             loader = git.GitRepoLoader(TEST_URL)
         assert loader.task_spec == {"greeting": "Hello"}
+
+    def test_repo_path(self) -> None:
+        with patch_git_repo_loader_dependencies() as mocks:
+            loader = git.GitRepoLoader(TEST_URL)
+        assert loader.repo_path == mocks.repo_path
+
+
+class TestSyncGitRepoLocally:
+    def test_download_not_required(self) -> None:
+        with patch_sync_git_repo_dependencies() as mocks:
+            git.sync_git_repo_locally(TEST_URL)
+        mocks.download_git_repo.assert_not_called()
+        mocks.update_git_repo.assert_called_once_with(mocks.local_path)
+
+    def test_download_required(self) -> None:
+        with patch_sync_git_repo_dependencies(local_path_exists=False) as mocks:
+            git.sync_git_repo_locally(TEST_URL)
+        mocks.download_git_repo.assert_called_once_with(TEST_URL, mocks.local_path)
+        mocks.update_git_repo.assert_not_called()
 
 
 class TestResolveGitUrl:
@@ -105,32 +107,51 @@ class TestUpdateGitRepo:
 
 @dataclass(frozen=True)
 class MockGitRepoLoaderDependencies:
-    local_path: Path
+    repo_path: Path
     local_loader: Mock
+    sync_git_repo: Mock
+
+
+@contextmanager
+def patch_git_repo_loader_dependencies(
+    repo_path: Path = Path("/path/to/repo"),
+    local_path_exists: bool = True,
+    data: Optional[Dict[str, Any]] = None,
+) -> Iterator[MockGitRepoLoaderDependencies]:
+    mock_loader = Mock(repo_path=repo_path, task_spec=data)
+
+    mock_sync = Mock(return_value=repo_path)
+    with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
+        with patch.object(git, "sync_git_repo_locally", new=mock_sync):
+            yield MockGitRepoLoaderDependencies(
+                repo_path=repo_path, local_loader=mock_loader, sync_git_repo=mock_sync
+            )
+
+
+@dataclass(frozen=True)
+class MockSyncGitRepoDepdendencies:
+    local_path: Path
     download_git_repo: Mock
     update_git_repo: Mock
 
 
 @contextmanager
-def patch_git_repo_loader_dependencies(
+def patch_sync_git_repo_dependencies(
     local_path: str = "/path/to/qwikstart.yml",
     local_path_exists: bool = True,
     data: Optional[Dict[str, Any]] = None,
-) -> Iterator[MockGitRepoLoaderDependencies]:
+) -> Iterator[MockSyncGitRepoDepdendencies]:
     mock_path = MagicMock(
         spec=Path,
         __str__=Mock(return_value=local_path),
         exists=Mock(return_value=local_path_exists),
     )
 
-    mock_loader = Mock(spec_path=local_path, task_spec=data)
-    with patch.object(git.local, "LocalRepoLoader", return_value=mock_loader):
-        with patch.object(git, "get_local_repo_path", return_value=mock_path):
-            with patch.object(git, "download_git_repo") as mock_download:
-                with patch.object(git, "update_git_repo") as mock_update_repo:
-                    yield MockGitRepoLoaderDependencies(
-                        local_path=mock_path,
-                        local_loader=mock_loader,
-                        download_git_repo=mock_download,
-                        update_git_repo=mock_update_repo,
-                    )
+    with patch.object(git, "get_local_repo_path", return_value=mock_path):
+        with patch.object(git, "download_git_repo") as mock_download:
+            with patch.object(git, "update_git_repo") as mock_update_repo:
+                yield MockSyncGitRepoDepdendencies(
+                    local_path=mock_path,
+                    download_git_repo=mock_download,
+                    update_git_repo=mock_update_repo,
+                )

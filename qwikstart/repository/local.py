@@ -4,8 +4,7 @@ from typing import Any, Dict
 from ..exceptions import RepoLoaderError
 from ..utils import io
 from .base import BaseRepoLoader
-
-QWIKSTART_TASK_SPEC_FILE = "qwikstart.yml"
+from .core import QWIKSTART_TASK_SPEC_FILE
 
 
 class YamlFileLoader:
@@ -24,22 +23,23 @@ class LocalRepoLoader(BaseRepoLoader):
     file_loader = YamlFileLoader()
 
     def __init__(self, path: str):
-        self._local_path = Path(path).resolve()
-        if self._local_path.is_dir():
-            self._local_path = self.spec_path / QWIKSTART_TASK_SPEC_FILE
-
-    @property
-    def spec_path(self) -> Path:
-        return self._local_path
-
-    def _can_load_spec(self) -> bool:
-        return self.spec_path.is_file() and self._can_load_spec_file()
-
-    def _can_load_spec_file(self) -> bool:
-        return self.file_loader.can_load(self.spec_path)
+        self._spec_path = Path(path).resolve()
+        if self._spec_path.is_dir():
+            self._spec_path = self._spec_path / QWIKSTART_TASK_SPEC_FILE
 
     @property
     def task_spec(self) -> Dict[str, Any]:
         if not self._can_load_spec():
-            raise RepoLoaderError(f"Cannot load {self.spec_path!r}")
-        return self.file_loader.load(self.spec_path)
+            raise RepoLoaderError(f"Cannot load {self._spec_path!r}")
+        return self.file_loader.load(self._spec_path)
+
+    @property
+    def repo_path(self) -> Path:
+        """Return local path to qwikstart repo."""
+        return self._spec_path.parent
+
+    def _can_load_spec(self) -> bool:
+        return self._spec_path.is_file() and self._can_load_spec_file()
+
+    def _can_load_spec_file(self) -> bool:
+        return self.file_loader.can_load(self._spec_path)

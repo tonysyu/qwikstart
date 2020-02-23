@@ -43,23 +43,28 @@ class GitRepoLoader(base.BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
 
     def __init__(self, git_url: str, path: str = ""):
-        git_url = resolve_git_url(git_url)
-        local_repo_path = get_local_repo_path(git_url)
-        if not local_repo_path.exists():
-            download_git_repo(git_url, local_repo_path)
-        else:
-            update_git_repo(local_repo_path)
-
-        local_path = local_repo_path / path
+        local_path = sync_git_repo_locally(git_url) / path
         self._local_loader = local.LocalRepoLoader(str(local_path))
-
-    @property
-    def spec_path(self) -> Path:
-        return self._local_loader.spec_path
 
     @property
     def task_spec(self) -> Dict[str, Any]:
         return self._local_loader.task_spec
+
+    @property
+    def repo_path(self) -> Path:
+        """Return local path to qwikstart repo."""
+        return self._local_loader.repo_path
+
+
+def sync_git_repo_locally(git_url: str) -> Path:
+    """Download or update local copy of git repo and return local path."""
+    git_url = resolve_git_url(git_url)
+    local_repo_path = get_local_repo_path(git_url)
+    if not local_repo_path.exists():
+        download_git_repo(git_url, local_repo_path)
+    else:
+        update_git_repo(local_repo_path)
+    return local_repo_path
 
 
 def resolve_git_url(url: str) -> str:

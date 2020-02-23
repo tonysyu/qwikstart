@@ -2,6 +2,8 @@ from typing import Any, Dict, List, Tuple, Union
 
 from typing_extensions import TypedDict
 
+QWIKSTART_TASK_SPEC_FILE = "qwikstart.yml"
+
 OperationSpec = Union[str, Dict[str, Dict[str, Any]], Tuple[str, Dict[str, Any]]]
 OperationsList = Union[List[OperationSpec], Dict[str, OperationSpec]]
 
