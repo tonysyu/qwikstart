@@ -13,10 +13,5 @@ class BaseRepoLoader(abc.ABC):
 
     @property
     @abc.abstractmethod
-    def spec_path(self) -> Path:
-        """Return local path to qwikstart task specification file."""
-
-    @property
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
-        return self.spec_path.parent
