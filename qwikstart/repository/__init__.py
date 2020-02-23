@@ -1,7 +1,5 @@
-from .base import BaseRepoLoader
 from .core import OperationsList, OperationSpec, TaskSpec
-from .git import GitRepoLoader
-from .local import LocalRepoLoader
+from .loaders import BaseRepoLoader, GitRepoLoader, LocalRepoLoader
 
 __all__ = [
     "BaseRepoLoader",
