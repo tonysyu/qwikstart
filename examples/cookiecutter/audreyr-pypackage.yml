@@ -1,0 +1,45 @@
+source:
+    url: "https://github.com/audreyr/cookiecutter-pypackage/"
+steps:
+    "Request metadata and configuration":
+        name: prompt
+        template_variable_prefix: "cookiecutter"
+        inputs:
+            - name: "full_name"
+            - name: "email"
+            - name: "github_username"
+            - name: "project_name"
+              default: "Python Boilerplate"
+            - name: "project_slug"
+              default: "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}"
+            - name: "project_short_description"
+              default: "Python Boilerplate contains all the boilerplate you need to create a Python package."
+            - name: "pypi_username"
+              default: "{{ cookiecutter.github_username }}"
+            - name: "version"
+              default: "0.1.0"
+            - name: "use_pytest"
+              default: False
+            - name: "use_pypi_deployment_with_travis"
+              default: True
+            - name: "add_pyup_badge"
+              default: False
+            - name: "command_line_interface"
+              choices:
+                - "Click"
+                - "Argparse"
+                - "No command-line interface"
+            - name: "create_author_file"
+              default: True
+            - name: "open_source_license"
+              choices:
+                - "MIT license"
+                - "BSD license"
+                - "ISC license"
+                - "Apache Software License 2.0"
+                - "GNU General Public License v3"
+                - "Not open source"
+    "Create new project":
+        name: add_file_tree
+        template_variable_prefix: "cookiecutter"
+        template_dir: "{{cookiecutter.project_slug}}"
