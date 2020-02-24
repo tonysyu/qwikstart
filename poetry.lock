@@ -1222,7 +1222,7 @@ testing = ["jaraco.itertools", "func-timeout"]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]
 
 [metadata]
-content-hash = "ce70ab0a8def8376321b7e03e88ad6dd819cd9eaf3a6072d29759f41e51122d5"
+content-hash = "1cf1e1d2dc6f6699273dd7a423fa57f51dffa9d052ca7fc4dd4f27e091be7ace"
 python-versions = "^3.6"
 
 [metadata.files]

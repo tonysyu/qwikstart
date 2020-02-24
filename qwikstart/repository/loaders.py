@@ -70,7 +70,8 @@ class DetachedRepoLoader(BaseRepoLoader):
 
     def __init__(self, url_or_path: str = ""):
         if http.is_url(url_or_path):
-            self._task_spec = http.read_from_url(url_or_path)
+            url_contents = http.read_from_url(url_or_path)
+            self._task_spec = io.load_yaml_string(url_contents)
         else:
             path = Path(url_or_path)
             self._task_spec = io.load_yaml_file(path)

@@ -42,7 +42,7 @@ class TestGetRepoLoader:
 
     def test_git_loader(self) -> None:
         repo_url = "http://example.com"
-        with patch.object(resolver, "GitRepoLoader") as loader_class:
+        with patch.object(resolver.repository, "GitRepoLoader") as loader_class:
             loader = resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
         assert loader is loader_class.return_value
         loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)

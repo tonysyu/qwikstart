@@ -1,4 +1,3 @@
-from typing import cast
 from urllib.parse import urlparse
 
 import requests
