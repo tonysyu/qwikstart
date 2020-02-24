@@ -19,10 +19,19 @@ def cli() -> None:
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
 @click.option("--repo", help="Url for repo containing qwikstart task", default=None)
-def run(task_path: str, verbose: bool, repo: str) -> None:
+@click.option(
+    "--detached",
+    is_flag=True,
+    help="""
+        If true, run task defined in one file that points to a detached qwikstart
+        repository (containing files used for templating).
+    """,
+    default=False,
+)
+def run(task_path: str, verbose: bool, repo: str, detached: bool) -> None:
     """Run task in the current directory."""
     logging.configure_logger("DEBUG" if verbose else "INFO")
-    task = resolve_task(task_path, repo_url=repo)
+    task = resolve_task(task_path, repo_url=repo, detached=detached)
     task.execute()
 
 
