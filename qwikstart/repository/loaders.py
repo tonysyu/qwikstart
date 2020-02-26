@@ -76,11 +76,9 @@ class DetachedRepoLoader(BaseRepoLoader):
             path = Path(url_or_path)
             self._task_spec = io.load_yaml_file(path)
 
-        source = self._task_spec.get("source")
-        if not source:
-            raise RepoLoaderError(f"Task defined by {url_or_path} must define `source`")
+        source = self._task_spec.get("source", {})
         git_url = source.get("url")
-        if not source.get:
+        if not git_url:
             raise RepoLoaderError(
                 f"Task defined by {url_or_path} must define `source.url`"
             )
