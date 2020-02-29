@@ -13,7 +13,10 @@ __all__ = ["Operation"]
 logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
-    "cmd": "Command or list of commands to run.",
+    "cmd": "Command or list of command arguments to run.",
+    "echo_output": "Toggle display of output to terminal.",
+    "output_var": "Variable name in which output is stored.",
+    "ignore_error_code": "Toggle check for error code returned by shell operation.",
     "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
 }
 
@@ -23,6 +26,7 @@ class Context(BaseContext):
     cmd: Union[List[str], str]
     echo_output: bool = True
     output_var: Optional[str] = None
+    ignore_error_code: bool = False
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
 
@@ -55,7 +59,8 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
             stderr=subprocess.PIPE,
             universal_newlines=True,
         )
-        response.check_returncode()
+        if not context.ignore_error_code:
+            response.check_returncode()
 
         if context.echo_output:
             logger.info(response.stdout)

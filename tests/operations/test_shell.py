@@ -1,5 +1,8 @@
+from subprocess import CalledProcessError
 from typing import Any, Dict
 from unittest.mock import Mock, call, patch
+
+import pytest
 
 from qwikstart.operations import shell
 
@@ -21,6 +24,13 @@ class TestShellOperation:
     def test_output_saved_to_variable(self, mock_logger: Mock) -> None:
         output = self.shell({"cmd": "echo hello", "output_var": "greeting"})
         assert output == {"greeting": "hello\n"}
+
+    def test_error_raised_for_non_zero_return_code(self, mock_logger: Mock) -> None:
+        with pytest.raises(CalledProcessError):
+            self.shell({"cmd": "exit 1"})
+
+    def test_error_ignored_for_non_zero_return_code(self, mock_logger: Mock) -> None:
+        self.shell({"cmd": "exit 1", "ignore_error_code": True})
 
     def test_list_command(self, mock_logger: Mock) -> None:
         self.shell({"cmd": ["echo", "hello"]})
