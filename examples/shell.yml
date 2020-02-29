@@ -1,0 +1,4 @@
+steps:
+    "Execute ls command":
+        name: shell
+        cmd: "ls"
