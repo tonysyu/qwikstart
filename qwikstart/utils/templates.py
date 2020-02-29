@@ -35,7 +35,9 @@ class TemplateRenderer:
         source_dir: Optional[Path] = None,
     ):
         self._env = jinja2.Environment(
-            loader=template_loader, undefined=jinja2.StrictUndefined
+            loader=template_loader,
+            undefined=jinja2.StrictUndefined,
+            extensions=["jinja2_time.TimeExtension"],
         )
         self.template_variables = template_variables or {}
         self.template_variable_prefix = (

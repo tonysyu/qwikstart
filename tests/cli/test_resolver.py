@@ -42,10 +42,21 @@ class TestGetRepoLoader:
 
     def test_git_loader(self) -> None:
         repo_url = "http://example.com"
-        with patch.object(resolver, "GitRepoLoader") as loader_class:
+        with patch.object(resolver.repository, "GitRepoLoader") as loader_class:
             loader = resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
         assert loader is loader_class.return_value
         loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
+
+    def test_detached_loader(self) -> None:
+        with patch.object(resolver.repository, "DetachedRepoLoader") as loader_class:
+            loader = resolver.get_repo_loader(FAKE_PATH_STR, detached=True)
+        assert loader is loader_class.return_value
+        loader_class.assert_called_once_with(FAKE_PATH_STR)
+
+    def test_error_when_specifying_both_repo_and_detached(self) -> None:
+        repo_url = "http://example.com"
+        with pytest.raises(UserFacingError):
+            resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url, detached=True)
 
 
 @contextmanager
