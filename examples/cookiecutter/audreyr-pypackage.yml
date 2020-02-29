@@ -39,6 +39,10 @@ steps:
                 - "Apache Software License 2.0"
                 - "GNU General Public License v3"
                 - "Not open source"
+    "Set target directory to project_slug":
+        name: define_context
+        context_defs:
+            target_dir: "{{ qwikstart.project_slug }}"
     "Create new project":
         name: add_file_tree
         template_variable_prefix: "cookiecutter"
