@@ -62,7 +62,10 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
                 logger.error(f"{self.description}: {FAILURE_MARK}")
             raise
         else:
-            if self.description and getattr(context, "display_step_description", True):
+            display_step_description = getattr(
+                context, "display_step_description", True
+            ) and self.local_context.get("display_step_description", True)
+            if self.description and display_step_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
         return {**original_context, **output_dict}

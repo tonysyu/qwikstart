@@ -9,6 +9,7 @@ from . import (
     insert_text,
     prompt,
     search_and_replace,
+    shell,
 )
 from .base import BaseOperation, GenericOperation
 
@@ -25,4 +26,5 @@ __all__ = [
     "insert_text",
     "prompt",
     "search_and_replace",
+    "shell",
 ]

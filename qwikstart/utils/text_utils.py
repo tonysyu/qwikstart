@@ -19,3 +19,7 @@ def strip_empty_lines(text: Optional[str]) -> str:
 
 def index_of_non_empty_line(lines_of_text: Iterable[str]) -> int:
     return first(i for i, line in enumerate(lines_of_text) if len(line.strip()) > 0)
+
+
+def noop(text: str) -> str:
+    return text
