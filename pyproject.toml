@@ -37,7 +37,6 @@ jinja2 = "^2.10"
 click = "^7.0"
 # The dataclasses module is not in the stdlib in Python 3.6
 dataclasses = { version = "^0.7", python = "~3.6" }
-pyyaml = "^5.1"
 binaryornot = "^0.4.4"
 colorlog = "^4.0.2"
 termcolor = "^1.1.0"
@@ -46,6 +45,7 @@ prompt-toolkit = "^3.0.3"
 pygments = "^2.5.2"
 jinja2-time = "^0.2.0"
 requests = "^2.23.0"
+"ruamel.yaml" = "^0.16.10"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "*"

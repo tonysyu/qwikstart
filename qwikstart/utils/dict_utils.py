@@ -3,20 +3,30 @@ from typing import Any, Dict, Mapping, Tuple, cast
 
 
 def merge_nested_dicts(
-    default: Mapping[str, Any], overwrite: Mapping[str, Any]
+    default: Mapping[str, Any], overwrite: Mapping[str, Any], inplace: bool = False
 ) -> Dict[str, Any]:
     """Return new dictionary from the combination of `default` and `overwrite`.
 
     Dict values that are dictionaries themselves will be updated, whilst preserving
     existing keys.
 
+    Args:
+        default: Dictionary containing default values
+        overwrite: Dictionary containing values that will overwrite default values.
+        inplace: If True, the `default` dictionary will be modified in-place. Otherwise,
+            a new dictionary will be returned.
+
     Adapted from `cookiecutter.config.merge_configs`.
     """
-    new_dict: Dict[str, Any] = copy.deepcopy(cast(Dict[str, Any], default))
+    # FIXME: Require Dict instead of Mapping for `default` to remove casting op:
+    default = cast(Dict[str, Any], default)
+    new_dict = default if inplace else copy.deepcopy(default)
 
     for k, v in overwrite.items():
         merge_needed = isinstance(v, dict) and k in default
-        new_dict[k] = merge_nested_dicts(default[k], v) if merge_needed else v
+        new_dict[k] = (
+            merge_nested_dicts(default[k], v, inplace=inplace) if merge_needed else v
+        )
 
     return new_dict
 

@@ -1,8 +1,9 @@
+import textwrap
 from typing import Any, Dict
 
 import pytest
 
-from qwikstart.utils import dict_utils
+from qwikstart.utils import dict_utils, io
 
 
 class TestGetNestedDictValue:
@@ -59,6 +60,29 @@ class TestMergeNestedDicts:
             {"nested_dict": {"a": 1}}, {"nested_dict": {"b": 2}}
         )
         assert merged_dict == {"nested_dict": {"a": 1, "b": 2}}
+
+    def test_inplace_modification_preserves_ruamel_comments(self) -> None:
+        # ruamel.yaml uses a special dict class to preserve comments. Ensure that
+        # inplace modification preserves comments from original dictionary.
+        data = io.load_yaml_string(
+            textwrap.dedent(
+                """
+            parent:
+                # First child
+                child1: Emily
+            """
+            )
+        )
+        new_child = {"parent": {"child2": "Austin"}}
+        merged_dict = dict_utils.merge_nested_dicts(data, new_child, inplace=True)
+        assert io.dump_yaml_string(merged_dict) == textwrap.dedent(
+            """\
+            parent:
+                # First child
+                child1: Emily
+                child2: Austin
+            """
+        )
 
 
 class TestRemapDict:
