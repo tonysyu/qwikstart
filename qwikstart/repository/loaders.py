@@ -2,7 +2,7 @@ import abc
 from pathlib import Path
 from typing import Any, Dict
 
-import yaml
+from ruamel.yaml import YAMLError
 
 from ..exceptions import RepoLoaderError
 from ..utils import http, io
@@ -36,7 +36,7 @@ class LocalRepoLoader(BaseRepoLoader):
     def task_spec(self) -> Dict[str, Any]:
         try:
             return io.load_yaml_file(self._spec_path)
-        except yaml.YAMLError as error:
+        except YAMLError as error:
             raise RepoLoaderError(f"Cannot load {self._spec_path!r}") from error
 
     @property

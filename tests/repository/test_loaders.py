@@ -5,11 +5,11 @@ from typing import Any, Dict, Iterator, Optional, Union
 from unittest.mock import Mock, patch
 
 import pytest
-import yaml
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import loaders
+from qwikstart.utils.io import dump_yaml_string
 
 TEST_URL = "https://github.com/user/repo"
 DETACHED_TASK_SPEC = {"source": {"url": TEST_URL}}
@@ -66,7 +66,8 @@ class TestDetachedRepoLoader:
 
     def test_task_spec_from_url(self) -> None:
         task_spec_url = "https://example.com/qwikstart.yml"
-        with patch_detached_repo_loader_deps(yaml.dump(DETACHED_TASK_SPEC)) as mocks:
+        task_spec = dump_yaml_string(DETACHED_TASK_SPEC)
+        with patch_detached_repo_loader_deps(task_spec) as mocks:
             loader = loaders.DetachedRepoLoader(task_spec_url)
 
         assert loader.task_spec == DETACHED_TASK_SPEC
