@@ -1,4 +1,5 @@
 import json
+import textwrap
 from pathlib import Path
 from typing import Any, Dict, cast
 
@@ -41,3 +42,15 @@ class TestEditJsonFS(TestCase):
     def test_overwrite(self) -> None:
         self.initialize_json({"mutable": 1})
         assert self.edit_json_and_return_parsed({"mutable": 2}) == {"mutable": 2}
+
+    def test_pretty_printing(self) -> None:
+        self.initialize_json({"one": 1})
+        self.edit_json_and_return_parsed({"two": 2})
+
+        assert helpers.read_file_path(self.file_path) == textwrap.dedent(
+            """\
+            {
+                "one": 1,
+                "two": 2
+            }"""
+        )

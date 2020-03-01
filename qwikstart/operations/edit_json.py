@@ -20,6 +20,7 @@ CONTEXT_HELP = {
 class Context(BaseContext):
     file_path: Path
     merge_data: Dict[str, Any]
+    indent: int = 4
 
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
@@ -39,4 +40,4 @@ class Operation(BaseOperation[Context, None]):
         data = merge_nested_dicts(data, context.merge_data)
 
         with file_path.open("w") as f:
-            json.dump(data, f)
+            json.dump(data, f, indent=context.indent)
