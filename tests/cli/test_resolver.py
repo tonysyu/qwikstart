@@ -7,7 +7,6 @@ import pytest
 
 from qwikstart.cli import resolver
 from qwikstart.exceptions import RepoLoaderError, UserFacingError
-from qwikstart.repository import LocalRepoLoader
 
 FAKE_PATH_STR = "/path/to/fake.yml"
 FAKE_PATH = Path(FAKE_PATH_STR)
@@ -37,8 +36,9 @@ class TestResolveTask:
 
 class TestGetRepoLoader:
     def test_local_loader(self) -> None:
-        loader = resolver.get_repo_loader(FAKE_PATH_STR)
-        assert isinstance(loader, LocalRepoLoader)
+        with patch.object(resolver.repository, "LocalRepoLoader") as loader_class:
+            resolver.get_repo_loader(FAKE_PATH_STR)
+        loader_class.assert_called_once_with(FAKE_PATH_STR)
 
     def test_git_loader(self) -> None:
         repo_url = "http://example.com"

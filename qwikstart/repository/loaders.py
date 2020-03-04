@@ -1,6 +1,6 @@
 import abc
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 from ruamel.yaml import YAMLError
 
@@ -22,25 +22,6 @@ class BaseRepoLoader(abc.ABC):
     @abc.abstractmethod
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
-
-
-class LocalRepoLoader(BaseRepoLoader):
-    """Loader for qwikstart task repos stored on the local filesystem."""
-
-    def __init__(self, path: str):
-        self._spec_path = _resolve_task_spec_path(path)
-
-    @property
-    def task_spec(self) -> Dict[str, Any]:
-        try:
-            return io.load_yaml_file(self._spec_path)
-        except YAMLError as error:
-            raise RepoLoaderError(f"Cannot load {self._spec_path!r}") from error
-
-    @property
-    def repo_path(self) -> Path:
-        """Return local path to qwikstart repo."""
-        return self._spec_path.parent
 
 
 class GitRepoLoader(BaseRepoLoader):
@@ -68,14 +49,18 @@ class DetachedRepoLoader(BaseRepoLoader):
 
     def __init__(self, url_or_path: str = ""):
         if http.is_url(url_or_path):
-            url_contents = http.read_from_url(url_or_path)
             self._repo_path = None
-            self._task_spec = io.load_yaml_string(url_contents)
+            spec_contents = http.read_from_url(url_or_path)
         else:
             local_path = _resolve_task_spec_path(url_or_path)
             # This repo path may get overwritten if task spec defines `source.url`
             self._repo_path = local_path.parent
-            self._task_spec = io.load_yaml_file(local_path)
+            spec_contents = io.read_file_contents(local_path)
+
+        try:
+            self._task_spec = io.load_yaml_string(spec_contents)
+        except YAMLError:
+            raise RepoLoaderError(f"Could not parse yaml from {url_or_path}")
 
         source = self._task_spec.get("source", {})
         git_url = source.get("url")
@@ -96,7 +81,8 @@ class DetachedRepoLoader(BaseRepoLoader):
     @property
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
-        return self._repo_path
+        # Cast to avoid type error, even though `None` is excluded in __init__.
+        return cast(Path, self._repo_path)
 
 
 def _resolve_task_spec_path(path_string: str) -> Path:
@@ -107,3 +93,8 @@ def _resolve_task_spec_path(path_string: str) -> Path:
     """
     spec_path = Path(path_string).resolve()
     return spec_path / QWIKSTART_TASK_SPEC_FILE if spec_path.is_dir() else spec_path
+
+
+# FIXME: Remove LocalRepoLoader alias used temporarily for testing
+class LocalRepoLoader(DetachedRepoLoader):
+    pass
