@@ -1,6 +1,6 @@
 import abc
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 from ruamel.yaml import YAMLError
 
@@ -24,33 +24,12 @@ class BaseRepoLoader(abc.ABC):
         """Return local path to qwikstart repo."""
 
 
-class LocalRepoLoader(BaseRepoLoader):
-    """Loader for qwikstart task repos stored on the local filesystem."""
-
-    def __init__(self, path: str):
-        self._spec_path = Path(path).resolve()
-        if self._spec_path.is_dir():
-            self._spec_path = self._spec_path / QWIKSTART_TASK_SPEC_FILE
-
-    @property
-    def task_spec(self) -> Dict[str, Any]:
-        try:
-            return io.load_yaml_file(self._spec_path)
-        except YAMLError as error:
-            raise RepoLoaderError(f"Cannot load {self._spec_path!r}") from error
-
-    @property
-    def repo_path(self) -> Path:
-        """Return local path to qwikstart repo."""
-        return self._spec_path.parent
-
-
 class GitRepoLoader(BaseRepoLoader):
     """Loader for qwikstart task repos stored in git repos."""
 
     def __init__(self, git_url: str, path: str = ""):
         local_path = git.sync_git_repo_locally(git_url) / path
-        self._local_loader = LocalRepoLoader(str(local_path))
+        self._local_loader = RepoLoader(str(local_path))
 
     @property
     def task_spec(self) -> Dict[str, Any]:
@@ -62,29 +41,38 @@ class GitRepoLoader(BaseRepoLoader):
         return self._local_loader.repo_path
 
 
-class DetachedRepoLoader(BaseRepoLoader):
-    """Loader for qwikstart task spec that is detached from the qwikstart repo.
+class RepoLoader(BaseRepoLoader):
+    """Loader for qwikstart task spec.
 
     The task spec must specify a source url for the location of the qwikstart repo.
     """
 
     def __init__(self, url_or_path: str = ""):
         if http.is_url(url_or_path):
-            url_contents = http.read_from_url(url_or_path)
-            self._task_spec = io.load_yaml_string(url_contents)
+            self._repo_path = None
+            spec_contents = http.read_from_url(url_or_path)
         else:
-            path = Path(url_or_path)
-            self._task_spec = io.load_yaml_file(path)
+            local_path = _resolve_task_spec_path(url_or_path)
+            # This repo path may get overwritten if task spec defines `source.url`
+            self._repo_path = local_path.parent
+            spec_contents = io.read_file_contents(local_path)
+
+        try:
+            self._task_spec = io.load_yaml_string(spec_contents)
+        except YAMLError:
+            raise RepoLoaderError(f"Could not parse yaml from {url_or_path}")
 
         source = self._task_spec.get("source", {})
         git_url = source.get("url")
-        if not git_url:
-            raise RepoLoaderError(
-                f"Task defined by {url_or_path} must define `source.url`"
-            )
+        if git_url:
+            local_git_repo = git.sync_git_repo_locally(git_url)
+            self._repo_path = local_git_repo / source.get("path", "")
 
-        local_path = git.sync_git_repo_locally(git_url) / source.get("path", "")
-        self._local_loader = LocalRepoLoader(str(local_path))
+        if self._repo_path is None:
+            raise RepoLoaderError(
+                "Qwikstart repository not valid. This can happen when:\n"
+                "- Given a url to a qwikstart file that does not define `source.url`\n"
+            )
 
     @property
     def task_spec(self) -> Dict[str, Any]:
@@ -93,4 +81,15 @@ class DetachedRepoLoader(BaseRepoLoader):
     @property
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
-        return self._local_loader.repo_path
+        # Cast to avoid type error, even though `None` is excluded in __init__.
+        return cast(Path, self._repo_path)
+
+
+def _resolve_task_spec_path(path_string: str) -> Path:
+    """Return Path to task spec from string path.
+
+    Note that the input path can be either the yaml file containing the task spec data
+    or a directory that contains a file with the name `qwikstart.yml`.
+    """
+    spec_path = Path(path_string).resolve()
+    return spec_path / QWIKSTART_TASK_SPEC_FILE if spec_path.is_dir() else spec_path

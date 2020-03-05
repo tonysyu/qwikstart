@@ -6,11 +6,9 @@ from ..parser import parse_task
 from ..tasks import Task
 
 
-def resolve_task(
-    task_path: str, repo_url: Optional[str] = None, detached: bool = False
-) -> Task:
+def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
     try:
-        loader = get_repo_loader(task_path, repo_url, detached)
+        loader = get_repo_loader(task_path, repo_url)
     except RepoLoaderError as error:
         raise UserFacingError(str(error)) from error
 
@@ -20,12 +18,8 @@ def resolve_task(
 
 
 def get_repo_loader(
-    task_path: str, repo_url: Optional[str] = None, detached: bool = False
+    task_path: str, repo_url: Optional[str] = None
 ) -> repository.BaseRepoLoader:
-    if detached:
-        if repo_url is not None:
-            raise UserFacingError("Cannot used both `--detached` and `--repo` options")
-        return repository.DetachedRepoLoader(task_path)
     if repo_url is not None:
         return repository.GitRepoLoader(repo_url, task_path)
-    return repository.LocalRepoLoader(task_path)
+    return repository.RepoLoader(task_path)

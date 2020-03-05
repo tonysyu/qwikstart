@@ -7,7 +7,6 @@ import pytest
 
 from qwikstart.cli import resolver
 from qwikstart.exceptions import RepoLoaderError, UserFacingError
-from qwikstart.repository import LocalRepoLoader
 
 FAKE_PATH_STR = "/path/to/fake.yml"
 FAKE_PATH = Path(FAKE_PATH_STR)
@@ -36,9 +35,10 @@ class TestResolveTask:
 
 
 class TestGetRepoLoader:
-    def test_local_loader(self) -> None:
-        loader = resolver.get_repo_loader(FAKE_PATH_STR)
-        assert isinstance(loader, LocalRepoLoader)
+    def test_loader_for_local_path(self) -> None:
+        with patch.object(resolver.repository, "RepoLoader") as loader_class:
+            resolver.get_repo_loader(FAKE_PATH_STR)
+        loader_class.assert_called_once_with(FAKE_PATH_STR)
 
     def test_git_loader(self) -> None:
         repo_url = "http://example.com"
@@ -46,17 +46,6 @@ class TestGetRepoLoader:
             loader = resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
         assert loader is loader_class.return_value
         loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
-
-    def test_detached_loader(self) -> None:
-        with patch.object(resolver.repository, "DetachedRepoLoader") as loader_class:
-            loader = resolver.get_repo_loader(FAKE_PATH_STR, detached=True)
-        assert loader is loader_class.return_value
-        loader_class.assert_called_once_with(FAKE_PATH_STR)
-
-    def test_error_when_specifying_both_repo_and_detached(self) -> None:
-        repo_url = "http://example.com"
-        with pytest.raises(UserFacingError):
-            resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url, detached=True)
 
 
 @contextmanager

@@ -12,6 +12,11 @@ _yaml = YAML()
 _yaml.indent(mapping=4, sequence=6, offset=4)
 
 
+def read_file_contents(file_path: Path) -> str:
+    with file_path.open() as f:
+        return f.read()
+
+
 def load_yaml_file(file_path: Path) -> Dict[str, Any]:
     with file_path.open() as f:
         return cast(Dict[str, Any], _yaml.load(f))

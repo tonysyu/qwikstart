@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Union
+from typing import Any, Dict, Iterator, Optional
 from unittest.mock import Mock, patch
 
 import pytest
@@ -9,36 +9,35 @@ from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.exceptions import RepoLoaderError
 from qwikstart.repository import loaders
-from qwikstart.utils.io import dump_yaml_string
+from qwikstart.utils import io
 
 TEST_URL = "https://github.com/user/repo"
 DETACHED_TASK_SPEC = {"source": {"url": TEST_URL}}
 TASK_SPEC_PATH = "/fake/local/path/qwikstart.yml"
 
 
-class TestLocalRepoLoader(TestCase):
+class TestRepoLoaderFS(TestCase):
     def setUp(self) -> None:
         self.setUpPyfakefs()
 
     def test_resolve_file(self) -> None:
         self.fs.create_file("/path/to/file.yml", contents='{"a": 1}')
-        loader = loaders.LocalRepoLoader("/path/to/file.yml")
+        loader = loaders.RepoLoader("/path/to/file.yml")
         assert loader.task_spec == {"a": 1}
 
     def test_resolve_directory(self) -> None:
         self.fs.create_file("/path/containing/qwikstart.yml", contents='{"a": 1}')
-        loader = loaders.LocalRepoLoader("/path/containing/")
+        loader = loaders.RepoLoader("/path/containing/")
         assert loader.task_spec == {"a": 1}
 
     def test_unknown_file_type(self) -> None:
         self.fs.create_file("/path/to/file.txt", contents="this: is: invalid")
-        loader = loaders.LocalRepoLoader("/path/to/file.txt")
         with pytest.raises(RepoLoaderError):
-            loader.task_spec
+            loaders.RepoLoader("/path/to/file.txt")
 
     def test_repo_path_defaults_to_spec_path_parent(self) -> None:
-        self.fs.create_file("/path/to/file.txt")
-        loader = loaders.LocalRepoLoader("/path/to/file.txt")
+        self.fs.create_file("/path/to/file.txt", contents="{}")
+        loader = loaders.RepoLoader("/path/to/file.txt")
         assert loader.repo_path == Path("/path/to")
 
 
@@ -54,44 +53,44 @@ class TestGitRepoLoader:
         assert loader.repo_path == mocks.repo_path
 
 
-class TestDetachedRepoLoader:
+class TestRepoLoaderWithSourceUrl:
     def test_task_spec_from_local_path(self) -> None:
-        with patch_detached_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
-            loader = loaders.DetachedRepoLoader(TASK_SPEC_PATH)
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
+            loader = loaders.RepoLoader(TASK_SPEC_PATH)
 
         assert loader.task_spec == DETACHED_TASK_SPEC
         mocks.read_from_url.assert_not_called()
-        mocks.load_yaml_file.assert_called_once_with(Path(TASK_SPEC_PATH))
+        mocks.read_file.assert_called_once_with(Path(TASK_SPEC_PATH))
         mocks.sync_git_repo.assert_called_once_with(TEST_URL)
 
     def test_task_spec_from_url(self) -> None:
         task_spec_url = "https://example.com/qwikstart.yml"
-        task_spec = dump_yaml_string(DETACHED_TASK_SPEC)
-        with patch_detached_repo_loader_deps(task_spec) as mocks:
-            loader = loaders.DetachedRepoLoader(task_spec_url)
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
+            loader = loaders.RepoLoader(task_spec_url)
 
         assert loader.task_spec == DETACHED_TASK_SPEC
         mocks.read_from_url.assert_called_once_with(task_spec_url)
-        mocks.load_yaml_file.assert_not_called()
+        mocks.read_file.assert_not_called()
         mocks.sync_git_repo.assert_called_once_with(TEST_URL)
 
-    def test_task_spec_without_source_url(self) -> None:
-        with patch_detached_repo_loader_deps({}) as mocks:
+    def test_remote_task_spec_without_source_url(self) -> None:
+        task_spec_url = "https://example.com/qwikstart.yml"
+        with patch_repo_loader_deps({}) as mocks:
             with pytest.raises(RepoLoaderError):
-                loaders.DetachedRepoLoader(TASK_SPEC_PATH)
+                loaders.RepoLoader(task_spec_url)
         mocks.sync_git_repo.assert_not_called()
 
     def test_repo_path(self) -> None:
         repo_path = Path("/path/to/repo")
-        with patch_detached_repo_loader_deps(DETACHED_TASK_SPEC, repo_path=repo_path):
-            loader = loaders.DetachedRepoLoader(TASK_SPEC_PATH)
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC, repo_path=repo_path):
+            loader = loaders.RepoLoader(TASK_SPEC_PATH)
         assert loader.repo_path == repo_path
 
 
 @dataclass(frozen=True)
 class MockGitRepoLoaderDependencies:
     repo_path: Path
-    local_loader: Mock
+    loader: Mock
     sync_git_repo: Mock
 
 
@@ -102,38 +101,35 @@ def patch_git_repo_loader_dependencies(
     mock_loader = Mock(repo_path=repo_path, task_spec=task_spec)
 
     mock_sync = Mock(return_value=repo_path)
-    with patch.object(loaders, "LocalRepoLoader", return_value=mock_loader):
+    with patch.object(loaders, "RepoLoader", return_value=mock_loader):
         with patch.object(loaders.git, "sync_git_repo_locally", new=mock_sync):
             yield MockGitRepoLoaderDependencies(
-                repo_path=repo_path, local_loader=mock_loader, sync_git_repo=mock_sync
+                repo_path=repo_path, loader=mock_loader, sync_git_repo=mock_sync
             )
 
 
 @dataclass(frozen=True)
-class MockDetachedRepoLoaderDependencies:
+class MockRepoLoaderDependencies:
     repo_path: Path
-    local_loader: Mock
-    load_yaml_file: Mock
+    read_file: Mock
     read_from_url: Mock
     sync_git_repo: Mock
 
 
 @contextmanager
-def patch_detached_repo_loader_deps(
-    task_spec: Union[str, Dict[str, Any]], repo_path: Path = Path("/path/to/repo")
-) -> Iterator[MockDetachedRepoLoaderDependencies]:
-    mock_loader = Mock(repo_path=repo_path, task_spec=task_spec)
-    mock_sync = Mock(return_value=repo_path)
-    mock_load_yaml = Mock(return_value=task_spec)
-    mock_read_url = Mock(return_value=task_spec)
-    with patch.object(loaders.io, "load_yaml_file", new=mock_load_yaml):
-        with patch.object(loaders, "LocalRepoLoader", return_value=mock_loader):
-            with patch.object(loaders.http, "read_from_url", new=mock_read_url):
-                with patch.object(loaders.git, "sync_git_repo_locally", new=mock_sync):
-                    yield MockDetachedRepoLoaderDependencies(
-                        repo_path=repo_path,
-                        local_loader=mock_loader,
-                        load_yaml_file=mock_load_yaml,
-                        read_from_url=mock_read_url,
-                        sync_git_repo=mock_sync,
-                    )
+def patch_repo_loader_deps(
+    task_spec: Dict[str, Any], repo_path: Path = Path("/path/to/repo")
+) -> Iterator[MockRepoLoaderDependencies]:
+    task_spec_yaml_string = io.dump_yaml_string(task_spec)
+    sync = Mock(return_value=repo_path)
+    read_url = Mock(return_value=task_spec_yaml_string)
+    read_file = Mock(return_value=task_spec_yaml_string)
+    with patch.object(loaders.io, "read_file_contents", new=read_file):
+        with patch.object(loaders.http, "read_from_url", new=read_url):
+            with patch.object(loaders.git, "sync_git_repo_locally", new=sync):
+                yield MockRepoLoaderDependencies(
+                    repo_path=repo_path,
+                    read_file=read_file,
+                    read_from_url=read_url,
+                    sync_git_repo=sync,
+                )

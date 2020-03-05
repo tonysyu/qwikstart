@@ -22,7 +22,9 @@ qwikstart: Code generator for fun and profit
 Install
 =======
 
-The recommended way of installing `qwikstart` is to use pipx_::
+The recommended way of installing `qwikstart` is to use pipx_:
+
+.. code-block:: bash
 
     pipx install qwikstart
 
@@ -40,11 +42,15 @@ Either move the code from `~/.bash_profile` to `~/.profile` or
 Basic Usage
 ===========
 
-After installing `qwikstart`, you can run a simple hello-world example using the following::
+After installing `qwikstart`, you can run a simple hello-world example using the following:
+
+.. code-block:: bash
 
     qwikstart run --repo https://github.com/tonysyu/qwikstart examples/hello_world.yml
 
-By default, there are abbreviations for common git repos, so the above can also be written::
+By default, there are abbreviations for common git repos, so the above can also be written:
+
+.. code-block:: bash
 
     qwikstart run --repo gh:tonysyu/qwikstart examples/hello_world.yml
 
