@@ -8,6 +8,7 @@ Contents
    :maxdepth: 2
 
    readme
+   qwikstart_definitions
    configuration
    developer_guide
    api/modules
