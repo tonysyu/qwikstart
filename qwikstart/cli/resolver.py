@@ -25,7 +25,7 @@ def get_repo_loader(
     if detached:
         if repo_url is not None:
             raise UserFacingError("Cannot used both `--detached` and `--repo` options")
-        return repository.DetachedRepoLoader(task_path)
+        return repository.RepoLoader(task_path)
     if repo_url is not None:
         return repository.GitRepoLoader(repo_url, task_path)
     return repository.LocalRepoLoader(task_path)

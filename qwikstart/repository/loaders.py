@@ -41,7 +41,7 @@ class GitRepoLoader(BaseRepoLoader):
         return self._local_loader.repo_path
 
 
-class DetachedRepoLoader(BaseRepoLoader):
+class RepoLoader(BaseRepoLoader):
     """Loader for qwikstart task spec that is detached from the qwikstart repo.
 
     The task spec must specify a source url for the location of the qwikstart repo.
@@ -96,5 +96,5 @@ def _resolve_task_spec_path(path_string: str) -> Path:
 
 
 # FIXME: Remove LocalRepoLoader alias used temporarily for testing
-class LocalRepoLoader(DetachedRepoLoader):
+class LocalRepoLoader(RepoLoader):
     pass

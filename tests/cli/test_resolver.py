@@ -48,7 +48,7 @@ class TestGetRepoLoader:
         loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
 
     def test_detached_loader(self) -> None:
-        with patch.object(resolver.repository, "DetachedRepoLoader") as loader_class:
+        with patch.object(resolver.repository, "RepoLoader") as loader_class:
             loader = resolver.get_repo_loader(FAKE_PATH_STR, detached=True)
         assert loader is loader_class.return_value
         loader_class.assert_called_once_with(FAKE_PATH_STR)
