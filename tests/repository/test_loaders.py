@@ -16,28 +16,28 @@ DETACHED_TASK_SPEC = {"source": {"url": TEST_URL}}
 TASK_SPEC_PATH = "/fake/local/path/qwikstart.yml"
 
 
-class TestLocalRepoLoader(TestCase):
+class TestRepoLoaderFS(TestCase):
     def setUp(self) -> None:
         self.setUpPyfakefs()
 
     def test_resolve_file(self) -> None:
         self.fs.create_file("/path/to/file.yml", contents='{"a": 1}')
-        loader = loaders.LocalRepoLoader("/path/to/file.yml")
+        loader = loaders.RepoLoader("/path/to/file.yml")
         assert loader.task_spec == {"a": 1}
 
     def test_resolve_directory(self) -> None:
         self.fs.create_file("/path/containing/qwikstart.yml", contents='{"a": 1}')
-        loader = loaders.LocalRepoLoader("/path/containing/")
+        loader = loaders.RepoLoader("/path/containing/")
         assert loader.task_spec == {"a": 1}
 
     def test_unknown_file_type(self) -> None:
         self.fs.create_file("/path/to/file.txt", contents="this: is: invalid")
         with pytest.raises(RepoLoaderError):
-            loaders.LocalRepoLoader("/path/to/file.txt")
+            loaders.RepoLoader("/path/to/file.txt")
 
     def test_repo_path_defaults_to_spec_path_parent(self) -> None:
         self.fs.create_file("/path/to/file.txt", contents="{}")
-        loader = loaders.LocalRepoLoader("/path/to/file.txt")
+        loader = loaders.RepoLoader("/path/to/file.txt")
         assert loader.repo_path == Path("/path/to")
 
 
@@ -53,9 +53,9 @@ class TestGitRepoLoader:
         assert loader.repo_path == mocks.repo_path
 
 
-class TestRepoLoader:
+class TestRepoLoaderWithSourceUrl:
     def test_task_spec_from_local_path(self) -> None:
-        with patch_detached_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
             loader = loaders.RepoLoader(TASK_SPEC_PATH)
 
         assert loader.task_spec == DETACHED_TASK_SPEC
@@ -65,7 +65,7 @@ class TestRepoLoader:
 
     def test_task_spec_from_url(self) -> None:
         task_spec_url = "https://example.com/qwikstart.yml"
-        with patch_detached_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC) as mocks:
             loader = loaders.RepoLoader(task_spec_url)
 
         assert loader.task_spec == DETACHED_TASK_SPEC
@@ -75,14 +75,14 @@ class TestRepoLoader:
 
     def test_remote_task_spec_without_source_url(self) -> None:
         task_spec_url = "https://example.com/qwikstart.yml"
-        with patch_detached_repo_loader_deps({}) as mocks:
+        with patch_repo_loader_deps({}) as mocks:
             with pytest.raises(RepoLoaderError):
                 loaders.RepoLoader(task_spec_url)
         mocks.sync_git_repo.assert_not_called()
 
     def test_repo_path(self) -> None:
         repo_path = Path("/path/to/repo")
-        with patch_detached_repo_loader_deps(DETACHED_TASK_SPEC, repo_path=repo_path):
+        with patch_repo_loader_deps(DETACHED_TASK_SPEC, repo_path=repo_path):
             loader = loaders.RepoLoader(TASK_SPEC_PATH)
         assert loader.repo_path == repo_path
 
@@ -90,7 +90,7 @@ class TestRepoLoader:
 @dataclass(frozen=True)
 class MockGitRepoLoaderDependencies:
     repo_path: Path
-    local_loader: Mock
+    loader: Mock
     sync_git_repo: Mock
 
 
@@ -101,10 +101,10 @@ def patch_git_repo_loader_dependencies(
     mock_loader = Mock(repo_path=repo_path, task_spec=task_spec)
 
     mock_sync = Mock(return_value=repo_path)
-    with patch.object(loaders, "LocalRepoLoader", return_value=mock_loader):
+    with patch.object(loaders, "RepoLoader", return_value=mock_loader):
         with patch.object(loaders.git, "sync_git_repo_locally", new=mock_sync):
             yield MockGitRepoLoaderDependencies(
-                repo_path=repo_path, local_loader=mock_loader, sync_git_repo=mock_sync
+                repo_path=repo_path, loader=mock_loader, sync_git_repo=mock_sync
             )
 
 
@@ -117,7 +117,7 @@ class MockRepoLoaderDependencies:
 
 
 @contextmanager
-def patch_detached_repo_loader_deps(
+def patch_repo_loader_deps(
     task_spec: Dict[str, Any], repo_path: Path = Path("/path/to/repo")
 ) -> Iterator[MockRepoLoaderDependencies]:
     task_spec_yaml_string = io.dump_yaml_string(task_spec)

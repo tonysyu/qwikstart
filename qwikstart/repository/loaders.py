@@ -29,7 +29,7 @@ class GitRepoLoader(BaseRepoLoader):
 
     def __init__(self, git_url: str, path: str = ""):
         local_path = git.sync_git_repo_locally(git_url) / path
-        self._local_loader = LocalRepoLoader(str(local_path))
+        self._local_loader = RepoLoader(str(local_path))
 
     @property
     def task_spec(self) -> Dict[str, Any]:
@@ -42,7 +42,7 @@ class GitRepoLoader(BaseRepoLoader):
 
 
 class RepoLoader(BaseRepoLoader):
-    """Loader for qwikstart task spec that is detached from the qwikstart repo.
+    """Loader for qwikstart task spec.
 
     The task spec must specify a source url for the location of the qwikstart repo.
     """
@@ -93,8 +93,3 @@ def _resolve_task_spec_path(path_string: str) -> Path:
     """
     spec_path = Path(path_string).resolve()
     return spec_path / QWIKSTART_TASK_SPEC_FILE if spec_path.is_dir() else spec_path
-
-
-# FIXME: Remove LocalRepoLoader alias used temporarily for testing
-class LocalRepoLoader(RepoLoader):
-    pass
