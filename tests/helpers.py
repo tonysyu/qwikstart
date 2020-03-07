@@ -60,7 +60,7 @@ class FakeOperation(base.BaseOperation[ContextWithDict, DictContext]):
     data passed to the `run` method.
     """
 
-    name: str = "fake-operation"
+    name: str = "fake_op"
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

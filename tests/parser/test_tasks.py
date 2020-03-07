@@ -31,10 +31,7 @@ class TestParseTask:
     @patch.object(tasks, "logger")
     def test_deprecation_logged_for_operations(self, logger: Mock) -> None:
         tasks.parse_task({"operations": {"insert_text": {}}})
-        logger.info.assert_called_once_with(
-            "Note that `operations` in task specification is deprecated. "
-            "Use `steps` instead."
-        )
+        logger.info.assert_called_once_with(tasks.OPERATIONS_DEPRECATION_WARNING)
 
     def test_steps(self) -> None:
         task_spec: TaskSpec = {"steps": {"Step 1": {"name": "insert_text"}}}

@@ -1,4 +1,5 @@
 import collections
+import logging
 from typing import Any, Dict, NamedTuple, Optional, Type, cast
 
 from .. import utils
@@ -8,6 +9,7 @@ from ..repository import OperationSpec
 
 __all__ = ["OperationDefinition", "parse_operation"]
 
+logger = logging.getLogger(__name__)
 OperationMapping = Dict[str, Type[GenericOperation]]
 RESERVED_WORDS_OPERATION_CONFIG = {
     "config",
@@ -16,6 +18,12 @@ RESERVED_WORDS_OPERATION_CONFIG = {
     "local_context",
     "output_mapping",
 }
+
+
+MAPPING_DEPRECATION_WARNING = (
+    "`{0}` as a top-level config in task specifications is deprecated and will be "
+    "removed in v0.8. Use `config.{0}` instead."
+)
 
 
 def get_operations_mapping() -> OperationMapping:
@@ -54,8 +62,10 @@ class OperationDefinition(NamedTuple):
         output_mapping = self.config.get("output_mapping")
         config = OperationConfig(**self.config.get("config", {}))
         if input_mapping:
+            logger.info(MAPPING_DEPRECATION_WARNING.format("input_mapping"))
             config.input_mapping = input_mapping
         if output_mapping:
+            logger.info(MAPPING_DEPRECATION_WARNING.format("output_mapping"))
             config.output_mapping = output_mapping
 
         local_context = self.config.get("local_context", {})
