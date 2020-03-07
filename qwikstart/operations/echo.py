@@ -36,7 +36,6 @@ class Context(BaseContext):
     message: str
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
-    display_step_description: bool = False
     highlight: str = ""
 
     @classmethod
@@ -48,6 +47,7 @@ class Operation(BaseOperation[Context, None]):
     """Operation to echo a message to the console."""
 
     name: str = "echo"
+    default_config = {"display_step_description": False}
 
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)

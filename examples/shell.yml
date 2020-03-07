@@ -9,7 +9,8 @@ steps:
             "version_file": "template_variables.version_file"
     "Display result":
         name: shell
-        display_step_description: false
+        config:
+            display_step_description: false
         cmd:
             - "echo"
             - "Version info can be found in {{ qwikstart.version_file }}"

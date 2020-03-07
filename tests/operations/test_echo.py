@@ -5,7 +5,7 @@ from pygments.formatters import TerminalFormatter
 from pygments.lexers import PythonLexer
 from termcolor import colored
 
-from qwikstart.operations import echo
+from qwikstart.operations import OperationConfig, echo
 
 from .. import helpers
 
@@ -47,6 +47,15 @@ class TestEchoOperation:
         mock_logger.warning.assert_called_once_with(
             "No highlighter found for 'unknown-language'"
         )
+
+    def test_description_not_displayed_by_default(self) -> None:
+        echo_op = echo.Operation()
+        assert echo_op.config.display_step_description is False
+
+    def test_configure_display_step_description(self) -> None:
+        config = OperationConfig(display_step_description=True)
+        echo_op = echo.Operation(config=config)
+        assert echo_op.config.display_step_description is True
 
     def echo(
         self,

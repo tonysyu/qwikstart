@@ -23,6 +23,9 @@ FAILURE_MARK = "\N{HEAVY BALLOT X}"
 class OperationConfig:
     input_mapping: ContextMapping = field(default_factory=dict)
     output_mapping: ContextMapping = field(default_factory=dict)
+    #: Toggle display of step/operation description during execution.
+    #: The default is not True to differentiate user selections from defaults.
+    display_step_description: Optional[bool] = None
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -30,6 +33,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
 
     name: str
     aliases: Optional[List[str]] = None
+    default_config: Dict[str, Any] = {}
 
     def __init__(
         self,
@@ -38,8 +42,12 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         description: str = "",
     ):
         self.local_context = local_context or {}
-        self.config = config or OperationConfig()
         self.description = description
+        self.config = config or OperationConfig()
+        for key, value in self.default_config.items():
+            # Note that this relies on the defaults for OperationConfig being falsey:
+            if not getattr(self.config, key):
+                setattr(self.config, key, value)
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
@@ -67,10 +75,10 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
                 logger.error(f"{self.description}: {FAILURE_MARK}")
             raise
         else:
-            display_step_description = getattr(
-                context, "display_step_description", True
-            ) and self.local_context.get("display_step_description", True)
-            if self.description and display_step_description:
+            # Display if `display_step_description` is None, which is the default value.
+            # The default is not True to differentiate user selections from defaults.
+            display_description = self.config.display_step_description in (True, None)
+            if self.description and display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
         return {**original_context, **output_dict}

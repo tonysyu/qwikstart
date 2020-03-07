@@ -48,7 +48,6 @@ class Context(BaseContext):
     introduction: str = DEFAULT_INTRO
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
-    display_step_description: bool = False
 
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
@@ -74,6 +73,7 @@ class Operation(BaseOperation[Context, Output]):
 
     name = "prompt"
     aliases = ["prompt_user"]
+    default_config = {"display_step_description": False}
 
     def run(self, context: Context) -> Output:
 
