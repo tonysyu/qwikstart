@@ -2,12 +2,14 @@ import io
 import os
 import stat
 from contextlib import contextmanager
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from textwrap import dedent
-from typing import Any, Iterator
+from typing import Any, Dict, Iterator, Optional
 from unittest.mock import Mock
 
-from qwikstart.base_context import ExecutionContext
+from qwikstart.base_context import BaseContext, DictContext, ExecutionContext
+from qwikstart.operations import base
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 TEMPLATES_DIR = os.path.join(HERE, "templates")
@@ -44,3 +46,26 @@ def filemode(filename: Path) -> int:
     """Return a file's mode as an octal that should match the input to `os.chmod`."""
     file_stat = os.stat(str(filename))
     return stat.S_IMODE(file_stat.st_mode)
+
+
+@dataclass(frozen=True)
+class ContextWithDict(BaseContext):
+    template_variables: Dict[str, Any] = field(default_factory=dict)
+
+
+class FakeOperation(base.BaseOperation[ContextWithDict, DictContext]):
+    """Fake operation used for testing.
+
+    This operation has a special `run_context` used for verifying the context
+    data passed to the `run` method.
+    """
+
+    name: str = "fake-operation"
+
+    def __init__(self, **kwargs: Any) -> None:
+        super().__init__(**kwargs)
+        self.run_context: Optional[ContextWithDict] = None
+
+    def run(self, context: ContextWithDict) -> DictContext:
+        self.run_context = context
+        return asdict(context)
