@@ -14,11 +14,12 @@ from . import (
     search_and_replace,
     shell,
 )
-from .base import BaseOperation, GenericOperation
+from .base import BaseOperation, GenericOperation, OperationConfig
 
 __all__ = [
     "BaseOperation",
     "GenericOperation",
+    "OperationConfig",
     "add_file",
     "add_file_tree",
     "append_text",

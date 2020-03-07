@@ -11,23 +11,21 @@ from qwikstart.tasks import Task
 
 class TestParseTask:
     def test_operation_list(self) -> None:
-        input_mapping = {"line_number": "line"}
         task_spec: TaskSpec = {
-            "operations": [{"insert_text": {"input_mapping": input_mapping}}]
+            "operations": [{"insert_text": {"description": "Test operation"}}]
         }
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY},
-            operations=[insert_text.Operation(input_mapping=input_mapping)],
+            operations=[insert_text.Operation(description="Test operation")],
         )
 
     def test_operation_dict(self) -> None:
-        input_mapping = {"line_number": "line"}
         task_spec: TaskSpec = {
-            "operations": {"insert_text": {"input_mapping": input_mapping}}
+            "operations": {"insert_text": {"description": "Test operation"}}
         }
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY},
-            operations=[insert_text.Operation(input_mapping=input_mapping)],
+            operations=[insert_text.Operation(description="Test operation")],
         )
 
     @patch.object(tasks, "logger")
@@ -39,13 +37,8 @@ class TestParseTask:
         )
 
     def test_steps(self) -> None:
-        input_mapping = {"line_number": "line"}
-        task_spec: TaskSpec = {
-            "steps": {"Step 1": {"name": "insert_text", "input_mapping": input_mapping}}
-        }
-        expected_operation = insert_text.Operation(
-            description="Step 1", input_mapping=input_mapping
-        )
+        task_spec: TaskSpec = {"steps": {"Step 1": {"name": "insert_text"}}}
+        expected_operation = insert_text.Operation(description="Step 1")
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY}, operations=[expected_operation]
         )

@@ -5,7 +5,6 @@ import re
 import textwrap
 from dataclasses import dataclass, field
 from fnmatch import fnmatch
-from pathlib import Path
 from typing import Callable, Dict, Iterable, List, Optional, cast
 
 from ..base_context import BaseContext
@@ -33,7 +32,7 @@ CONTEXT_HELP = {
 @dataclass(frozen=True)
 class Context(BaseContext):
     regex: str = ""
-    directory: str = None
+    directory: str = "."
     output_name: str = "matching_files"
     path_filter: Optional[str] = None
     regex_flags: List[str] = field(default_factory=list)
@@ -51,10 +50,9 @@ class Operation(BaseOperation[Context, Dict[str, List[str]]]):
     def run(self, context: Context) -> Dict[str, List[str]]:
         regex_flags = create_regex_flags(context.regex_flags)
         regex = re.compile(context.regex, flags=regex_flags) if context.regex else None
-        root_directory = context.directory or "."
 
         matching_files = []
-        for filename in iter_path(root_directory, context.path_filter):
+        for filename in iter_path(context.directory, context.path_filter):
             if regex:
                 try:
                     with open(filename) as f:

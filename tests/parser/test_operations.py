@@ -46,10 +46,9 @@ class TestGetOperationsMapping:
 
 class TestParseOperationFromStep:
     def test_success(self) -> None:
-        input_mapping = {"line_number": "line"}
-        op_def = {"name": "insert_text", "input_mapping": input_mapping}
+        op_def = {"name": "insert_text", "description": "Test operation"}
         op = operations.parse_operation_from_step(op_def)
-        assert op == insert_text.Operation(input_mapping=input_mapping)
+        assert op == insert_text.Operation(description="Test operation")
 
     def test_custom_operation_mapping(self) -> None:
         mock_operation = Mock()
@@ -75,10 +74,9 @@ class TestParseOperation:
         )
 
     def test_dict_definition(self) -> None:
-        input_mapping = {"line_number": "line"}
-        op_def: OperationSpec = {"insert_text": {"input_mapping": input_mapping}}
+        op_def: OperationSpec = {"insert_text": {"description": "Test operation"}}
         assert operations.parse_operation(op_def) == insert_text.Operation(
-            input_mapping=input_mapping
+            description="Test operation"
         )
 
     def test_tuple_definition(self) -> None:

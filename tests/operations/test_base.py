@@ -60,14 +60,18 @@ class TestOperationHavingContextWithDict(TestCase):
         assert output["template_variables"] == template_variables
 
     def test_input_mapping(self) -> None:
-        operation = FakeOperation(input_mapping={"vars": "template_variables"})
+        config = base.OperationConfig(input_mapping={"vars": "template_variables"})
+        operation = FakeOperation(config=config)
         output = operation.execute(
             {"execution_context": self.execution_context, "vars": {"some": "value"}}
         )
         assert output["template_variables"] == {"some": "value"}
 
     def test_output_mapping(self) -> None:
-        operation = FakeOperation(output_mapping={"template_variables": "output_vars"})
+        config = base.OperationConfig(
+            output_mapping={"template_variables": "output_vars"}
+        )
+        operation = FakeOperation(config=config)
         output = operation.execute(
             {
                 "execution_context": self.execution_context,
@@ -99,8 +103,12 @@ class TestOperationHavingContextWithDict(TestCase):
         assert output["template_variables"] == {"a": 1, "b": 2}
 
     def test_repr(self) -> None:
-        operation = FakeOperation()
-        args = "local_context={}, input_mapping={}, output_mapping={}"
+        operation = FakeOperation(description="Test Op")
+        args = (
+            "local_context={}, "
+            f"config={base.OperationConfig()}, "
+            "description=Test Op"
+        )
         assert repr(operation) == f"tests.operations.test_base.FakeOperation({args})"
 
     @patch.object(base, "logger")

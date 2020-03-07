@@ -3,17 +3,18 @@ from typing import Any, Dict, NamedTuple, Optional, Type, cast
 
 from .. import utils
 from ..exceptions import TaskParserError
-from ..operations import BaseOperation, GenericOperation
+from ..operations import BaseOperation, GenericOperation, OperationConfig
 from ..repository import OperationSpec
 
 __all__ = ["OperationDefinition", "parse_operation"]
 
 OperationMapping = Dict[str, Type[GenericOperation]]
 RESERVED_WORDS_OPERATION_CONFIG = {
-    "local_context",
-    "input_mapping",
-    "output_mapping",
+    "config",
     "description",
+    "input_mapping",
+    "local_context",
+    "output_mapping",
 }
 
 
@@ -47,10 +48,17 @@ class OperationDefinition(NamedTuple):
         Any configuration that is not a reserved word will be added to the
         `local_context` passed to the operation initializer.
         """
-        local_context = self.config.get("local_context", {})
+        description = self.config.get("description", "")
+
         input_mapping = self.config.get("input_mapping")
         output_mapping = self.config.get("output_mapping")
-        description = self.config.get("description", "")
+        config = OperationConfig(**self.config.get("config", {}))
+        if input_mapping:
+            config.input_mapping = input_mapping
+        if output_mapping:
+            config.output_mapping = output_mapping
+
+        local_context = self.config.get("local_context", {})
         local_context.update(
             {
                 key: value
@@ -60,8 +68,7 @@ class OperationDefinition(NamedTuple):
         )
         return {
             "local_context": local_context,
-            "input_mapping": input_mapping,
-            "output_mapping": output_mapping,
+            "config": config,
             "description": description,
         }
 

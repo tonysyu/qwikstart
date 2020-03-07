@@ -1,21 +1,28 @@
 import abc
 import logging
+from dataclasses import dataclass, field
 from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
 
-__all__ = ["BaseOperation", "GenericOperation"]
+__all__ = ["BaseOperation", "GenericOperation", "OperationConfig"]
 
 logger = logging.getLogger(__name__)
 
 ContextData = Optional[Mapping[str, Any]]
-ContextMapping = Optional[Mapping[str, str]]
+ContextMapping = Mapping[str, str]
 TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
 
 SUCCESS_MARK = "\N{HEAVY CHECK MARK}"
 FAILURE_MARK = "\N{HEAVY BALLOT X}"
+
+
+@dataclass
+class OperationConfig:
+    input_mapping: ContextMapping = field(default_factory=dict)
+    output_mapping: ContextMapping = field(default_factory=dict)
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -27,13 +34,11 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def __init__(
         self,
         local_context: ContextData = None,
-        input_mapping: ContextMapping = None,
-        output_mapping: ContextMapping = None,
+        config: Optional[OperationConfig] = None,
         description: str = "",
     ):
         self.local_context = local_context or {}
-        self.input_mapping = input_mapping or {}
-        self.output_mapping = output_mapping or {}
+        self.config = config or OperationConfig()
         self.description = description
 
     @abc.abstractmethod
@@ -42,7 +47,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
 
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
-        context_dict = utils.remap_dict(context_dict, self.input_mapping)
+        context_dict = utils.remap_dict(context_dict, self.config.input_mapping)
         merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
         return context_class.from_dict(merged_dict)
 
@@ -51,7 +56,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
             return {}
 
         # If output is not `None`, then it should be a dict; tell mypy.
-        return utils.remap_dict(cast(DictContext, output), self.output_mapping)
+        return utils.remap_dict(cast(DictContext, output), self.config.output_mapping)
 
     def execute(self, original_context: DictContext) -> Dict[str, Any]:
         context = self.pre_run(original_context)
@@ -73,16 +78,15 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def __repr__(self) -> str:
         return (
             utils.full_class_name(self) + f"(local_context={self.local_context}, "
-            f"input_mapping={self.input_mapping}, "
-            f"output_mapping={self.output_mapping})"
+            f"config={self.config}, description={self.description})"
         )
 
     def __eq__(self, other: Any) -> bool:
         return (
             other.__class__ is self.__class__
             and other.local_context == self.local_context
-            and other.input_mapping == self.input_mapping
-            and other.output_mapping == self.output_mapping
+            and other.config == self.config
+            and other.description == self.description
         )
 
     @classmethod
