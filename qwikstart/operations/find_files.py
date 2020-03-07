@@ -1,8 +1,9 @@
+import functools
 import logging
 import os
 import re
 import textwrap
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Callable, Dict, List, Optional, cast
@@ -35,6 +36,7 @@ class Context(BaseContext):
     directory: Optional[Path] = None
     output_name: str = "matching_files"
     path_filter: Optional[str] = None
+    regex_flags: List[str] = field(default_factory=list)
 
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
@@ -47,7 +49,8 @@ class Operation(BaseOperation[Context, Dict[str, List[str]]]):
     name: str = "find_files"
 
     def run(self, context: Context) -> Dict[str, List[str]]:
-        regex = re.compile(context.regex)
+        regex_flags = create_regex_flags(context.regex_flags)
+        regex = re.compile(context.regex, flags=regex_flags)
         root_directory = context.directory or "."
         path_filter = create_path_filter(context.path_filter)
 
@@ -82,3 +85,10 @@ def create_path_filter(path_filter_string: Optional[str]) -> Callable[[str], boo
             return fnmatch(path, cast(str, path_filter_string))
 
     return path_filter
+
+
+def create_regex_flags(flag_strings: List[str]) -> re.RegexFlag:
+    default = re.RegexFlag(0)
+    flags = (getattr(re, name, default) for name in flag_strings)
+    # FIXME: This line complains about returning Any but still fails when casting.
+    return functools.reduce(lambda x, y: x | y, flags, default)  # type: ignore
