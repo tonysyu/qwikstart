@@ -59,6 +59,11 @@ class TestFindFilesFS(TestCase):
         self.fs.create_file("file.md", contents="match")
         assert self.find_files("match", path_filter="*.md") == ["./file.md"]
 
+    def test_search_with_only_path_filter(self) -> None:
+        self.fs.create_file("file.txt")
+        self.fs.create_file("file.md")
+        assert self.find_files(path_filter="*.md") == ["./file.md"]
+
     def test_multiple_file_matches(self) -> None:
         self.fs.create_file("match1.txt", contents="hi")
         self.fs.create_file("match2.txt", contents="hello")
@@ -72,7 +77,7 @@ class TestFindFilesFS(TestCase):
         logger.debug("Failed to read file /restricted_file.txt")
 
     def find_files(
-        self, regex: str, output_name: str = "matching_files", **kwargs: Any
+        self, regex: str = "", output_name: str = "matching_files", **kwargs: Any
     ) -> Any:
         context = {
             "execution_context": helpers.get_execution_context(),

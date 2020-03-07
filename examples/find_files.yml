@@ -1,0 +1,14 @@
+steps:
+    "Find example files using shell operation":
+        name: find_files
+        path_filter: "*examples/*.yml"
+        regex: "name: shell"
+        output_mapping:
+            "matching_files": "template_variables.matching_files"
+    "List matching files":
+        name: echo
+        message: |
+            The following examples use the shell operation:
+            {% for path in qwikstart.matching_files %}
+                - {{ path }}
+            {%- endfor %}
