@@ -33,21 +33,21 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
 
     name: str
     aliases: Optional[List[str]] = None
-    default_config: Dict[str, Any] = {}
+    default_opconfig: Dict[str, Any] = {}
 
     def __init__(
         self,
         local_context: ContextData = None,
-        config: Optional[OperationConfig] = None,
+        opconfig: Optional[OperationConfig] = None,
         description: str = "",
     ):
         self.local_context = local_context or {}
         self.description = description
-        self.config = config or OperationConfig()
-        for key, value in self.default_config.items():
+        self.opconfig = opconfig or OperationConfig()
+        for key, value in self.default_opconfig.items():
             # Note that this relies on the defaults for OperationConfig being falsey:
-            if not getattr(self.config, key):
-                setattr(self.config, key, value)
+            if not getattr(self.opconfig, key):
+                setattr(self.opconfig, key, value)
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
@@ -55,7 +55,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
 
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
-        context_dict = utils.remap_dict(context_dict, self.config.input_mapping)
+        context_dict = utils.remap_dict(context_dict, self.opconfig.input_mapping)
         merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
         return context_class.from_dict(merged_dict)
 
@@ -64,7 +64,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
             return {}
 
         # If output is not `None`, then it should be a dict; tell mypy.
-        return utils.remap_dict(cast(DictContext, output), self.config.output_mapping)
+        return utils.remap_dict(cast(DictContext, output), self.opconfig.output_mapping)
 
     def execute(self, original_context: DictContext) -> Dict[str, Any]:
         context = self.pre_run(original_context)
@@ -77,7 +77,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         else:
             # Display if `display_step_description` is None, which is the default value.
             # The default is not True to differentiate user selections from defaults.
-            display_description = self.config.display_step_description in (True, None)
+            display_description = self.opconfig.display_step_description in (True, None)
             if self.description and display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
@@ -86,14 +86,14 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def __repr__(self) -> str:
         return (
             utils.full_class_name(self) + f"(local_context={self.local_context}, "
-            f"config={self.config}, description={self.description})"
+            f"opconfig={self.opconfig}, description={self.description})"
         )
 
     def __eq__(self, other: Any) -> bool:
         return (
             other.__class__ is self.__class__
             and other.local_context == self.local_context
-            and other.config == self.config
+            and other.opconfig == self.opconfig
             and other.description == self.description
         )
 

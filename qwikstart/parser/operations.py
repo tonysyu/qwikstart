@@ -12,7 +12,7 @@ __all__ = ["OperationDefinition", "parse_operation"]
 logger = logging.getLogger(__name__)
 OperationMapping = Dict[str, Type[GenericOperation]]
 RESERVED_WORDS_OPERATION_CONFIG = {
-    "config",
+    "opconfig",
     "description",
     "input_mapping",
     "local_context",
@@ -22,7 +22,7 @@ RESERVED_WORDS_OPERATION_CONFIG = {
 
 MAPPING_DEPRECATION_WARNING = (
     "`{0}` as a top-level config in task specifications is deprecated and will be "
-    "removed in v0.8. Use `config.{0}` instead."
+    "removed in v0.8. Use `opconfig.{0}` instead."
 )
 
 
@@ -60,13 +60,13 @@ class OperationDefinition(NamedTuple):
 
         input_mapping = self.config.get("input_mapping")
         output_mapping = self.config.get("output_mapping")
-        config = OperationConfig(**self.config.get("config", {}))
+        opconfig = OperationConfig(**self.config.get("opconfig", {}))
         if input_mapping:
             logger.info(MAPPING_DEPRECATION_WARNING.format("input_mapping"))
-            config.input_mapping = input_mapping
+            opconfig.input_mapping = input_mapping
         if output_mapping:
             logger.info(MAPPING_DEPRECATION_WARNING.format("output_mapping"))
-            config.output_mapping = output_mapping
+            opconfig.output_mapping = output_mapping
 
         local_context = self.config.get("local_context", {})
         local_context.update(
@@ -78,7 +78,7 @@ class OperationDefinition(NamedTuple):
         )
         return {
             "local_context": local_context,
-            "config": config,
+            "opconfig": opconfig,
             "description": description,
         }
 

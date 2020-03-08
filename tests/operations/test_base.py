@@ -41,18 +41,18 @@ class TestOperationHavingContextWithDict(TestCase):
         assert output["template_variables"] == template_variables
 
     def test_input_mapping(self) -> None:
-        config = base.OperationConfig(input_mapping={"vars": "template_variables"})
-        operation = helpers.FakeOperation(config=config)
+        opconfig = base.OperationConfig(input_mapping={"vars": "template_variables"})
+        operation = helpers.FakeOperation(opconfig=opconfig)
         output = operation.execute(
             {"execution_context": self.execution_context, "vars": {"some": "value"}}
         )
         assert output["template_variables"] == {"some": "value"}
 
     def test_output_mapping(self) -> None:
-        config = base.OperationConfig(
+        opconfig = base.OperationConfig(
             output_mapping={"template_variables": "output_vars"}
         )
-        operation = helpers.FakeOperation(config=config)
+        operation = helpers.FakeOperation(opconfig=opconfig)
         output = operation.execute(
             {
                 "execution_context": self.execution_context,
@@ -89,7 +89,7 @@ class TestOperationHavingContextWithDict(TestCase):
         operation = helpers.FakeOperation(description="Test Op")
         args = (
             "local_context={}, "
-            f"config={base.OperationConfig()}, "
+            f"opconfig={base.OperationConfig()}, "
             "description=Test Op"
         )
         assert repr(operation) == f"tests.helpers.FakeOperation({args})"

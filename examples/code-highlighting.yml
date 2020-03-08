@@ -2,7 +2,7 @@ steps:
     "Display python":
         name: echo
         highlight: "python"
-        config:
+        opconfig:
             display_step_description: true
         message: |
             def greetings():
@@ -10,7 +10,7 @@ steps:
     "Display javascript":
         name: echo
         highlight: "javascript"
-        config:
+        opconfig:
             display_step_description: true
         message: |
             function greetings() {
@@ -19,7 +19,7 @@ steps:
     "Display html":
         name: echo
         highlight: "javascript"
-        config:
+        opconfig:
             display_step_description: true
         message: |
             <html>
@@ -30,7 +30,7 @@ steps:
     "Display css":
         name: echo
         highlight: "css"
-        config:
+        opconfig:
             display_step_description: true
         message: |
             p {

@@ -70,21 +70,21 @@ class TestParseOperationFromStep:
     @patch.object(operations, "logger")
     def test_config_input_mapping_does_not_log(self, logger: Mock) -> None:
         config_dict = {"input_mapping": {"name": "template_variables.name"}}
-        op_def = {"name": "fake_op", "description": "Test", "config": config_dict}
+        op_def = {"name": "fake_op", "description": "Test", "opconfig": config_dict}
         op = operations.parse_operation_from_step(op_def)
 
-        config = OperationConfig(input_mapping={"name": "template_variables.name"})
-        assert op == helpers.FakeOperation(description="Test", config=config)
+        opconfig = OperationConfig(input_mapping={"name": "template_variables.name"})
+        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
         logger.info.assert_not_called()
 
     @patch.object(operations, "logger")
     def test_config_output_mapping_does_not_log(self, logger: Mock) -> None:
         config_dict = {"output_mapping": {"template_variables.name": "name"}}
-        op_def = {"name": "fake_op", "description": "Test", "config": config_dict}
+        op_def = {"name": "fake_op", "description": "Test", "opconfig": config_dict}
         op = operations.parse_operation_from_step(op_def)
 
-        config = OperationConfig(output_mapping={"template_variables.name": "name"})
-        assert op == helpers.FakeOperation(description="Test", config=config)
+        opconfig = OperationConfig(output_mapping={"template_variables.name": "name"})
+        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
         logger.info.assert_not_called()
 
     @patch.object(operations, "logger")
@@ -93,8 +93,8 @@ class TestParseOperationFromStep:
         op_def = {"name": "fake_op", "description": "Test", "input_mapping": mapping}
         op = operations.parse_operation_from_step(op_def)
 
-        config = OperationConfig(input_mapping=mapping)
-        assert op == helpers.FakeOperation(description="Test", config=config)
+        opconfig = OperationConfig(input_mapping=mapping)
+        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
         logger.info.assert_called_once_with(
             operations.MAPPING_DEPRECATION_WARNING.format("input_mapping")
         )
@@ -105,8 +105,8 @@ class TestParseOperationFromStep:
         op_def = {"name": "fake_op", "description": "Test", "output_mapping": mapping}
         op = operations.parse_operation_from_step(op_def)
 
-        config = OperationConfig(output_mapping=mapping)
-        assert op == helpers.FakeOperation(description="Test", config=config)
+        opconfig = OperationConfig(output_mapping=mapping)
+        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
         logger.info.assert_called_once_with(
             operations.MAPPING_DEPRECATION_WARNING.format("output_mapping")
         )

@@ -47,7 +47,7 @@ class Operation(BaseOperation[Context, None]):
     """Operation to echo a message to the console."""
 
     name: str = "echo"
-    default_config = {"display_step_description": False}
+    default_opconfig = {"display_step_description": False}
 
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)

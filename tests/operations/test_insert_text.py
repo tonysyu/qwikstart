@@ -84,7 +84,7 @@ class TestInsertText:
             ),
         }
         assert insert_text_and_return_file_text(
-            context, config=OperationConfig(input_mapping={"line_number": "line"})
+            context, opconfig=OperationConfig(input_mapping={"line_number": "line"})
         ) == dedent(
             """
                 A
