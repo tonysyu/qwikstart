@@ -2,14 +2,16 @@ steps:
     "Display python":
         name: echo
         highlight: "python"
-        display_step_description: true
+        opconfig:
+            display_description: true
         message: |
             def greetings():
                 print("Hello world!")
     "Display javascript":
         name: echo
         highlight: "javascript"
-        display_step_description: true
+        opconfig:
+            display_description: true
         message: |
             function greetings() {
                 alert("Hello world!");
@@ -17,7 +19,8 @@ steps:
     "Display html":
         name: echo
         highlight: "javascript"
-        display_step_description: true
+        opconfig:
+            display_description: true
         message: |
             <html>
                 <body>
@@ -27,7 +30,8 @@ steps:
     "Display css":
         name: echo
         highlight: "css"
-        display_step_description: true
+        opconfig:
+            display_description: true
         message: |
             p {
               font-family: verdana;

@@ -6,7 +6,7 @@ from typing import Any
 from pyfakefs.fake_filesystem_unittest import TestCase
 
 from qwikstart.base_context import DictContext
-from qwikstart.operations import insert_text
+from qwikstart.operations import OperationConfig, insert_text
 
 from .. import helpers
 
@@ -83,9 +83,8 @@ class TestInsertText:
                 """
             ),
         }
-        input_mapping = {"line_number": "line"}
         assert insert_text_and_return_file_text(
-            context, input_mapping=input_mapping
+            context, opconfig=OperationConfig(input_mapping={"line_number": "line"})
         ) == dedent(
             """
                 A

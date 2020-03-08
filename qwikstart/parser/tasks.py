@@ -13,6 +13,10 @@ from .operations import (
 )
 
 logger = logging.getLogger(__name__)
+OPERATIONS_DEPRECATION_WARNING = (
+    "Note that `operations` in task specification is deprecated and will be "
+    "removed in v0.8. Use `steps` instead."
+)
 
 
 def parse_task(task_spec: TaskSpec, source_path: Optional[Path] = None) -> Task:
@@ -34,10 +38,7 @@ def parse_task(task_spec: TaskSpec, source_path: Optional[Path] = None) -> Task:
             for op_desc, op_def in task_spec["steps"].items()
         ]
     elif task_spec.get("operations"):
-        logger.info(
-            "Note that `operations` in task specification is deprecated. "
-            "Use `steps` instead."
-        )
+        logger.info(OPERATIONS_DEPRECATION_WARNING)
         operations = [
             parse_operation(op_def, known_operations)
             for op_def in normalize_operations_list(task_spec["operations"])

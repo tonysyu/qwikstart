@@ -28,7 +28,6 @@ class Context(BaseContext):
     context_defs: Dict[str, Any]
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
-    display_step_description: bool = False
 
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
@@ -39,6 +38,7 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
     """Operation to context variables to the operation context."""
 
     name: str = "define_context"
+    default_opconfig = {"display_description": False}
 
     def run(self, context: Context) -> Dict[str, Any]:
         renderer = TemplateRenderer.from_context(context)
