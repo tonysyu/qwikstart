@@ -3,7 +3,7 @@ steps:
         name: echo
         highlight: "python"
         opconfig:
-            display_step_description: true
+            display_description: true
         message: |
             def greetings():
                 print("Hello world!")
@@ -11,7 +11,7 @@ steps:
         name: echo
         highlight: "javascript"
         opconfig:
-            display_step_description: true
+            display_description: true
         message: |
             function greetings() {
                 alert("Hello world!");
@@ -20,7 +20,7 @@ steps:
         name: echo
         highlight: "javascript"
         opconfig:
-            display_step_description: true
+            display_description: true
         message: |
             <html>
                 <body>
@@ -31,7 +31,7 @@ steps:
         name: echo
         highlight: "css"
         opconfig:
-            display_step_description: true
+            display_description: true
         message: |
             p {
               font-family: verdana;

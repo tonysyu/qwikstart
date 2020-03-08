@@ -73,7 +73,7 @@ class Operation(BaseOperation[Context, Output]):
 
     name = "prompt"
     aliases = ["prompt_user"]
-    default_opconfig = {"display_step_description": False}
+    default_opconfig = {"display_description": False}
 
     def run(self, context: Context) -> Output:
 

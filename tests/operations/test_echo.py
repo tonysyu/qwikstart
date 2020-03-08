@@ -50,12 +50,12 @@ class TestEchoOperation:
 
     def test_description_not_displayed_by_default(self) -> None:
         echo_op = echo.Operation()
-        assert echo_op.opconfig.display_step_description is False
+        assert echo_op.opconfig.display_description is False
 
-    def test_configure_display_step_description(self) -> None:
-        opconfig = OperationConfig(display_step_description=True)
+    def test_configure_display_description(self) -> None:
+        opconfig = OperationConfig(display_description=True)
         echo_op = echo.Operation(opconfig=opconfig)
-        assert echo_op.opconfig.display_step_description is True
+        assert echo_op.opconfig.display_description is True
 
     def echo(
         self,

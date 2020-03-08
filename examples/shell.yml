@@ -10,7 +10,7 @@ steps:
     "Display result":
         name: shell
         opconfig:
-            display_step_description: false
+            display_description: false
         cmd:
             - "echo"
             - "Version info can be found in {{ qwikstart.version_file }}"

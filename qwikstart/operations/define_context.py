@@ -38,7 +38,7 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
     """Operation to context variables to the operation context."""
 
     name: str = "define_context"
-    default_opconfig = {"display_step_description": False}
+    default_opconfig = {"display_description": False}
 
     def run(self, context: Context) -> Dict[str, Any]:
         renderer = TemplateRenderer.from_context(context)

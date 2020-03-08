@@ -25,7 +25,7 @@ class OperationConfig:
     output_mapping: ContextMapping = field(default_factory=dict)
     #: Toggle display of step/operation description during execution.
     #: The default is not True to differentiate user selections from defaults.
-    display_step_description: Optional[bool] = None
+    display_description: Optional[bool] = None
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -75,9 +75,9 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
                 logger.error(f"{self.description}: {FAILURE_MARK}")
             raise
         else:
-            # Display if `display_step_description` is None, which is the default value.
+            # Display if `display_description` is None, which is the default value.
             # The default is not True to differentiate user selections from defaults.
-            display_description = self.opconfig.display_step_description in (True, None)
+            display_description = self.opconfig.display_description in (True, None)
             if self.description and display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
