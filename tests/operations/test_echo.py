@@ -5,7 +5,7 @@ from pygments.formatters import TerminalFormatter
 from pygments.lexers import PythonLexer
 from termcolor import colored
 
-from qwikstart.operations import OperationConfig, echo
+from qwikstart.operations import echo
 
 from .. import helpers
 
@@ -53,8 +53,7 @@ class TestEchoOperation:
         assert echo_op.opconfig.display_description is False
 
     def test_configure_display_description(self) -> None:
-        opconfig = OperationConfig(display_description=True)
-        echo_op = echo.Operation(opconfig=opconfig)
+        echo_op = echo.Operation(opconfig={"display_description": True})
         assert echo_op.opconfig.display_description is True
 
     def echo(

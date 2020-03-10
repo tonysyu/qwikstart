@@ -1,7 +1,19 @@
 import abc
 import logging
+from collections import ChainMap
 from dataclasses import dataclass
-from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, Union, cast
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
@@ -14,38 +26,10 @@ ContextData = Optional[Mapping[str, Any]]
 ContextMapping = Mapping[str, str]
 TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
+TOperationConfig = TypeVar("TOperationConfig", bound="OperationConfig")
 
 SUCCESS_MARK = "\N{HEAVY CHECK MARK}"
 FAILURE_MARK = "\N{HEAVY BALLOT X}"
-
-
-class _NOT_SPECIFIED_TYPE:
-    pass
-
-
-NOT_SPECIFIED = _NOT_SPECIFIED_TYPE()
-
-
-@dataclass
-class OperationConfig:
-    input_mapping: Union[ContextMapping, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
-    output_mapping: Union[ContextMapping, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
-    input_namespace: Union[str, None, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
-    output_namespace: Union[str, None, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
-    display_description: Union[bool, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
-
-    def update_unspecified_fields(self, **kwargs: Any) -> None:
-        """Update any fields having value `NOT_SPECIFIED` with values in `kwargs`.
-
-        Any fields with values other than `NOT_SPECIFIED` will not be altered. This
-        method is used to support multiple layers of defaults and customization.
-        """
-        # Use `self.__dict__` instead of `dataclasses.asdict`, which copies objects,
-        # so that `NOT_SPECIFIED` will no longer be identical.
-        for name, value in self.__dict__.items():
-            if value is NOT_SPECIFIED:
-                new_value = kwargs.get(name, DEFAULT_OPERATION_CONFIG[name])
-                setattr(self, name, new_value)
 
 
 DEFAULT_OPERATION_CONFIG: Dict[str, Any] = dict(
@@ -55,6 +39,34 @@ DEFAULT_OPERATION_CONFIG: Dict[str, Any] = dict(
     output_namespace=None,
     display_description=True,
 )
+
+
+@dataclass
+class OperationConfig:
+    input_mapping: Union[ContextMapping]
+    output_mapping: Union[ContextMapping]
+    input_namespace: Union[str, None]
+    output_namespace: Union[str, None]
+    display_description: Union[bool]
+
+    @classmethod
+    def create(cls: Type[TOperationConfig], **kwargs: Any) -> TOperationConfig:
+        return cls.from_config_dicts(kwargs)
+
+    @classmethod
+    def from_config_dicts(
+        cls: Type[TOperationConfig], *opconfig_dicts: Dict[str, Any]
+    ) -> TOperationConfig:
+        """Return OperationConfig from multiple opconfig dictionaries.
+
+        Note that values in the later dictionaries take precendence over earlier ones.
+        """
+        # Reverse the order so that later dictionary values take precedence. This
+        # ordering matches the behavior of `qwikstart.utils.merge_nested_dicts`.
+        ordered_dicts = list(reversed(opconfig_dicts))
+        ordered_dicts.append(DEFAULT_OPERATION_CONFIG)
+
+        return cls(**ChainMap(*ordered_dicts))
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -67,13 +79,14 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def __init__(
         self,
         local_context: ContextData = None,
-        opconfig: Optional[OperationConfig] = None,
+        opconfig: Optional[Dict[str, Any]] = None,
         description: str = "",
     ):
         self.local_context = local_context or {}
         self.description = description
-        self.opconfig = opconfig or OperationConfig()
-        self.opconfig.update_unspecified_fields(**self.default_opconfig)
+        self.opconfig = OperationConfig.from_config_dicts(
+            self.default_opconfig, opconfig or {}
+        )
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
