@@ -1,7 +1,7 @@
 import abc
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, cast
+from dataclasses import dataclass
+from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, Union, cast
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
@@ -19,13 +19,42 @@ SUCCESS_MARK = "\N{HEAVY CHECK MARK}"
 FAILURE_MARK = "\N{HEAVY BALLOT X}"
 
 
+class _NOT_SPECIFIED_TYPE:
+    pass
+
+
+NOT_SPECIFIED = _NOT_SPECIFIED_TYPE()
+
+
 @dataclass
 class OperationConfig:
-    input_mapping: ContextMapping = field(default_factory=dict)
-    output_mapping: ContextMapping = field(default_factory=dict)
-    #: Toggle display of step/operation description during execution.
-    #: The default is not True to differentiate user selections from defaults.
-    display_description: Optional[bool] = None
+    input_mapping: Union[ContextMapping, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
+    output_mapping: Union[ContextMapping, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
+    input_namespace: Union[str, None, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
+    output_namespace: Union[str, None, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
+    display_description: Union[bool, _NOT_SPECIFIED_TYPE] = NOT_SPECIFIED
+
+    def update_unspecified_fields(self, **kwargs: Any) -> None:
+        """Update any fields having value `NOT_SPECIFIED` with values in `kwargs`.
+
+        Any fields with values other than `NOT_SPECIFIED` will not be altered. This
+        method is used to support multiple layers of defaults and customization.
+        """
+        # Use `self.__dict__` instead of `dataclasses.asdict`, which copies objects,
+        # so that `NOT_SPECIFIED` will no longer be identical.
+        for name, value in self.__dict__.items():
+            if value is NOT_SPECIFIED:
+                new_value = kwargs.get(name, DEFAULT_OPERATION_CONFIG[name])
+                setattr(self, name, new_value)
+
+
+DEFAULT_OPERATION_CONFIG: Dict[str, Any] = dict(
+    input_mapping={},
+    output_mapping={},
+    input_namespace=None,
+    output_namespace=None,
+    display_description=True,
+)
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -44,10 +73,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         self.local_context = local_context or {}
         self.description = description
         self.opconfig = opconfig or OperationConfig()
-        for key, value in self.default_opconfig.items():
-            # Note that this relies on the defaults for OperationConfig being falsey:
-            if not getattr(self.opconfig, key):
-                setattr(self.opconfig, key, value)
+        self.opconfig.update_unspecified_fields(**self.default_opconfig)
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
@@ -56,6 +82,11 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
         context_dict = utils.remap_dict(context_dict, self.opconfig.input_mapping)
+        context_dict = (
+            context_dict
+            if self.opconfig.input_namespace is None
+            else context_dict[self.opconfig.input_namespace]
+        )
         merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
         return context_class.from_dict(merged_dict)
 
@@ -63,6 +94,11 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         if not output:
             return {}
 
+        output = (
+            output
+            if self.opconfig.output_namespace is None
+            else {self.opconfig.output_namespace: output}
+        )
         # If output is not `None`, then it should be a dict; tell mypy.
         return utils.remap_dict(cast(DictContext, output), self.opconfig.output_mapping)
 
@@ -75,13 +111,10 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
                 logger.error(f"{self.description}: {FAILURE_MARK}")
             raise
         else:
-            # Display if `display_description` is None, which is the default value.
-            # The default is not True to differentiate user selections from defaults.
-            display_description = self.opconfig.display_description in (True, None)
-            if self.description and display_description:
+            if self.description and self.opconfig.display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
-        return {**original_context, **output_dict}
+        return utils.merge_nested_dicts(original_context, output_dict, inplace=True)
 
     def __repr__(self) -> str:
         return (

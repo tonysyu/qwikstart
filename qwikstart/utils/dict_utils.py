@@ -23,7 +23,7 @@ def merge_nested_dicts(
     new_dict = default if inplace else copy.deepcopy(default)
 
     for k, v in overwrite.items():
-        merge_needed = isinstance(v, dict) and k in default
+        merge_needed = isinstance(v, dict) and isinstance(default.get(k), dict)
         new_dict[k] = (
             merge_nested_dicts(default[k], v, inplace=inplace) if merge_needed else v
         )

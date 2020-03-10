@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
 
 from ..base_context import BaseContext, DictContext, TContext
+from ..exceptions import OperationDefinitionError
 from ..utils.prompt import create_prompt_spec, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
@@ -31,20 +32,16 @@ CONTEXT_HELP = {
                       default: "Hello {{ qwikstart.name }}!"
         """
     ),
-    "output_name_dict": "Dictionary in context where input responses will be added.",
     "introduction": "Message to user before prompting for inputs.",
     "template_variable_prefix": TEMPLATE_VARIABLE_PREFIX_HELP,
 }
 
-# Output will be dict with single key, `Context.output_dict_name`, and dict
-# value w/ keys defined by `Context.prompts` mapping to user responses.
-Output = Dict[str, Dict[str, Any]]
+Output = Dict[str, Any]
 
 
 @dataclass(frozen=True)
 class Context(BaseContext):
     inputs: List[Dict[str, Any]]
-    output_dict_name: str = "template_variables"
     introduction: str = DEFAULT_INTRO
     template_variables: Dict[str, Any] = field(default_factory=dict)
     template_variable_prefix: str = DEFAULT_TEMPLATE_VARIABLE_PREFIX
@@ -73,7 +70,18 @@ class Operation(BaseOperation[Context, Output]):
 
     name = "prompt"
     aliases = ["prompt_user"]
-    default_opconfig = {"display_description": False}
+    default_opconfig = {
+        "display_description": False,
+        "output_namespace": "template_variables",
+    }
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+        if "output_dict_name" in self.local_context:
+            raise OperationDefinitionError(
+                "prompt operation no longer supports `output_dict_name`. "
+                "Use `opconfig.output_namespace` instead."
+            )
 
     def run(self, context: Context) -> Output:
 
@@ -93,11 +101,4 @@ class Operation(BaseOperation[Context, Output]):
             # Ensure that templates used for defaults can use the new variable.
             renderer.add_template_variable(prompt_spec.name, response)
 
-        output_name = context.output_dict_name
-        logger.debug(f"Responses recorded to {output_name}:")
-        logger.debug(
-            "\t"
-            + "\n\t".join(f"{key}: {value!r}" for key, value in user_responses.items())
-        )
-
-        return {output_name: user_responses}
+        return user_responses

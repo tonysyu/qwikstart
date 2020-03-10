@@ -1,3 +1,4 @@
+from typing import Any
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -16,7 +17,27 @@ class ErrorOperation(base.BaseOperation[helpers.ContextWithDict, DictContext]):
         raise Exception("Error raised for testing purposes")
 
 
-class TestOperationHavingContextWithDict(TestCase):
+class TestOperationConfig:
+    # FIXME: Add mypy stub for pytest parametrize
+    @pytest.mark.parametrize(  # type: ignore
+        "attr_name,value", base.DEFAULT_OPERATION_CONFIG.items()
+    )
+    def test_update_all_defaults(self, attr_name: str, value: Any) -> None:
+        opconfig = base.OperationConfig()
+        opconfig.update_unspecified_fields()
+        assert getattr(opconfig, attr_name) == value
+
+    def test_config_not_overridden_by_update(self) -> None:
+        opconfig = base.OperationConfig(display_description=False)
+        opconfig.update_unspecified_fields(display_description=True)
+        assert opconfig.display_description is False
+
+        opconfig = base.OperationConfig(display_description=True)
+        opconfig.update_unspecified_fields(display_description=False)
+        assert opconfig.display_description is True
+
+
+class TestBaseOperation(TestCase):
     def setUp(self) -> None:
         self.execution_context = helpers.get_execution_context()
 
