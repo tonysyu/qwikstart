@@ -5,6 +5,7 @@ These tests use pyfakefs (https://jmcgeheeiv.github.io/pyfakefs/) for mocking
 the filesystem. It appears that this doesn't play nicely with `ipdb` so any
 debugging of these tests will need to be done with normal `pdb`.
 """
+import textwrap
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -35,6 +36,17 @@ class TestRenderFileTree(TestCase):
         self.fs.create_file(template_path, contents="test")
         renderer = self.get_template_renderer()
         assert renderer.render(str(template_path)) == "test"
+
+    def test_render_trailing_newline(self) -> None:
+        template_path = self.source_dir / "test.txt"
+        contents = textwrap.dedent(
+            """
+                This text has a trailing newline that should remain after rendering.
+            """
+        )
+        self.fs.create_file(template_path, contents=contents)
+        renderer = self.get_template_renderer()
+        assert renderer.render(str(template_path)) == contents
 
     def test_get_template_path_is_resolved(self) -> None:
         # This is a regression test for unresolved paths, which jinja2's
