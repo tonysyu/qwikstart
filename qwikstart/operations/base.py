@@ -115,8 +115,8 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         # If output is not `None`, then it should be a dict; tell mypy.
         return utils.remap_dict(cast(DictContext, output), self.opconfig.output_mapping)
 
-    def execute(self, original_context: DictContext) -> Dict[str, Any]:
-        context = self.pre_run(original_context)
+    def execute(self, global_context: DictContext) -> Dict[str, Any]:
+        context = self.pre_run(global_context)
         try:
             output = self.run(context)
         except Exception:
@@ -127,7 +127,7 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
             if self.description and self.opconfig.display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
-        return utils.merge_nested_dicts(original_context, output_dict, inplace=True)
+        return utils.merge_nested_dicts(global_context, output_dict, inplace=True)
 
     def __repr__(self) -> str:
         return (

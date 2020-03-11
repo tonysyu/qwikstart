@@ -22,11 +22,9 @@ steps:
         opconfig:
             display_description: true
         message: |
-            <html>
-                <body>
-                    <h1>Hello world</h1>
-                </body>
-            </html>
+            <div class="main">
+                <h1>Hello world</h1>
+            </div>
     "Display css":
         name: echo
         highlight: "css"

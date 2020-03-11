@@ -9,6 +9,7 @@ Contents
 
    readme
    qwikstart_definitions
+   understanding_operations
    configuration
    developer_guide
    api/modules
