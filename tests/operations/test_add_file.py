@@ -42,7 +42,7 @@ class TestAddFile(TestCase):
 
         add_file_op = add_file.Operation()
         add_file_op.execute(context)
-        assert helpers.read_file_path(output_file) == "Hello, World!"
+        assert helpers.read_file_path(output_file) == "Hello, World!\n"
 
     def test_copy_file_permissions(self) -> None:
         template_path = self.create_template("Hello")
