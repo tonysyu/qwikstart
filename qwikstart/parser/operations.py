@@ -4,7 +4,7 @@ from typing import Any, Dict, NamedTuple, Optional, Type, cast
 
 from .. import utils
 from ..exceptions import TaskParserError
-from ..operations import BaseOperation, GenericOperation, OperationConfig
+from ..operations import BaseOperation, GenericOperation
 from ..repository import OperationSpec
 
 __all__ = ["OperationDefinition", "parse_operation"]
@@ -60,13 +60,13 @@ class OperationDefinition(NamedTuple):
 
         input_mapping = self.config.get("input_mapping")
         output_mapping = self.config.get("output_mapping")
-        opconfig = OperationConfig(**self.config.get("opconfig", {}))
+        opconfig = self.config.get("opconfig", {})
         if input_mapping:
             logger.info(MAPPING_DEPRECATION_WARNING.format("input_mapping"))
-            opconfig.input_mapping = input_mapping
+            opconfig["input_mapping"] = input_mapping
         if output_mapping:
             logger.info(MAPPING_DEPRECATION_WARNING.format("output_mapping"))
-            opconfig.output_mapping = output_mapping
+            opconfig["output_mapping"] = output_mapping
 
         local_context = self.config.get("local_context", {})
         local_context.update(

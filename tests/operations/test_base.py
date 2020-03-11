@@ -1,3 +1,4 @@
+from typing import Any
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -16,7 +17,28 @@ class ErrorOperation(base.BaseOperation[helpers.ContextWithDict, DictContext]):
         raise Exception("Error raised for testing purposes")
 
 
-class TestOperationHavingContextWithDict(TestCase):
+class TestOperationConfig:
+    # FIXME: Add mypy stub for pytest parametrize
+    @pytest.mark.parametrize(  # type: ignore
+        "attr_name,value", base.DEFAULT_OPERATION_CONFIG.items()
+    )
+    def test_update_all_defaults(self, attr_name: str, value: Any) -> None:
+        opconfig = base.OperationConfig.create()
+        assert getattr(opconfig, attr_name) == value
+
+    def test_final_config_takes_precedence(self) -> None:
+        opconfig = base.OperationConfig.from_config_dicts(
+            {"display_description": False}, {"display_description": True}
+        )
+        assert opconfig.display_description is True
+
+        opconfig = base.OperationConfig.from_config_dicts(
+            {"display_description": True}, {"display_description": False}
+        )
+        assert opconfig.display_description is False
+
+
+class TestBaseOperation(TestCase):
     def setUp(self) -> None:
         self.execution_context = helpers.get_execution_context()
 
@@ -41,7 +63,7 @@ class TestOperationHavingContextWithDict(TestCase):
         assert output["template_variables"] == template_variables
 
     def test_input_mapping(self) -> None:
-        opconfig = base.OperationConfig(input_mapping={"vars": "template_variables"})
+        opconfig = dict(input_mapping={"vars": "template_variables"})
         operation = helpers.FakeOperation(opconfig=opconfig)
         output = operation.execute(
             {"execution_context": self.execution_context, "vars": {"some": "value"}}
@@ -49,9 +71,7 @@ class TestOperationHavingContextWithDict(TestCase):
         assert output["template_variables"] == {"some": "value"}
 
     def test_output_mapping(self) -> None:
-        opconfig = base.OperationConfig(
-            output_mapping={"template_variables": "output_vars"}
-        )
+        opconfig = dict(output_mapping={"template_variables": "output_vars"})
         operation = helpers.FakeOperation(opconfig=opconfig)
         output = operation.execute(
             {
@@ -89,7 +109,7 @@ class TestOperationHavingContextWithDict(TestCase):
         operation = helpers.FakeOperation(description="Test Op")
         args = (
             "local_context={}, "
-            f"opconfig={base.OperationConfig()}, "
+            f"opconfig={base.OperationConfig.create()}, "
             "description=Test Op"
         )
         assert repr(operation) == f"tests.helpers.FakeOperation({args})"

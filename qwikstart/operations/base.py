@@ -1,7 +1,19 @@
 import abc
 import logging
-from dataclasses import dataclass, field
-from typing import Any, Dict, Generic, List, Mapping, Optional, TypeVar, cast
+from collections import ChainMap
+from dataclasses import dataclass
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Mapping,
+    Optional,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from .. import utils
 from ..base_context import BaseContext, DictContext
@@ -14,18 +26,47 @@ ContextData = Optional[Mapping[str, Any]]
 ContextMapping = Mapping[str, str]
 TContext = TypeVar("TContext", bound=BaseContext)
 TOutput = TypeVar("TOutput", bound=Optional[DictContext])
+TOperationConfig = TypeVar("TOperationConfig", bound="OperationConfig")
 
 SUCCESS_MARK = "\N{HEAVY CHECK MARK}"
 FAILURE_MARK = "\N{HEAVY BALLOT X}"
 
 
+DEFAULT_OPERATION_CONFIG: Dict[str, Any] = dict(
+    input_mapping={},
+    output_mapping={},
+    input_namespace=None,
+    output_namespace=None,
+    display_description=True,
+)
+
+
 @dataclass
 class OperationConfig:
-    input_mapping: ContextMapping = field(default_factory=dict)
-    output_mapping: ContextMapping = field(default_factory=dict)
-    #: Toggle display of step/operation description during execution.
-    #: The default is not True to differentiate user selections from defaults.
-    display_description: Optional[bool] = None
+    input_mapping: Union[ContextMapping]
+    output_mapping: Union[ContextMapping]
+    input_namespace: Union[str, None]
+    output_namespace: Union[str, None]
+    display_description: Union[bool]
+
+    @classmethod
+    def create(cls: Type[TOperationConfig], **kwargs: Any) -> TOperationConfig:
+        return cls.from_config_dicts(kwargs)
+
+    @classmethod
+    def from_config_dicts(
+        cls: Type[TOperationConfig], *opconfig_dicts: Dict[str, Any]
+    ) -> TOperationConfig:
+        """Return OperationConfig from multiple opconfig dictionaries.
+
+        Note that values in the later dictionaries take precendence over earlier ones.
+        """
+        # Reverse the order so that later dictionary values take precedence. This
+        # ordering matches the behavior of `qwikstart.utils.merge_nested_dicts`.
+        ordered_dicts = list(reversed(opconfig_dicts))
+        ordered_dicts.append(DEFAULT_OPERATION_CONFIG)
+
+        return cls(**ChainMap(*ordered_dicts))
 
 
 class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
@@ -38,16 +79,14 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def __init__(
         self,
         local_context: ContextData = None,
-        opconfig: Optional[OperationConfig] = None,
+        opconfig: Optional[Dict[str, Any]] = None,
         description: str = "",
     ):
         self.local_context = local_context or {}
         self.description = description
-        self.opconfig = opconfig or OperationConfig()
-        for key, value in self.default_opconfig.items():
-            # Note that this relies on the defaults for OperationConfig being falsey:
-            if not getattr(self.opconfig, key):
-                setattr(self.opconfig, key, value)
+        self.opconfig = OperationConfig.from_config_dicts(
+            self.default_opconfig, opconfig or {}
+        )
 
     @abc.abstractmethod
     def run(self, context: TContext) -> TOutput:
@@ -56,6 +95,11 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
         context_dict = utils.remap_dict(context_dict, self.opconfig.input_mapping)
+        context_dict = (
+            context_dict
+            if self.opconfig.input_namespace is None
+            else context_dict[self.opconfig.input_namespace]
+        )
         merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
         return context_class.from_dict(merged_dict)
 
@@ -63,11 +107,16 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         if not output:
             return {}
 
+        output = (
+            output
+            if self.opconfig.output_namespace is None
+            else {self.opconfig.output_namespace: output}
+        )
         # If output is not `None`, then it should be a dict; tell mypy.
         return utils.remap_dict(cast(DictContext, output), self.opconfig.output_mapping)
 
-    def execute(self, original_context: DictContext) -> Dict[str, Any]:
-        context = self.pre_run(original_context)
+    def execute(self, global_context: DictContext) -> Dict[str, Any]:
+        context = self.pre_run(global_context)
         try:
             output = self.run(context)
         except Exception:
@@ -75,13 +124,10 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
                 logger.error(f"{self.description}: {FAILURE_MARK}")
             raise
         else:
-            # Display if `display_description` is None, which is the default value.
-            # The default is not True to differentiate user selections from defaults.
-            display_description = self.opconfig.display_description in (True, None)
-            if self.description and display_description:
+            if self.description and self.opconfig.display_description:
                 logger.info(f"{self.description}: {SUCCESS_MARK}")
         output_dict = self.post_run(output)
-        return {**original_context, **output_dict}
+        return utils.merge_nested_dicts(global_context, output_dict, inplace=True)
 
     def __repr__(self) -> str:
         return (

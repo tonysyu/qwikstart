@@ -2,7 +2,7 @@
 Qwikstart definitions
 =====================
 
-Qwikstart definition types
+Qwikstart repository types
 ==========================
 
 Qwikstart repositories can have two parts:
@@ -80,8 +80,8 @@ Within this repo, you can run that example using:
     $ qwikstart run examples/cookiecutter/audreyr-pypackage.yml
 
 
-Remote task specification with remote repository
-------------------------------------------------
+Remote task specification
+-------------------------
 
 The same task above can be run as a remote file using the `--repo` option to point to
 the git repo and the path to the task specification within the repo:
