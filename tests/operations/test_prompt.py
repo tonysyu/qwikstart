@@ -36,17 +36,18 @@ class TestPromptUser:
             "pre-existing": "value",
             "name": "Tony",
         }
+        # Double check that "name" wasn't also added to the global context.
+        assert "name" not in output_context
 
     def test_output_to_global_namespace(self) -> None:
-        context = {
-            "inputs": [{"name": "name"}],
-            "template_variables": {"pre-existing": "value"},
-        }
-        output_context = execute_prompt_op(context, responses={"name": "Tony"})
-        assert output_context["template_variables"] == {
-            "pre-existing": "value",
-            "name": "Tony",
-        }
+        context = {"inputs": [{"name": "name"}]}
+        # Override default output_namespace (template_variables) to use global context.
+        output_context = execute_prompt_op(
+            context, responses={"name": "Tony"}, opconfig={"output_namespace": None}
+        )
+        assert output_context["name"] == "Tony"
+        # Double check the default namespace, "template_variables", is not created.
+        assert "template_variables" not in output_context
 
     def test_old_output_dict_name_raises_error(self) -> None:
         with pytest.raises(OperationDefinitionError):
