@@ -1,6 +1,7 @@
 """
 Input prompts to request data from users.
 """
+import logging
 import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
@@ -9,6 +10,13 @@ from qwikstart import utils
 from qwikstart.exceptions import UserFacingError
 
 from . import input_types
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_VALUE_DEPRECATION_WARNING = (
+    "Note that `default_value` in prompt inputs is deprecated and will be "
+    "removed in v0.8. Use `default` instead."
+)
 
 
 @dataclass
@@ -27,8 +35,9 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
 
     This raises a UserFacingError if the PromptSpec is incorrectly defined.
     """
-    # FIXME: Remove in v0.5; Support default_value for backwards compatibility
     if "default_value" in prompt_kwargs:
+        # FIXME: Raise error in v0.8
+        logger.warning(DEFAULT_VALUE_DEPRECATION_WARNING)
         prompt_kwargs["default"] = prompt_kwargs.pop("default_value")
 
     name = prompt_kwargs.get("name")

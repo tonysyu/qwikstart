@@ -23,10 +23,14 @@ class TestCreatePromptSpec:
         assert prompt_spec.name == "test"
         assert prompt_spec.default == "hello"
 
-    def test_deprecated_default_value_still_works(self) -> None:
+    @patch.object(_prompt, "logger")
+    def test_deprecated_default_value_still_works(self, logger: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", default_value="hello")
         assert prompt_spec.name == "test"
         assert prompt_spec.default == "hello"
+        logger.warning.assert_called_once_with(
+            _prompt.DEFAULT_VALUE_DEPRECATION_WARNING
+        )
 
     def test_name_missing_raises(self) -> None:
         msg = "PromptSpec definition has no 'name'"
