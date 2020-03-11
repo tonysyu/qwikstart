@@ -63,6 +63,7 @@ just data defined as part of the operation. For example, the following defines t
 `echo` operation, with a local context variable, `message`:
 
 .. code-block:: yaml
+
     steps:
         "Display message":
             name: echo
