@@ -44,8 +44,12 @@ class InputType(Generic[T]):
     def raw_prompt(
         self, message: str, suffix: Optional[str] = None, **prompt_kwargs: Any
     ) -> str:
+        """Prompt user for input and return string input from user."""
         if suffix is None:
             suffix = self.default_prefix
+        # Cannot pass `default=None` for some data types due to autocompletion.
+        if "default" in prompt_kwargs and prompt_kwargs["default"] is None:
+            del prompt_kwargs["default"]
         return ptk_prompt(  # type: ignore
             message + suffix,
             completer=self.completer,
@@ -54,6 +58,7 @@ class InputType(Generic[T]):
         )
 
     def prompt(self, message: str, **prompt_kwargs: Any) -> T:
+        """Prompt user for input and return input cast to appropriate data type."""
         value = self.raw_prompt(message, **prompt_kwargs)
         return self.cast(value)
 

@@ -62,9 +62,11 @@ class OperationDefinition(NamedTuple):
         output_mapping = self.config.get("output_mapping")
         opconfig = self.config.get("opconfig", {})
         if input_mapping:
+            # FIXME: Raise error in v0.8
             logger.info(MAPPING_DEPRECATION_WARNING.format("input_mapping"))
             opconfig["input_mapping"] = input_mapping
         if output_mapping:
+            # FIXME: Raise error in v0.8
             logger.info(MAPPING_DEPRECATION_WARNING.format("output_mapping"))
             opconfig["output_mapping"] = output_mapping
 

@@ -38,6 +38,7 @@ def parse_task(task_spec: TaskSpec, source_path: Optional[Path] = None) -> Task:
             for op_desc, op_def in task_spec["steps"].items()
         ]
     elif task_spec.get("operations"):
+        # FIXME: Raise error in v0.8
         logger.info(OPERATIONS_DEPRECATION_WARNING)
         operations = [
             parse_operation(op_def, known_operations)

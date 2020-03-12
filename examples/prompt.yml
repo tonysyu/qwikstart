@@ -4,6 +4,7 @@ steps:
         inputs:
             - name: "name"
               default: "World"
+              help_text: "Enter whatever name you like"
             - name: "target_dir"
               default: "."
               type: "path"

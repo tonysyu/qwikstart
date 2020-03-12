@@ -1,6 +1,7 @@
 """
 Input prompts to request data from users.
 """
+import logging
 import os
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
@@ -10,16 +11,29 @@ from qwikstart.exceptions import UserFacingError
 
 from . import input_types
 
+logger = logging.getLogger(__name__)
+
+DEFAULT_VALUE_DEPRECATION_WARNING = (
+    "Note that `default_value` in prompt inputs is deprecated and will be "
+    "removed in v0.8. Use `default` instead."
+)
+
 
 @dataclass
 class PromptSpec:
     """Data class used to specify input prompts."""
 
     name: str
+    help_text: Optional[str] = None
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
     input_type: Type[input_types.InputType[Any]] = input_types.StringInput
     input_config: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def ptk_kwargs(self) -> Dict[str, Any]:
+        """Return keyword arguments for `prompt_toolkit.prompt`."""
+        return {"default": self.default, "bottom_toolbar": self.help_text}
 
 
 def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
@@ -27,8 +41,9 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
 
     This raises a UserFacingError if the PromptSpec is incorrectly defined.
     """
-    # FIXME: Remove in v0.5; Support default_value for backwards compatibility
     if "default_value" in prompt_kwargs:
+        # FIXME: Raise error in v0.8
+        logger.warning(DEFAULT_VALUE_DEPRECATION_WARNING)
         prompt_kwargs["default"] = prompt_kwargs.pop("default_value")
 
     name = prompt_kwargs.get("name")
@@ -88,10 +103,7 @@ def read_user_variable(prompt_spec: PromptSpec) -> Any:
         return read_user_choice(prompt_spec)
 
     input_type = prompt_spec.input_type(**prompt_spec.input_config)
-    # Cannot pass `default=None` in some cases due to autocompletion.
-    if prompt_spec.default is None:
-        return input_type.prompt(prompt_spec.name)
-    return input_type.prompt(prompt_spec.name, default=prompt_spec.default)
+    return input_type.prompt(prompt_spec.name, **prompt_spec.ptk_kwargs)
 
 
 def read_user_choice(prompt_spec: PromptSpec) -> Any:
@@ -123,5 +135,11 @@ def read_user_choice(prompt_spec: PromptSpec) -> Any:
     )
 
     input_type = input_types.NumberRange(1, len(choices))
-    user_choice = input_type.raw_prompt(display)
+
+    ptk_kwargs = prompt_spec.ptk_kwargs
+    if prompt_spec.default in choices:
+        # Offset by index one since our choices are numbered starting with 1.
+        ptk_kwargs["default"] = choices.index(prompt_spec.default) + 1
+
+    user_choice = input_type.raw_prompt(display, **ptk_kwargs)
     return choice_map[user_choice]

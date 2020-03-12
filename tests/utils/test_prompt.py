@@ -23,10 +23,14 @@ class TestCreatePromptSpec:
         assert prompt_spec.name == "test"
         assert prompt_spec.default == "hello"
 
-    def test_deprecated_default_value_still_works(self) -> None:
+    @patch.object(_prompt, "logger")
+    def test_deprecated_default_value_still_works(self, logger: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", default_value="hello")
         assert prompt_spec.name == "test"
         assert prompt_spec.default == "hello"
+        logger.warning.assert_called_once_with(
+            _prompt.DEFAULT_VALUE_DEPRECATION_WARNING
+        )
 
     def test_name_missing_raises(self) -> None:
         msg = "PromptSpec definition has no 'name'"
@@ -91,7 +95,18 @@ class TestReadUserVariable:
         prompt_spec = _prompt.create_prompt_spec(name="test")
         assert _prompt.read_user_variable(prompt_spec) == "hello"
 
-        ptk_prompt.assert_called_once_with("test: ", completer=None, validator=ANY)
+        ptk_prompt.assert_called_once_with(
+            "test: ", bottom_toolbar=None, completer=None, validator=ANY
+        )
+        read_choice.assert_not_called()
+
+    def test_prompt_with_help_text(self, ptk_prompt: Mock, read_choice: Mock) -> None:
+        prompt_spec = _prompt.create_prompt_spec(name="test", help_text="Test info")
+        _prompt.read_user_variable(prompt_spec)
+
+        ptk_prompt.assert_called_once_with(
+            "test: ", bottom_toolbar="Test info", completer=None, validator=ANY
+        )
         read_choice.assert_not_called()
 
     def test_call_read_choice(self, ptk_prompt: Mock, read_choice: Mock) -> None:
@@ -106,7 +121,11 @@ class TestReadUserVariable:
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
-            "test (y/n): ", default="n", completer=None, validator=ANY
+            "test (y/n): ",
+            default="n",
+            bottom_toolbar=None,
+            completer=None,
+            validator=ANY,
         )
         read_choice.assert_not_called()
 
@@ -115,7 +134,7 @@ class TestReadUserVariable:
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
-            "port: ", default="8000", completer=None, validator=ANY
+            "port: ", default="8000", bottom_toolbar=None, completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 
@@ -134,6 +153,17 @@ class TestReadUserChoice:
 
         ptk_prompt.return_value = "2"
         assert _prompt.read_user_choice(prompt_spec) == "Hello"
+
+    def test_default_value(self, ptk_prompt: Mock) -> None:
+        prompt_spec = _prompt.create_prompt_spec(
+            name="greet", choices=["Hi", "Hello"], default="Hello"
+        )
+        ptk_prompt.return_value = "1"
+        _prompt.read_user_choice(prompt_spec)
+
+        ptk_prompt.assert_called_once_with(
+            ANY, default="2", bottom_toolbar=None, completer=None, validator=ANY
+        )
 
     def test_string_choices_raises_type_error(self, ptk_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greeting", choices="Hi, Hello")
