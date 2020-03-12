@@ -102,7 +102,6 @@ class TestReadUserVariable:
 
     def test_prompt_with_help_text(self, ptk_prompt: Mock, read_choice: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="test", help_text="Test info")
-
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
@@ -154,6 +153,17 @@ class TestReadUserChoice:
 
         ptk_prompt.return_value = "2"
         assert _prompt.read_user_choice(prompt_spec) == "Hello"
+
+    def test_default_value(self, ptk_prompt: Mock) -> None:
+        prompt_spec = _prompt.create_prompt_spec(
+            name="greet", choices=["Hi", "Hello"], default="Hello"
+        )
+        ptk_prompt.return_value = "1"
+        _prompt.read_user_choice(prompt_spec)
+
+        ptk_prompt.assert_called_once_with(
+            ANY, default="2", bottom_toolbar=None, completer=None, validator=ANY
+        )
 
     def test_string_choices_raises_type_error(self, ptk_prompt: Mock) -> None:
         prompt_spec = _prompt.create_prompt_spec(name="greeting", choices="Hi, Hello")

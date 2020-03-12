@@ -33,11 +33,7 @@ class PromptSpec:
     @property
     def ptk_kwargs(self) -> Dict[str, Any]:
         """Return keyword arguments for `prompt_toolkit.prompt`."""
-        kwargs = {"bottom_toolbar": self.help_text}
-        # Cannot pass `default=None` for some data types due to autocompletion.
-        if self.default is not None:
-            kwargs["default"] = self.default
-        return kwargs
+        return {"default": self.default, "bottom_toolbar": self.help_text}
 
 
 def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
@@ -139,5 +135,11 @@ def read_user_choice(prompt_spec: PromptSpec) -> Any:
     )
 
     input_type = input_types.NumberRange(1, len(choices))
-    user_choice = input_type.raw_prompt(display)
+
+    ptk_kwargs = prompt_spec.ptk_kwargs
+    if prompt_spec.default in choices:
+        # Offset by index one since our choices are numbered starting with 1.
+        ptk_kwargs["default"] = choices.index(prompt_spec.default) + 1
+
+    user_choice = input_type.raw_prompt(display, **ptk_kwargs)
     return choice_map[user_choice]

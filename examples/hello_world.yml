@@ -4,11 +4,14 @@ steps:
         inputs:
             - name: "name"
               default: "World"
+              help_text: "Enter whatever name you like"
             - name: "greeting"
               choices:
                 - "Hello"
                 - "Hi"
                 - "Howdy"
+              default: "Howdy"
+              help_text: "How would you like to be greeted"
     "Display message":
         name: echo
         message: |
