@@ -95,7 +95,19 @@ class TestReadUserVariable:
         prompt_spec = _prompt.create_prompt_spec(name="test")
         assert _prompt.read_user_variable(prompt_spec) == "hello"
 
-        ptk_prompt.assert_called_once_with("test: ", completer=None, validator=ANY)
+        ptk_prompt.assert_called_once_with(
+            "test: ", bottom_toolbar=None, completer=None, validator=ANY
+        )
+        read_choice.assert_not_called()
+
+    def test_prompt_with_help_text(self, ptk_prompt: Mock, read_choice: Mock) -> None:
+        prompt_spec = _prompt.create_prompt_spec(name="test", help_text="Test info")
+
+        _prompt.read_user_variable(prompt_spec)
+
+        ptk_prompt.assert_called_once_with(
+            "test: ", bottom_toolbar="Test info", completer=None, validator=ANY
+        )
         read_choice.assert_not_called()
 
     def test_call_read_choice(self, ptk_prompt: Mock, read_choice: Mock) -> None:
@@ -110,7 +122,11 @@ class TestReadUserVariable:
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
-            "test (y/n): ", default="n", completer=None, validator=ANY
+            "test (y/n): ",
+            default="n",
+            bottom_toolbar=None,
+            completer=None,
+            validator=ANY,
         )
         read_choice.assert_not_called()
 
@@ -119,7 +135,7 @@ class TestReadUserVariable:
         _prompt.read_user_variable(prompt_spec)
 
         ptk_prompt.assert_called_once_with(
-            "port: ", default="8000", completer=None, validator=ANY
+            "port: ", default="8000", bottom_toolbar=None, completer=None, validator=ANY
         )
         read_choice.assert_not_called()
 

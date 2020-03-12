@@ -24,10 +24,20 @@ class PromptSpec:
     """Data class used to specify input prompts."""
 
     name: str
+    help_text: Optional[str] = None
     default: Optional[Any] = None
     choices: Optional[List[Any]] = None
     input_type: Type[input_types.InputType[Any]] = input_types.StringInput
     input_config: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def ptk_kwargs(self) -> Dict[str, Any]:
+        """Return keyword arguments for `prompt_toolkit.prompt`."""
+        kwargs = {"bottom_toolbar": self.help_text}
+        # Cannot pass `default=None` for some data types due to autocompletion.
+        if self.default is not None:
+            kwargs["default"] = self.default
+        return kwargs
 
 
 def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
@@ -97,10 +107,7 @@ def read_user_variable(prompt_spec: PromptSpec) -> Any:
         return read_user_choice(prompt_spec)
 
     input_type = prompt_spec.input_type(**prompt_spec.input_config)
-    # Cannot pass `default=None` in some cases due to autocompletion.
-    if prompt_spec.default is None:
-        return input_type.prompt(prompt_spec.name)
-    return input_type.prompt(prompt_spec.name, default=prompt_spec.default)
+    return input_type.prompt(prompt_spec.name, **prompt_spec.ptk_kwargs)
 
 
 def read_user_choice(prompt_spec: PromptSpec) -> Any:
