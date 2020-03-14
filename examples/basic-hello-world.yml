@@ -1,0 +1,11 @@
+steps:
+    "Ask for name":
+        name: prompt
+        inputs:
+            - name: "name"
+              default: "World"
+    "Display message":
+        name: echo
+        message: |
+
+            Hello, {{ qwikstart.name }}!

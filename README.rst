@@ -19,6 +19,39 @@ qwikstart: Code generator for fun and profit
 - **Documentation:** https://qwikstart.readthedocs.io
 - **Source:** https://github.com/tonysyu/qwikstart
 
+`qwikstart` is a code generator for integrating code into existing projects. It's
+similar to code generators like cookiecutter_, yeoman_, and hygen_ but with a focus on
+adding code to existing projects.
+
+A simple `{{ hello-world.yml }}` script in qwikstart would look something like:
+
+.. code-block:: yaml
+
+    steps:
+        "Ask for name":
+            name: prompt
+            inputs:
+                - name: "name"
+                  default: "World"
+        "Display message":
+            name: echo
+            message: |
+
+                Hello, {{ qwikstart.name }}!
+
+The first step uses the `prompt` operation with a single input `"name"`, with a default
+value of `"World"` (which is editable when running the script). The next step just uses
+the `echo` operation to display a message. This script can be using `qwikstart run`:
+
+.. code-block:: bash
+
+    $ qwikstart run hello-world.yml
+
+    Please enter the following information:
+    name: World
+
+    Hello, World!
+
 Install
 =======
 
@@ -39,16 +72,20 @@ Either move the code from `~/.bash_profile` to `~/.profile` or
 .. _pipx installation instructions:
     https://pipxproject.github.io/pipx/installation/
 
+
 Basic Usage
 ===========
 
-After installing `qwikstart`, you can run a simple hello-world example using the following:
+After installing `qwikstart`, you can run a simple hello-world example using the
+following:
 
 .. code-block:: bash
 
-    qwikstart run --repo https://github.com/tonysyu/qwikstart examples/hello_world.yml
+    $ qwikstart run --repo https://github.com/tonysyu/qwikstart examples/hello_world.yml
 
-By default, there are abbreviations for common git repos, so the above can also be written:
+
+By default, there are abbreviations for common git repos, so the above can also be
+written:
 
 .. code-block:: bash
 
@@ -58,10 +95,13 @@ By default, there are abbreviations for common git repos, so the above can also 
 See Also
 ========
 
-- `hygen <https://www.hygen.io/>`_: The scalable code generator that saves you
-  time.
-- `cookiecutter <https://cookiecutter.readthedocs.io/>`_:
-  A command-line utility that creates projects from cookiecutters (project
-  templates)
-- `pyscaffold <https://pyscaffold.org/>`_: Python project template generator
-  with batteries included.
+There are a lot code generators and scaffolding tools out there, and the following is
+just a selection of some of the most popular ones:
+- cookiecutter_: A command-line utility that creates projects from cookiecutters
+  (project templates)
+- hygen_: The scalable code generator that saves you time.
+- yeoman_: The web's scaffolding tool for modern webapps
+
+.. _hygen: https://www.hygen.io/
+.. _cookiecutter: https://cookiecutter.readthedocs.io/
+.. _yeoman: https://yeoman.io/

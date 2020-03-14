@@ -8,7 +8,7 @@ steps:
             - name: "greeting"
               choices:
                 - "Hello"
-                - "Hi"
+                - "Hola"
                 - "Howdy"
               default: "Howdy"
               help_text: "How would you like to be greeted"
