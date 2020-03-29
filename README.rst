@@ -97,6 +97,7 @@ See Also
 
 There are a lot code generators and scaffolding tools out there, and the following is
 just a selection of some of the most popular ones:
+
 - cookiecutter_: A command-line utility that creates projects from cookiecutters
   (project templates)
 - hygen_: The scalable code generator that saves you time.
@@ -105,3 +106,4 @@ just a selection of some of the most popular ones:
 .. _hygen: https://www.hygen.io/
 .. _cookiecutter: https://cookiecutter.readthedocs.io/
 .. _yeoman: https://yeoman.io/
+

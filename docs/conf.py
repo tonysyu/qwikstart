@@ -6,6 +6,7 @@
 # This file does only contain a selection of the most common options. For a
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
+import datetime
 import re
 from typing import Any, Dict
 
@@ -13,8 +14,9 @@ import qwikstart
 
 # -- Project information -----------------------------------------------------
 
+now = datetime.datetime.today()
 project = "qwikstart"
-copyright = "2019, Tony S. Yu"
+copyright = f"{now.year}, Tony S. Yu"
 author = "Tony S. Yu"
 
 # The short X.Y version

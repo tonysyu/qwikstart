@@ -10,6 +10,7 @@ Contents
    readme
    qwikstart_definitions
    understanding_operations
+   operations_reference
    configuration
    developer_guide
    api/modules
