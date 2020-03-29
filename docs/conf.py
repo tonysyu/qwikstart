@@ -39,6 +39,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "sphinx.ext.coverage",
+    "sphinxcontrib.apidoc",
     "sphinxcontrib.napoleon",
 ]
 
@@ -162,34 +163,13 @@ texinfo_documents = [
 # -- Extension configuration -------------------------------------------------
 
 
-# -- Run sphinx-apidoc to generate API docs ----------------------------------
+# -- Configuration for sphinxcontrib.apidoc ----------------------------------
 
-
-def run_apidoc(_):
-    """Run sphinx-apidoc to generate API docs for qwikstart
-
-    See https://github.com/rtfd/readthedocs.org/issues/1139
-    """
-    from sphinx import apidoc
-    import os
-    import sys
-
-    here = os.path.abspath(os.path.dirname(__file__))
-    sys.path.append(os.path.join(here, ".."))
-
-    api_docs_dir = os.path.join(here, "api")
-    package_dir = os.path.join(here, "..", "qwikstart")
-    exclude_dirs = [
-        os.path.join(package_dir, "tests", "*"),
-        os.path.join(package_dir, "**", "tests", "*"),
-    ]
-    options = ["--separate", "--force"]
-
-    apidoc_args = options + ["-o", api_docs_dir, package_dir] + exclude_dirs
-    # `None` fixes Sphinx 1.7.1 issue introduced in sphinx-doc/sphinx#4615
-    apidoc.main(apidoc_args)
+apidoc_module_dir = "../qwikstart"
+apidoc_output_dir = "api"
+apidoc_excluded_paths = ["tests"]
+apidoc_separate_modules = True
 
 
 def setup(app):
     app.add_stylesheet("css/custom.css")
-    app.connect("builder-inited", run_apidoc)
