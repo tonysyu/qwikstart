@@ -24,14 +24,14 @@ class TestFindFilesFS(TestCase):
 
     def test_single_file_match(self) -> None:
         self.fs.create_file("path/to/match.txt", contents="match")
-        assert self.find_files("match") == ["path/to/match.txt"]
+        assert self.find_files("match") == ["./path/to/match.txt"]
 
-    def test_case_isensitive_search_fails_to_match(self) -> None:
+    def test_case_sensitive_search_fails_to_match(self) -> None:
         self.fs.create_file("path/to/match.txt", contents="match")
         assert self.find_files("MaTcH") == []
 
-    def test_case_nsensitive_matches(self) -> None:
-        file_path = "path/to/match.txt"
+    def test_case_insensitive_matches(self) -> None:
+        file_path = "./path/to/match.txt"
         self.fs.create_file(file_path, contents="match")
         assert self.find_files("MaTcH", regex_flags=["IGNORECASE"]) == [file_path]
 
@@ -47,12 +47,12 @@ class TestFindFilesFS(TestCase):
                 """
             ),
         )
-        assert self.find_files("match") == ["path/to/match.txt"]
+        assert self.find_files("match") == ["./path/to/match.txt"]
 
     def test_single_match_in_similarly_named_files(self) -> None:
         self.fs.create_file("a/b/file.txt", contents="no-match")
         self.fs.create_file("x/y/file.txt", contents="exact-match")
-        assert self.find_files("exact-match") == ["x/y/file.txt"]
+        assert self.find_files("exact-match") == ["./x/y/file.txt"]
 
     def test_path_filter_skips_file_with_matching_text(self) -> None:
         self.fs.create_file("file.txt", contents="match")
