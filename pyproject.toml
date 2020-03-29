@@ -28,7 +28,6 @@ keywords = ["console", "terminal"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-sphinx = { version = "<2", optional = true }
 sphinx-autobuild = { version = "*", optional = true }
 sphinxcontrib-napoleon = { version = "*", optional = true }
 rope = "^0.14.0"
@@ -62,6 +61,8 @@ pre-commit = "^1.17"
 pyfakefs = "^3.7"
 flake8-bugbear = "^19.8.0"
 mypy = "^0.761"
+sphinx = "^2.4.4"
+sphinxcontrib-apidoc = "^0.3.0"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-autobuild", "sphinxcontrib-napoleon"]

@@ -23,7 +23,7 @@ qwikstart: Code generator for fun and profit
 similar to code generators like cookiecutter_, yeoman_, and hygen_ but with a focus on
 adding code to existing projects.
 
-A simple `{{ hello-world.yml }}` script in qwikstart would look something like:
+A simple `hello-world.yml` script in qwikstart would look something like:
 
 .. code-block:: yaml
 
