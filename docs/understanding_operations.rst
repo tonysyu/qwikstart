@@ -7,6 +7,7 @@ functionality of qwikstart. Typically, a single operation does something quite s
 but they are combined to perform more complex tasks.
 
 While operations are mostly independent, an operation can affect other operations by:
+
 1. Modifying the filesystem
 2. Modifying the global context
 

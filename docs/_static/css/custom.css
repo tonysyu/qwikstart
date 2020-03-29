@@ -1,31 +1,12 @@
-pre.terminal.literal-block {
-    padding: 1em;
-    color: white;
-    background-color: #404040;
-    margin-bottom: 24px;
+body {
+    font-family: "Roboto", "Helvetica", sans-serif;
 }
-
-.terminal .blue {
-    color: #7a7aff;
-}
-
-.terminal .cyan {
-    color: cyan;
-}
-
-.terminal .red {
-    color: red;
-}
-
-.terminal .yellow {
-    color: yellow;
-}
-
-.terminal .on-red {
-    background-color: red;
-}
-
-.terminal .black-on-yellow {
-    color: black;
-    background-color: yellow;
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 {
+    font-family: "Roboto", "Helvetica", sans-serif;
+    font-weight: 300;
 }
