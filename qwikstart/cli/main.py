@@ -9,6 +9,7 @@ from .resolver import resolve_task
 
 
 @click.group()
+@click.version_option()
 def cli() -> None:
     pass  # pragma: no cover
 
