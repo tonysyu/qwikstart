@@ -77,7 +77,7 @@ A reminder for the maintainers on how to deploy.
 
 - Update the version and push::
 
-    $ bumpversion patch # possible: major / minor / patch
+    $ poetry run bumpversion --tag release  # possible: major / minor / patch / build
     $ git push
     $ git push --tags
 
@@ -85,3 +85,8 @@ A reminder for the maintainers on how to deploy.
 
     $ poetry build
     $ poetry publish
+
+- Update version to the next planned version (without `release` argument, this will
+  add a `-dev0` suffix)::
+
+    $ poetry run bumpversion minor  # possible: major / minor / patch / build
