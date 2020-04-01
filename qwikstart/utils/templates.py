@@ -41,12 +41,14 @@ class TemplateRenderer:
             extensions=["jinja2_time.TimeExtension"],
         )
         self.template_variables = template_variables or {}
-        self.template_variable_prefix = (
-            template_variable_prefix or DEFAULT_TEMPLATE_VARIABLE_PREFIX
-        )
-        self._template_context = {
-            self.template_variable_prefix: self.template_variables
-        }
+
+        if template_variable_prefix is None:
+            self._template_context = self.template_variables
+        else:
+            self._template_context = {
+                template_variable_prefix: self.template_variables
+            }
+
         self.source_dir = ensure_path(source_dir or Path("."))
 
     def get_template(self, path_str: str) -> jinja2.Template:
