@@ -37,7 +37,9 @@ class TestRenderFileTree(TestCase):
         ignore_patterns: Optional[List[str]] = None,
     ) -> None:
         renderer = templates.TemplateRenderer(
-            jinja2.FileSystemLoader("/"), template_variables=template_variables
+            jinja2.FileSystemLoader("/"),
+            template_variables=template_variables,
+            template_variable_prefix=templates.DEFAULT_TEMPLATE_VARIABLE_PREFIX,
         )
         generator = filesystem.FileTreeGenerator(
             source_dir or self.source_dir,

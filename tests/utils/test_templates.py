@@ -25,10 +25,14 @@ class TestRenderFileTree(TestCase):
         self.fs.create_dir(self.source_dir)
 
     def get_template_renderer(
-        self, template_variables: Optional[Dict[str, Any]] = None
+        self,
+        template_variables: Optional[Dict[str, Any]] = None,
+        template_variable_prefix: Optional[str] = None,
     ) -> templates.TemplateRenderer:
         return templates.TemplateRenderer(
-            jinja2.FileSystemLoader("/"), template_variables=template_variables
+            jinja2.FileSystemLoader("/"),
+            template_variables=template_variables,
+            template_variable_prefix=template_variable_prefix,
         )
 
     def test_render(self) -> None:
@@ -55,6 +59,21 @@ class TestRenderFileTree(TestCase):
         self.fs.create_file(template_path)
         renderer = self.get_template_renderer()
         assert isinstance(renderer.get_template(str(template_path)), jinja2.Template)
+
+    def test_render_variable(self) -> None:
+        template_path = self.source_dir / "test.txt"
+        self.fs.create_file(template_path, contents="Hello, {{ name }}!")
+        renderer = self.get_template_renderer(template_variables={"name": "World"})
+        assert renderer.render(str(template_path)) == "Hello, World!"
+
+    def test_render_prefixed_variable(self) -> None:
+        template_path = self.source_dir / "test.txt"
+        self.fs.create_file(template_path, contents="Hello, {{ qwikstart.name }}!")
+        renderer = self.get_template_renderer(
+            template_variable_prefix="qwikstart",
+            template_variables={"name": "World"},
+        )
+        assert renderer.render(str(template_path)) == "Hello, World!"
 
     def test_meta_variables(self) -> None:
         renderer = self.get_template_renderer()
