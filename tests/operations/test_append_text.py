@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -24,8 +24,11 @@ class TestAppendText(TestCase):
 
     def test_dry_run(self) -> None:
         self.fs.create_file(self.file_path, contents="First line")
-        context = {"execution_context": helpers.get_execution_context(dry_run=True)}
-        assert self.append("Ignored line", override_context=context) == "First line"
+        output_text = self.append(
+            "Ignored line",
+            execution_context=helpers.get_execution_context(dry_run=True),
+        )
+        assert output_text == "First line"
 
     def test_file_permissions_not_changed(self) -> None:
         self.fs.create_file(self.file_path)
@@ -33,10 +36,7 @@ class TestAppendText(TestCase):
         assert self.append("New line") == "\nNew line"
         assert helpers.filemode(self.file_path) == 0o777
 
-    def append(
-        self, text: str, override_context: Optional[Dict[str, Any]] = None
-    ) -> str:
-        override_context = override_context or {}
+    def append(self, text: str, **override_context: Any) -> str:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": text,

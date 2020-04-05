@@ -22,9 +22,7 @@ class TestAddFile(TestCase):
         template_path = self.create_template("Fake template content")
         output_path = self.render_template(
             template_path,
-            override_context={
-                "execution_context": helpers.get_execution_context(dry_run=True)
-            },
+            execution_context=helpers.get_execution_context(dry_run=True),
         )
         assert not output_path.exists()
 
@@ -69,10 +67,9 @@ class TestAddFile(TestCase):
         self,
         template_path: Path,
         template_variables: Optional[Dict[str, Any]] = None,
-        override_context: Optional[Dict[str, Any]] = None,
+        **override_context: Any,
     ) -> Path:
         template_variables = template_variables or {}
-        override_context = override_context or {}
         output_file = Path("output.txt")
         context = {
             "execution_context": helpers.get_execution_context(),

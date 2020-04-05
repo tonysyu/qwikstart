@@ -1,7 +1,7 @@
 import json
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, cast
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -19,11 +19,8 @@ class TestEditJsonFS(TestCase):
         self.fs.create_file(self.file_path, contents=json.dumps(data))
 
     def edit_json_and_return_parsed(
-        self,
-        merge_data: Dict[str, Any],
-        override_context: Optional[Dict[str, Any]] = None,
+        self, merge_data: Dict[str, Any], **override_context: Any,
     ) -> Dict[str, Any]:
-        override_context = override_context or {}
         context = {
             "execution_context": helpers.get_execution_context(),
             "file_path": self.file_path,
@@ -49,9 +46,7 @@ class TestEditJsonFS(TestCase):
         self.initialize_json({"unchanged": True})
         output_json = self.edit_json_and_return_parsed(
             {"unchanged": False},
-            override_context={
-                "execution_context": helpers.get_execution_context(dry_run=True)
-            },
+            execution_context=helpers.get_execution_context(dry_run=True),
         )
         assert output_json == {"unchanged": True}
 

@@ -1,6 +1,6 @@
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -19,11 +19,8 @@ class TestEditYamlFS(TestCase):
         self.fs.create_file(self.file_path, contents=dump_yaml_string(data))
 
     def edit_yaml_and_return_parsed(
-        self,
-        merge_data: Dict[str, Any],
-        override_context: Optional[Dict[str, Any]] = None,
+        self, merge_data: Dict[str, Any], **override_context: Any,
     ) -> Dict[str, Any]:
-        override_context = override_context or {}
         context = {
             "execution_context": helpers.get_execution_context(),
             "file_path": self.file_path,
@@ -48,9 +45,7 @@ class TestEditYamlFS(TestCase):
         self.initialize_yaml({"unchanged": True})
         output_yaml = self.edit_yaml_and_return_parsed(
             {"unchanged": False},
-            override_context={
-                "execution_context": helpers.get_execution_context(dry_run=True)
-            },
+            execution_context=helpers.get_execution_context(dry_run=True),
         )
         assert output_yaml == {"unchanged": True}
 
