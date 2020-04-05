@@ -63,6 +63,13 @@ class Operation(BaseOperation[Context, None]):
         source = execution_context.source_dir.joinpath(context.template_dir)
         target = context.target_dir or execution_context.target_dir
 
+        if context.execution_context.dry_run:
+            logger.info(
+                f"Skipping copy of files from  {source} to {target} "
+                "due to `--dry-run` option"
+            )
+            return
+
         generator = FileTreeGenerator(
             Path(source), Path(target), renderer, ignore_patterns=context.ignore
         )
