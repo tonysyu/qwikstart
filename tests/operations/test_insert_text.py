@@ -29,9 +29,9 @@ class TestInsertTextFakeFS(TestCase):
     def test_dry_run(self) -> None:
         self.fs.create_file(self.file_path, contents="Hello")
 
-        execution_context = helpers.get_execution_context(dry_run=True)
+        exec_context = helpers.get_execution_context(dry_run=True)
         assert (
-            self.insert_on_first_line("New Line", execution_context=execution_context)
+            self.insert_on_first_line("New Line", execution_context=exec_context)
             == "Hello"
         )
 
