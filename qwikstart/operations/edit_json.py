@@ -1,14 +1,17 @@
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 from ..base_context import BaseContext
-from ..utils import ensure_path, merge_nested_dicts
+from ..utils import ensure_path, merge_nested_dicts, pformat_json
 from .base import BaseOperation
 from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
     "file_path": FILE_PATH_HELP,
@@ -39,5 +42,15 @@ class Operation(BaseOperation[Context, None]):
 
         data = merge_nested_dicts(data, context.merge_data)
 
-        with file_path.open("w") as f:
-            json.dump(data, f, indent=context.indent)
+        if context.execution_context.dry_run:
+            self.on_dry_run(file_path, context.merge_data)
+        else:
+            with file_path.open("w") as f:
+                json.dump(data, f, indent=context.indent)
+
+    @staticmethod
+    def on_dry_run(file_path: Path, merge_data: Dict[str, Any]) -> None:
+        logger.info(
+            f"Skipping the following edits to {file_path} due to `--dry-run` option:\n"
+            + pformat_json(merge_data)
+        )

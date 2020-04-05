@@ -1,7 +1,7 @@
 import json
 import textwrap
 from pathlib import Path
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -18,11 +18,17 @@ class TestEditJsonFS(TestCase):
     def initialize_json(self, data: Dict[str, Any]) -> None:
         self.fs.create_file(self.file_path, contents=json.dumps(data))
 
-    def edit_json_and_return_parsed(self, merge_data: Dict[str, Any]) -> Dict[str, Any]:
+    def edit_json_and_return_parsed(
+        self,
+        merge_data: Dict[str, Any],
+        override_context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        override_context = override_context or {}
         context = {
             "execution_context": helpers.get_execution_context(),
             "file_path": self.file_path,
             "merge_data": merge_data,
+            **override_context,
         }
         edit_action = edit_json.Operation()
         edit_action.execute(context)
@@ -38,6 +44,16 @@ class TestEditJsonFS(TestCase):
         assert self.edit_json_and_return_parsed({"parent": {"son": "Austin"}}) == {
             "parent": {"daughter": "Emily", "son": "Austin"}
         }
+
+    def test_dry_run(self) -> None:
+        self.initialize_json({"unchanged": True})
+        output_json = self.edit_json_and_return_parsed(
+            {"unchanged": False},
+            override_context={
+                "execution_context": helpers.get_execution_context(dry_run=True)
+            },
+        )
+        assert output_json == {"unchanged": True}
 
     def test_overwrite(self) -> None:
         self.initialize_json({"mutable": 1})
