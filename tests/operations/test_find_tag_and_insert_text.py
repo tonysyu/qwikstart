@@ -56,3 +56,14 @@ class TestFindTagAndInsertText:
                     print('Done')
             """
         )
+
+    def test_dry_run(self) -> None:
+        context = {
+            "execution_context": get_execution_context(dry_run=True),
+            "tag": "# qwikstart-HERE",
+            "file_path": create_mock_file_path("# qwikstart-HERE"),
+            "text": "This shouldn't get inserted",
+        }
+        operation = find_tag_and_insert_text.Operation()
+        context = operation.execute(context)
+        assert read_file_path(context["file_path"]) == "# qwikstart-HERE"

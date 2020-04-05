@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -11,6 +12,8 @@ from .insert_text import LINE_ENDING_HELP, TEXT_HELP, insert_text_in_file
 from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
     "file_path": FILE_PATH_HELP,
@@ -45,6 +48,13 @@ class Operation(BaseOperation[Context, None]):
         file_path = ensure_path(context.file_path)
         output = find_tagged_line_in_file(file_path, context.tag)
         text = self.get_text(context, output["column"])
+
+        if context.execution_context.dry_run:
+            logger.info(
+                f"Skipping insert of text to file {file_path} due to `--dry-run` option"
+            )
+            return
+
         insert_text_in_file(file_path, output["line"], text)
 
     def get_text(self, context: Context, column: int) -> str:
