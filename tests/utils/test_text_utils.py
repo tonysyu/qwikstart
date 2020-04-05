@@ -22,3 +22,14 @@ class TestStripEmptyLines:
 
     def test_single_line_with_indentation_preserved(self) -> None:
         assert text_utils.strip_empty_lines("    hello") == "    hello"
+
+
+class TestPformatJson:
+    def test_single_key(self) -> None:
+        assert text_utils.pformat_json({"key": "value"}) == text_utils.format_multiline(
+            """
+            {
+                "key": "value"
+            }
+            """
+        )

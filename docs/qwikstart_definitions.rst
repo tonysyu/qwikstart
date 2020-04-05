@@ -16,18 +16,18 @@ Local repository including task specification
 
 The simplest way to define qwikstart operations is using a local directory containing
 a qwikstart task specification. For example, the following is a subset of the examples
-directory in this repo:
+directory in the qwikstart repo::
 
-| ├── examples
-| │  ├── copy_file_tree.yml
-| │  ├── hello_world
-| │  │  └── qwikstart.yml
-| │  └── templates
-| │     ├── copy-file-tree
-| │     │  ├── subdirectory
-| │     │  │  └── example-file.txt
-| │     │  └── {{ qwikstart.dynamic_directory_name }}
-| │     │     └── {{ qwikstart.dynamic_file_name }}.txt
+    └── examples
+       ├── copy_file_tree.yml
+       ├── hello_world
+       │  └── qwikstart.yml
+       └── templates
+          └── copy-file-tree
+             ├── subdirectory
+             │  └── example-file.txt
+             └── {{ qwikstart.dynamic_directory_name }}
+                └── {{ qwikstart.dynamic_file_name }}.txt
 
 Within this repo, you can run an example by specifying the path to the qwikstart repo:
 

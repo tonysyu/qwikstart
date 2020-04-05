@@ -26,13 +26,23 @@ class TestInsertTextFakeFS(TestCase):
         assert self.insert_on_first_line("New Line") == "New Line\nHello"
         assert helpers.filemode(self.file_path) == 0o777
 
-    def insert_on_first_line(self, text: str) -> str:
+    def test_dry_run(self) -> None:
+        self.fs.create_file(self.file_path, contents="Hello")
+
+        exec_context = helpers.get_execution_context(dry_run=True)
+        assert (
+            self.insert_on_first_line("New Line", execution_context=exec_context)
+            == "Hello"
+        )
+
+    def insert_on_first_line(self, text: str, **override_context: Any) -> str:
         context = {
             "execution_context": helpers.get_execution_context(),
             "text": text,
             "line": 0,
             "column": 0,
             "file_path": self.file_path,
+            **override_context,
         }
         return insert_text_and_return_file_text(context)
 

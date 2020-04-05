@@ -1,3 +1,4 @@
+import logging
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,6 +10,8 @@ from .base import BaseOperation
 from .utils import FILE_PATH_HELP
 
 __all__ = ["Context", "Operation"]
+
+logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
     "file_path": FILE_PATH_HELP,
@@ -43,6 +46,12 @@ class Operation(BaseOperation[Context, None]):
 
         replace = search_and_replace_rx if context.use_regex else search_and_replace
         content_after = replace(context.search, context.replace, content_before)
+
+        if context.execution_context.dry_run:
+            logger.info(
+                f"Skipping search_and_replace on {file_path} due to `--dry-run` option"
+            )
+            return
 
         with file_path.open("w") as f:
             f.write(content_after)

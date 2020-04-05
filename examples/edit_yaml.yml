@@ -1,0 +1,9 @@
+steps:
+    "Edit this yaml file":
+        name: edit_yaml
+        file_path: "examples/edit_yaml.yml"
+        merge_data:
+            steps:
+                "Display message":
+                    name: echo
+                    message: "Hello"

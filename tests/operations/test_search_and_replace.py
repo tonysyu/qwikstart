@@ -1,6 +1,7 @@
 import os
 import textwrap
 from pathlib import Path
+from typing import Any
 
 from pyfakefs.fake_filesystem_unittest import TestCase
 
@@ -52,8 +53,21 @@ class TestSearchAndReplace(TestCase):
         assert self.search_and_replace("Hello", "Howdy") == "Howdy World!"
         assert helpers.filemode(self.file_path) == 0o777
 
+    def test_dry_run(self) -> None:
+        self.fs.create_file(self.file_path, contents="Hello World!")
+
+        exec_context = helpers.get_execution_context(dry_run=True)
+        assert (
+            self.search_and_replace("Hello", "Howdy", execution_context=exec_context)
+            == "Hello World!"
+        )
+
     def search_and_replace(
-        self, search: str, replace: str, use_regex: bool = False
+        self,
+        search: str,
+        replace: str,
+        use_regex: bool = False,
+        **override_context: Any,
     ) -> str:
         context = {
             "execution_context": helpers.get_execution_context(),
@@ -61,6 +75,7 @@ class TestSearchAndReplace(TestCase):
             "search": search,
             "replace": replace,
             "use_regex": use_regex,
+            **override_context,
         }
         op = search_and_replace.Operation()
         op.execute(context)

@@ -59,6 +59,12 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
 
         logger.info(f"Running command: {cmd}")
 
+        if context.execution_context.dry_run:
+            logger.warning(
+                "Running with `--dry-run` option, but shell operation will run "
+                "regardless of whether operation modifies filesystem."
+            )
+
         response = subprocess.run(
             cmd,
             shell=isinstance(cmd, str),

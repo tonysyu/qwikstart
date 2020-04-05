@@ -51,6 +51,12 @@ class Operation(BaseOperation[Context, None]):
 
     def run(self, context: Context) -> None:
         renderer = TemplateRenderer.from_context(context)
+
+        if context.execution_context.dry_run:
+            file_path = context.target_path
+            logger.info(f"Skipping addition of {file_path} due to `--dry-run` option")
+            return
+
         with ensure_path(context.target_path).open("w") as f:
             f.write(renderer.render(context.template_path))
 

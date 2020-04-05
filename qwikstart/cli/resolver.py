@@ -1,4 +1,4 @@
-from typing import Optional, cast
+from typing import Any, Dict, Optional, cast
 
 from .. import repository
 from ..exceptions import RepoLoaderError, UserFacingError
@@ -6,7 +6,11 @@ from ..parser import parse_task
 from ..tasks import Task
 
 
-def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
+def resolve_task(
+    task_path: str,
+    repo_url: Optional[str] = None,
+    execution_config: Optional[Dict[str, Any]] = None,
+) -> Task:
     try:
         loader = get_repo_loader(task_path, repo_url)
     except RepoLoaderError as error:
@@ -14,7 +18,10 @@ def resolve_task(task_path: str, repo_url: Optional[str] = None) -> Task:
 
     # FIXME: We should check whether the data has the required keys.
     task_spec = cast(repository.TaskSpec, loader.task_spec)
-    return parse_task(task_spec, loader.repo_path)
+
+    execution_config = execution_config or {}
+    execution_config.setdefault("source_dir", loader.repo_path)
+    return parse_task(task_spec, execution_config=execution_config)
 
 
 def get_repo_loader(

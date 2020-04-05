@@ -18,11 +18,14 @@ class TestEditJsonFS(TestCase):
     def initialize_json(self, data: Dict[str, Any]) -> None:
         self.fs.create_file(self.file_path, contents=json.dumps(data))
 
-    def edit_json_and_return_parsed(self, merge_data: Dict[str, Any]) -> Dict[str, Any]:
+    def edit_json_and_return_parsed(
+        self, merge_data: Dict[str, Any], **override_context: Any,
+    ) -> Dict[str, Any]:
         context = {
             "execution_context": helpers.get_execution_context(),
             "file_path": self.file_path,
             "merge_data": merge_data,
+            **override_context,
         }
         edit_action = edit_json.Operation()
         edit_action.execute(context)
@@ -38,6 +41,14 @@ class TestEditJsonFS(TestCase):
         assert self.edit_json_and_return_parsed({"parent": {"son": "Austin"}}) == {
             "parent": {"daughter": "Emily", "son": "Austin"}
         }
+
+    def test_dry_run(self) -> None:
+        self.initialize_json({"unchanged": True})
+        output_json = self.edit_json_and_return_parsed(
+            {"unchanged": False},
+            execution_context=helpers.get_execution_context(dry_run=True),
+        )
+        assert output_json == {"unchanged": True}
 
     def test_overwrite(self) -> None:
         self.initialize_json({"mutable": 1})

@@ -18,11 +18,14 @@ class TestEditYamlFS(TestCase):
     def initialize_yaml(self, data: Dict[str, Any]) -> None:
         self.fs.create_file(self.file_path, contents=dump_yaml_string(data))
 
-    def edit_yaml_and_return_parsed(self, merge_data: Dict[str, Any]) -> Dict[str, Any]:
+    def edit_yaml_and_return_parsed(
+        self, merge_data: Dict[str, Any], **override_context: Any,
+    ) -> Dict[str, Any]:
         context = {
             "execution_context": helpers.get_execution_context(),
             "file_path": self.file_path,
             "merge_data": merge_data,
+            **override_context,
         }
         edit_action = edit_yaml.Operation()
         edit_action.execute(context)
@@ -37,6 +40,14 @@ class TestEditYamlFS(TestCase):
         assert self.edit_yaml_and_return_parsed({"parent": {"son": "Austin"}}) == {
             "parent": {"daughter": "Emily", "son": "Austin"}
         }
+
+    def test_dry_run(self) -> None:
+        self.initialize_yaml({"unchanged": True})
+        output_yaml = self.edit_yaml_and_return_parsed(
+            {"unchanged": False},
+            execution_context=helpers.get_execution_context(dry_run=True),
+        )
+        assert output_yaml == {"unchanged": True}
 
     def test_overwrite(self) -> None:
         self.initialize_yaml({"mutable": 1})
