@@ -7,16 +7,18 @@ from .core import (
     indent,
 )
 from .dict_utils import merge_nested_dicts, remap_dict
-from .text_utils import strip_empty_lines
+from .text_utils import format_multiline, pformat_json, strip_empty_lines
 
 __all__ = [
     "ensure_path",
     "first",
+    "format_multiline",
     "full_class_name",
     "get_dataclass_keys",
     "get_dataclass_values",
     "indent",
     "merge_nested_dicts",
+    "pformat_json",
     "remap_dict",
     "strip_empty_lines",
 ]

@@ -1,5 +1,7 @@
+import json
 import os
-from typing import Iterable, Optional
+import textwrap
+from typing import Any, Dict, Iterable, Optional
 
 from .core import first
 
@@ -23,3 +25,16 @@ def index_of_non_empty_line(lines_of_text: Iterable[str]) -> int:
 
 def noop(text: str) -> str:
     return text
+
+
+def format_multiline(multiline_text: str) -> str:
+    """Return multiline string after dedenting and with empty lines stripped."""
+    return textwrap.dedent(strip_empty_lines(multiline_text))
+
+
+def pformat_json(data: Dict[Any, Any]) -> str:
+    """Return pretty-formatted string from dictionary assuming json serializable data.
+
+    See https://stackoverflow.com/q/3229419 for other printing options.
+    """
+    return json.dumps(data, indent=4)
