@@ -19,7 +19,7 @@ def cli() -> None:
 @click.option(
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
-@click.option("--dry_run", is_flag=True, help="Enable dry run execution.")
+@click.option("--dry-run", is_flag=True, help="Enable dry run execution.")
 @click.option("--repo", help="Url for repo containing qwikstart task", default=None)
 def run(task_path: str, verbose: bool, dry_run: bool, repo: str) -> None:
     """Run task in the current directory."""
