@@ -65,7 +65,7 @@ class Operation(BaseOperation[Context, None]):
 
         if context.execution_context.dry_run:
             logger.info(
-                f"Skipping copy of files from  {source} to {target} "
+                f"Skipping copy of files from {source} to {target} "
                 "due to `--dry-run` option"
             )
             return

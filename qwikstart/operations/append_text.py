@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,6 +10,8 @@ from .base import BaseOperation
 from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+logger = logging.getLogger(__name__)
 
 CONTEXT_HELP = {
     "file_path": FILE_PATH_HELP,
@@ -37,6 +40,13 @@ class Operation(BaseOperation[Context, None]):
 
     def run(self, context: Context) -> None:
         file_path = ensure_path(context.file_path)
+
+        if context.execution_context.dry_run:
+            logger.info(
+                f"Skipping append_text operation on {file_path} "
+                "due to `--dry-run` option"
+            )
+            return
 
         with file_path.open("a") as f:
             f.write(self.get_text(context))
