@@ -1,3 +1,4 @@
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -9,6 +10,8 @@ from .base import BaseOperation
 from .utils import FILE_PATH_HELP
 
 __all__ = ["Operation"]
+
+logger = logging.getLogger(__name__)
 
 TEXT_HELP = "Text that will be inserted."
 LINE_ENDING_HELP = "Text appended to the end of inserted text."
@@ -43,6 +46,13 @@ class Operation(BaseOperation[Context, None]):
     def run(self, context: Context) -> None:
         file_path = ensure_path(context.file_path)
         text = self.get_text(context)
+
+        if context.execution_context.dry_run:
+            logger.info(
+                f"Skipping insert of text to file {file_path} due to `--dry-run` option"
+            )
+            return
+
         insert_text_in_file(file_path, context.line, text)
 
     def get_text(self, context: Context) -> str:
