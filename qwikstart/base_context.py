@@ -20,6 +20,9 @@ class ExecutionContext:
     #: In practice, this will be set to the working directory by the CLI.
     target_dir: Path
 
+    #: Enable dry-run mode, which avoids changes to filesystem.
+    dry_run: bool = False
+
     def get_template_loader(self) -> jinja2.BaseLoader:
         return jinja2.FileSystemLoader("/")
 

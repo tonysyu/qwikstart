@@ -19,11 +19,13 @@ def cli() -> None:
 @click.option(
     "-v", "--verbose", is_flag=True, help="Print debug information", default=False
 )
+@click.option("--dry_run", is_flag=True, help="Enable dry run execution.")
 @click.option("--repo", help="Url for repo containing qwikstart task", default=None)
-def run(task_path: str, verbose: bool, repo: str) -> None:
+def run(task_path: str, verbose: bool, dry_run: bool, repo: str) -> None:
     """Run task in the current directory."""
     logging.configure_logger("DEBUG" if verbose else "INFO")
-    task = resolve_task(task_path, repo_url=repo)
+    execution_config = {"dry_run": dry_run}
+    task = resolve_task(task_path, repo_url=repo, execution_config=execution_config)
     task.execute()
 
 

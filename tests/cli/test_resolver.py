@@ -18,14 +18,18 @@ class TestResolveTask:
         mock_loader = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
-        mock_parse_task.assert_called_once_with(data, FAKE_PATH.parent)
+        mock_parse_task.assert_called_once_with(
+            data, FAKE_PATH.parent, execution_config=None
+        )
 
     def test_resolve_directory(self) -> None:
         data = {"name": "fake_task"}
         mock_loader = create_mock_repo_loader(data)
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
-        mock_parse_task.assert_called_once_with(data, FAKE_PATH.parent)
+        mock_parse_task.assert_called_once_with(
+            data, FAKE_PATH.parent, execution_config=None
+        )
 
     def test_loader_error(self) -> None:
         error = RepoLoaderError("fake error")

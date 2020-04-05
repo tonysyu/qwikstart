@@ -13,7 +13,9 @@ def test_run() -> None:
     with patch.object(main, "resolve_task") as mock_resolve_task:
         result = runner.invoke(main.run, "fake/path")
     assert result.exit_code == 0
-    mock_resolve_task.assert_called_once_with("fake/path", repo_url=None)
+    mock_resolve_task.assert_called_once_with(
+        "fake/path", repo_url=None, execution_config={"dry_run": False}
+    )
 
 
 def test_list_operations() -> None:
