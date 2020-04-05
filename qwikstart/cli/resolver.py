@@ -18,7 +18,10 @@ def resolve_task(
 
     # FIXME: We should check whether the data has the required keys.
     task_spec = cast(repository.TaskSpec, loader.task_spec)
-    return parse_task(task_spec, loader.repo_path, execution_config=execution_config)
+
+    execution_config = execution_config or {}
+    execution_config.setdefault("source_dir", loader.repo_path)
+    return parse_task(task_spec, execution_config=execution_config)
 
 
 def get_repo_loader(

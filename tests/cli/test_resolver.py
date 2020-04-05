@@ -19,7 +19,7 @@ class TestResolveTask:
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
         mock_parse_task.assert_called_once_with(
-            data, FAKE_PATH.parent, execution_config=None
+            data, execution_config={"source_dir": FAKE_PATH.parent}
         )
 
     def test_resolve_directory(self) -> None:
@@ -28,7 +28,7 @@ class TestResolveTask:
         with patch_resolve_task_dependencies(mock_loader) as mock_parse_task:
             resolver.resolve_task(FAKE_PATH_STR)
         mock_parse_task.assert_called_once_with(
-            data, FAKE_PATH.parent, execution_config=None
+            data, execution_config={"source_dir": FAKE_PATH.parent}
         )
 
     def test_loader_error(self) -> None:

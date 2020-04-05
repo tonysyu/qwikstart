@@ -20,12 +20,10 @@ OPERATIONS_DEPRECATION_WARNING = (
 
 
 def parse_task(
-    task_spec: TaskSpec,
-    source_path: Optional[Path] = None,
-    execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: TaskSpec, execution_config: Optional[Dict[str, Any]] = None,
 ) -> Task:
     """Return task parsed from a task specification dictionary."""
-    _initialize_context(task_spec, source_path, execution_config=execution_config)
+    _initialize_context(task_spec, execution_config=execution_config)
 
     known_operations = get_operations_mapping()
 
@@ -62,16 +60,13 @@ def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str,
 
 
 def _initialize_context(
-    task_spec: TaskSpec,
-    source_path: Optional[Path] = None,
-    execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: TaskSpec, execution_config: Optional[Dict[str, Any]] = None,
 ) -> None:
-    task_spec.setdefault("context", {})
-    source_dir = source_path if source_path else Path(".")
     execution_config = execution_config or {}
+    execution_config.setdefault("source_dir", Path("."))
+    execution_config.setdefault("target_dir", Path("."))
+
+    task_spec.setdefault("context", {})
     task_spec["context"].setdefault(
-        "execution_context",
-        base_context.ExecutionContext(
-            source_dir=source_dir, target_dir=Path("."), **execution_config
-        ),
+        "execution_context", base_context.ExecutionContext(**execution_config),
     )
