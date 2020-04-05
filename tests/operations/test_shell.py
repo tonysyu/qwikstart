@@ -51,9 +51,19 @@ class TestShellOperation:
         )
         mock_logger.info.assert_any_call("Howdy")
 
-    def shell(self, context_defs: Dict[str, Any]) -> Dict[str, Any]:
-        context = shell.Context(
-            execution_context=helpers.get_execution_context(), **context_defs
+    def test_dry_run_does_not_skip_run_but_warns(self, mock_logger: Mock) -> None:
+        execution_context = helpers.get_execution_context(dry_run=True)
+        self.shell({"cmd": "echo hello", "execution_context": execution_context})
+        mock_logger.info.assert_has_calls(
+            [call("Running command: echo hello"), call("hello")],
         )
+        mock_logger.warning.assert_called_once()
+
+    def shell(self, context_defs: Dict[str, Any]) -> Dict[str, Any]:
+        raw_context: Dict[str, Any] = {
+            "execution_context": helpers.get_execution_context(),
+            **context_defs,
+        }
+        context = shell.Context(**raw_context)
         shell_op = shell.Operation()
         return shell_op.run(context)
