@@ -18,6 +18,16 @@ class TestAddFile(TestCase):
         output_path = self.render_template(template_path)
         assert helpers.read_file_path(output_path) == "Fake template content"
 
+    def test_dry_run(self) -> None:
+        template_path = self.create_template("Fake template content")
+        output_path = self.render_template(
+            template_path,
+            override_context={
+                "execution_context": helpers.get_execution_context(dry_run=True)
+            },
+        )
+        assert not output_path.exists()
+
     def test_variables(self) -> None:
         template_path = self.create_template("""Hello, {{ qwikstart.name }}!""")
         output_path = self.render_template(
@@ -56,15 +66,20 @@ class TestAddFile(TestCase):
         return path
 
     def render_template(
-        self, template_path: Path, template_variables: Optional[Dict[str, Any]] = None
+        self,
+        template_path: Path,
+        template_variables: Optional[Dict[str, Any]] = None,
+        override_context: Optional[Dict[str, Any]] = None,
     ) -> Path:
         template_variables = template_variables or {}
+        override_context = override_context or {}
         output_file = Path("output.txt")
         context = {
             "execution_context": helpers.get_execution_context(),
             "target_path": output_file,
             "template_path": str(template_path),
             "template_variables": template_variables,
+            **override_context,
         }
 
         add_file_op = add_file.Operation()
