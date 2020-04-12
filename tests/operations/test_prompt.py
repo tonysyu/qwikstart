@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
-from qwikstart.exceptions import OperationDefinitionError
+from qwikstart.exceptions import OperationDefinitionError, OperationError
 from qwikstart.operations import prompt as prompt_user
 from qwikstart.utils.prompt import PromptSpec
 
@@ -25,6 +25,24 @@ class TestPromptUser:
         context = {"inputs": [{"name": "name", "default": "World"}]}
         output_context = execute_prompt_op(context, responses={})
         assert output_context["template_variables"]["name"] == "World"
+
+    def test_choices_from_template_variables(self) -> None:
+        with patch.object(prompt_user, "create_prompt_spec") as create_prompt_spec:
+            execute_prompt_op(
+                {
+                    "inputs": [{"name": "name", "choices_from": "possible_names"}],
+                    "template_variables": {"possible_names": ["Troy", "Abed"]},
+                }
+            )
+        create_prompt_spec.assert_called_once_with(
+            name="name", choices=["Troy", "Abed"],
+        )
+
+    def test_unknown_choices_from(self) -> None:
+        with pytest.raises(OperationError):
+            execute_prompt_op(
+                {"inputs": [{"name": "name", "choices_from": "unknown_variable"}],}
+            )
 
     def test_pre_existing_template_variable_in_output(self) -> None:
         context = {
@@ -77,8 +95,8 @@ def execute_prompt_op(
     **operation_kwargs: Any,
 ) -> Dict[str, Any]:
     context.setdefault("execution_context", helpers.get_execution_context())
-    mock_read_user_variable = MockReadUserVariable(responses=responses)
     prompt_op = prompt_user.Operation(**operation_kwargs)
+    mock_read_user_variable = MockReadUserVariable(responses=responses)
     with patch.object(prompt_user, "read_user_variable", new=mock_read_user_variable):
         return prompt_op.execute(context)
 

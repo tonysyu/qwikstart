@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
 
 from ..base_context import BaseContext, DictContext, TContext
-from ..exceptions import OperationDefinitionError
+from ..exceptions import OperationDefinitionError, OperationError
 from ..utils.prompt import create_prompt_spec, read_user_variable
 from ..utils.templates import DEFAULT_TEMPLATE_VARIABLE_PREFIX, TemplateRenderer
 from .base import BaseOperation
@@ -91,6 +91,10 @@ class Operation(BaseOperation[Context, Output]):
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
         for input_description in context.inputs:
+            if "choices_from" in input_description:
+                self._resolve_input_choices_from_template_variables(
+                    input_description, context.template_variables
+                )
             prompt_spec = create_prompt_spec(**input_description)
 
             if isinstance(prompt_spec.default, str):
@@ -102,3 +106,21 @@ class Operation(BaseOperation[Context, Output]):
             renderer.add_template_variable(prompt_spec.name, response)
 
         return user_responses
+
+    def _resolve_input_choices_from_template_variables(
+        self, input_description: Dict[str, Any], template_variables: Dict[str, Any]
+    ) -> None:
+        """Update `input_description` with `choices` resolved from `template_variables`.
+
+        The `choices_from` value in `input_description` should be a variable name in
+        `template_variables` mapping to a list of input choices.
+        """
+        variable_name = input_description.pop("choices_from")
+        choices = template_variables.get(variable_name)
+        if not choices:
+            input_name = input_description["name"]
+            raise OperationError(
+                f"Input '{input_name}' defined with `choices_from='{variable_name}'` "
+                f"not found in template variables: {template_variables}"
+            )
+        input_description["choices"] = choices

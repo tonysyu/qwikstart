@@ -355,18 +355,20 @@ Required context
     `default`
         Optional default value of variable. Note that this can be defined as
         a template string, with variables defined in previous prompts or from
-        template variables in the context
+        template variables in the context. For example::
+
+            - name: "name"
+              default: "World"
+            - name: "message"
+              default: "Hello {{ qwikstart.name }}!"
+
     `help_text`
         Optional info presented to users when responding to prompts.
     `choices`
         A list of allowed choices.
-
-    For example::
-
-        - name: "name"
-          default: "World"
-        - name: "message"
-          default: "Hello {{ qwikstart.name }}!"
+    `choices_from`
+        The name of a template variable in `template_variables` mapping to a list of
+        allowed choices.
 
 Optional context
 ----------------
