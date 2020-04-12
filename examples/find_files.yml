@@ -3,12 +3,15 @@ steps:
         name: find_files
         path_filter: "*examples/*.yml"
         regex: "name: shell"
-        output_mapping:
-            "matching_files": "template_variables.matching_files"
-    "List matching files":
-        name: echo
-        message: |
-            The following examples use the shell operation:
-            {% for path in qwikstart.matching_files %}
-                - {{ path }}
-            {%- endfor %}
+        opconfig:
+            output_namespace: "template_variables"
+    "Choose example":
+        name: prompt
+        inputs:
+            - name: "example_file"
+              choices_from: "matching_files"
+    "Display example":
+        name: shell
+        cmd: "cat {{ qwikstart.example_file }}"
+        opconfig:
+            display_description: false
