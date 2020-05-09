@@ -41,7 +41,7 @@ class TestPromptUser:
     def test_unknown_choices_from(self) -> None:
         with pytest.raises(OperationError):
             execute_prompt_op(
-                {"inputs": [{"name": "name", "choices_from": "unknown_variable"}],}
+                {"inputs": [{"name": "name", "choices_from": "unknown_variable"}]}
             )
 
     def test_pre_existing_template_variable_in_output(self) -> None:
