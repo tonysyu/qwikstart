@@ -29,7 +29,7 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation edit yaml by merging data into existing yaml data."""
+    """Operation to edit yaml by merging data into existing yaml data."""
 
     name: str = "edit_yaml"
 

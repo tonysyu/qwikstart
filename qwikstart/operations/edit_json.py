@@ -31,7 +31,7 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation edit json by merging data into existing json data."""
+    """Operation to edit json by merging data into existing json data."""
 
     name: str = "edit_json"
 

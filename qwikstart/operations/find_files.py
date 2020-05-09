@@ -1,4 +1,3 @@
-import functools
 import logging
 import os
 import re
@@ -8,7 +7,9 @@ from fnmatch import fnmatch
 from typing import Callable, Dict, Iterable, List, Optional, cast
 
 from ..base_context import BaseContext
+from ..utils import create_regex_flags
 from .base import BaseOperation
+from .utils import REGEX_FLAGS_HELP
 
 __all__ = ["Context", "Operation"]
 
@@ -26,6 +27,7 @@ CONTEXT_HELP = {
         For example, you can limit text search to json files using "*.json".
         """
     ),
+    "regex_flags": REGEX_FLAGS_HELP,
 }
 
 
@@ -90,10 +92,3 @@ def create_path_filter(path_filter_string: Optional[str]) -> Callable[[str], boo
             return fnmatch(path, cast(str, path_filter_string))
 
     return path_filter
-
-
-def create_regex_flags(flag_strings: List[str]) -> re.RegexFlag:
-    default = re.RegexFlag(0)
-    flags = (getattr(re, name, default) for name in flag_strings)
-    # FIXME: This line complains about returning Any but still fails when casting.
-    return functools.reduce(lambda x, y: x | y, flags, default)  # type: ignore
