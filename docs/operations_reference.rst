@@ -103,6 +103,39 @@ Optional context
     Text added after appended `text`
 
 
+context_from_regex
+==================
+
+Operation to extract context data from a file using a regex.
+
+Required context
+----------------
+
+`regex`
+    Regex to search for in `file_path`. Note that this is expected to contain named
+    capture groups. Names of capture groups define new context variable names.
+
+    See https://docs.python.org/3/howto/regex.html#non-capturing-and-named-groups
+
+`file_path`
+    Path to file relative to the current working directory.
+
+Optional context
+----------------
+
+`regex_flags`
+    default: `["MULTILINE"]`
+
+    List of Python regex flags. Any combination of `'IGNORECASE'`, `'MULTILINE'`,
+    `'DOTALL'`, `'UNICODE'`. See `docs for Python regex library`_.
+
+Output
+------
+
+This operation can define arbitrary output values based on named capture groups in
+`regex`.
+
+
 define_context
 ==============
 
@@ -132,7 +165,7 @@ Optional context
 Output
 ------
 
-This operation can define arbitrary output values.
+This operation can define arbitrary output values based on `context_defs`.
 
 
 echo
@@ -242,7 +275,7 @@ Optional context
 Output
 ------
 
-This operation can define arbitrary output values.
+This operation returns a list of file paths in a variable defined by `output_name`.
 
 
 find_tag_and_insert_text
@@ -298,10 +331,10 @@ Output
 ------
 
 `line`
-    type: <class 'int'>
+    Line number where the text was found.
 
 `column`
-    type: <class 'int'>
+    Column where the start of the matching text was found.
 
 
 insert_text
@@ -391,7 +424,8 @@ Optional context
 Output
 ------
 
-This operation can define arbitrary output values.
+This operation can define arbitrary output values based on the values of `name` defined
+in `inputs`.
 
 
 search_and_replace
@@ -464,7 +498,7 @@ Optional context
 Output
 ------
 
-This operation can define arbitrary output values.
+This operation can define arbitrary output in a variable defined by `output_var`.
 
 
 .. |file_path description| replace::
