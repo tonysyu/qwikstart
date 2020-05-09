@@ -9,6 +9,7 @@ from typing import Callable, Dict, Iterable, List, Optional, cast
 from ..base_context import BaseContext
 from ..utils import create_regex_flags
 from .base import BaseOperation
+from .utils import REGEX_FLAGS_HELP
 
 __all__ = ["Context", "Operation"]
 
@@ -26,6 +27,7 @@ CONTEXT_HELP = {
         For example, you can limit text search to json files using "*.json".
         """
     ),
+    "regex_flags": REGEX_FLAGS_HELP,
 }
 
 

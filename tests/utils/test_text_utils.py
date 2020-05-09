@@ -26,7 +26,7 @@ class TestStripEmptyLines:
 
 class TestPformatJson:
     def test_single_key(self) -> None:
-        assert text_utils.pformat_json({"key": "value"}) == text_utils.format_multiline(
+        assert text_utils.pformat_json({"key": "value"}) == text_utils.clean_multiline(
             """
             {
                 "key": "value"

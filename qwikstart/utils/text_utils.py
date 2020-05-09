@@ -27,7 +27,7 @@ def noop(text: str) -> str:
     return text
 
 
-def format_multiline(multiline_text: str) -> str:
+def clean_multiline(multiline_text: str) -> str:
     """Return multiline string after dedenting and with empty lines stripped."""
     return textwrap.dedent(strip_empty_lines(multiline_text))
 

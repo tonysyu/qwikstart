@@ -167,7 +167,7 @@ Optional context
 edit_json
 =========
 
-Operation edit json by merging data into existing json data.
+Operation to edit json by merging data into existing json data.
 
 Required context
 ----------------
@@ -188,7 +188,7 @@ Optional context
 edit_yaml
 =========
 
-Operation edit yaml by merging data into existing yaml data.
+Operation to edit yaml by merging data into existing yaml data.
 
 Required context
 ----------------
@@ -203,7 +203,9 @@ Required context
 find_files
 ==========
 
-Operation for searching for text within files and returning file paths.
+Operation to search for text within files and return match file paths. Matching files
+are stored in a list of `matching_files`, but the name can be specified using
+`output_name`.
 
 Optional context
 ----------------
