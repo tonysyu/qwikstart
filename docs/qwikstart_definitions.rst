@@ -18,7 +18,7 @@ The simplest way to define qwikstart operations is using a local directory conta
 a qwikstart task specification. For example, the following is a subset of the examples
 directory in the qwikstart repo::
 
-    └── examples
+    └── qwikstart/examples/docs
        ├── copy_file_tree.yml
        ├── hello_world
        │  └── qwikstart.yml
@@ -33,7 +33,7 @@ Within this repo, you can run an example by specifying the path to the qwikstart
 
 .. code-block:: bash
 
-    $ qwikstart run examples/copy_file_tree.yml
+    $ qwikstart run examples/docs/copy_file_tree.yml
 
 The `copy_file_tree.yml` is the task specification file and the parent directory is
 assumed to be the repository containing files used by the task. For example, templates
@@ -96,4 +96,4 @@ then the path for source files (e.g. template files) is assumed to be within the
 
 .. code-block:: bash
 
-    $ qwikstart run --repo https://github.com/tonysyu/qwikstart examples/copy_file_tree.yml
+    $ qwikstart run --repo https://github.com/tonysyu/qwikstart examples/docs/copy_file_tree.yml

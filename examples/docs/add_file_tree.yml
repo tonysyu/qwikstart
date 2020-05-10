@@ -1,0 +1,12 @@
+steps:
+    "Prompt for name":
+        name: prompt
+        inputs:
+            - name: "name"
+    "Add files from `templates/add-file-tree`":
+        name: add_file_tree
+        target_dir: "./add-file-tree"
+        template_dir: "templates/add-file-tree"
+        template_variables:
+            dynamic_directory_name: "my-dynamic-directory"
+            dynamic_file_name: "my-dynamic-file"
