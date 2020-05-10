@@ -1,0 +1,9 @@
+steps:
+    "Prompt for name":
+        name: prompt
+        inputs:
+            - name: "name"
+    "Add file example":
+        name: add_file
+        template_path: "templates/hello_world.txt"
+        target_path: "add_file.txt"

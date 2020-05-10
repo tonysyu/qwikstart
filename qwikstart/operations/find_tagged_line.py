@@ -39,7 +39,7 @@ class Output(TypedDict):
 
 
 class Operation(BaseOperation[Context, Output]):
-    """Operation inserting text on a given line"""
+    """Operation for finding a line in a file containing a text "tag"."""
 
     name: str = "find_tagged_line"
 

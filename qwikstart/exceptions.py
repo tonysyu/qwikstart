@@ -14,10 +14,6 @@ class RepoLoaderError(QwikstartException):
     """Exception raised when loading task specification fails."""
 
 
-class OperationDefinitionError(QwikstartException):
-    """Exception raised when an operation is improperly defined."""
-
-
 # ----------------------
 # User-facing exceptions
 # ----------------------
@@ -33,6 +29,10 @@ class ConfigurationError(UserFacingError):
 
 class OperationError(UserFacingError):
     """User-facing exception raised during execution of operation."""
+
+
+class OperationDefinitionError(UserFacingError):
+    """Exception raised when an operation is improperly defined."""
 
 
 class TaskParserError(UserFacingError):
