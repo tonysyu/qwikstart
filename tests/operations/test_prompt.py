@@ -67,6 +67,11 @@ class TestPromptUser:
         # Double check the default namespace, "template_variables", is not created.
         assert "template_variables" not in output_context
 
+    def test_input_dictionary_raises_error(self) -> None:
+        # User-facing error raised when inputs is dict instead of list-of-dicts:
+        with pytest.raises(OperationDefinitionError):
+            execute_prompt_op(context={"inputs": {"name": "name"}})
+
     def test_old_output_dict_name_raises_error(self) -> None:
         with pytest.raises(OperationDefinitionError):
             # Error only raised if `output_dict_name` passed as `local_context`:
