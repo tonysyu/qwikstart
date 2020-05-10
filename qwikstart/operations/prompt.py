@@ -84,12 +84,17 @@ class Operation(BaseOperation[Context, Output]):
             )
 
     def run(self, context: Context) -> Output:
+        if not isinstance(context.inputs, list):
+            raise OperationDefinitionError(
+                f"Expected prompt inputs to be a list but given {context.inputs}"
+            )
 
         introduction = context.introduction
         logger.info(introduction)
 
         renderer = TemplateRenderer.from_context(context)
         user_responses = {}
+
         for input_description in context.inputs:
             if "choices_from" in input_description:
                 self._resolve_input_choices_from_template_variables(
