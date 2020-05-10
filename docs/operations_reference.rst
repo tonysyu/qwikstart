@@ -11,8 +11,8 @@ See the section on :doc:`./understanding_operations`
 for more background on how operations work.
 
 For examples the in this guide, we'll be using example files from the
-`qwikstart/examples/operations`_ directory in the qwikstart repo, which looks something
-like::
+`qwikstart/examples/operations`_ directory in the qwikstart project repo, which looks
+something like::
 
     qwikstart
     └── examples
@@ -50,7 +50,9 @@ This example uses the following template (path relative to qwikstart definition 
 
 Note that template variables (in this case, `name`) default to using `qwikstart` as
 a prefix, when rendered in templates. This can be controlled using the
-`template_variable_prefix` option described below.
+`template_variable_prefix` option described below. By default, the `prompt` operation
+adds variables to the `template_variables` namespace, which is used when rendering the
+template.
 
 Required context
 ----------------
@@ -79,6 +81,39 @@ add_file_tree
 =============
 
 Operation to add a file tree (a.k.a. directory) to a project.
+
+Example
+-------
+
+The following example uses the `prompt` operation to prompt the user for a name, and
+then uses it to generate a greeting message in one of the rendered files
+(`example-file.txt`):
+
+.. literalinclude:: ../examples/operations/add_file_tree.yml
+   :emphasize-lines: 7-12
+   :caption: `examples/operations/add_file_tree.yml`
+
+This example references an `add-file-tree` directory, which looks like::
+
+    qwikstart/examples/operations
+    ├── add_file_tree.yml
+    └── templates
+       └── add-file-tree
+          ├── subdirectory
+          │  └── example-file.txt
+          └── {{ qwikstart.dynamic_directory_name }}
+             └── {{ qwikstart.dynamic_file_name }}.txt
+
+The `prompt` operation, by default, adds variables to the `template_variables`
+namespace. The operation definition above defines additional template variables, `dynamic_directory_name` and `dynamic_file_name`, which are combined with those in
+the `template_variables` from the global context. Running the operation defined above
+produces the following::
+
+    ./add-file-tree
+    ├── subdirectory
+    │  └── example-file.txt
+    └── my-dynamic-directory
+       └── my-dynamic-file.txt
 
 Required context
 ----------------

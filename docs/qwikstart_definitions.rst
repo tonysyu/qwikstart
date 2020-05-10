@@ -19,11 +19,11 @@ a qwikstart task specification. For example, the following is a subset of the ex
 directory in the qwikstart repo::
 
     └── qwikstart/examples/operations
-       ├── copy_file_tree.yml
+       ├── add_file_tree.yml
        ├── hello_world
        │  └── qwikstart.yml
        └── templates
-          └── copy-file-tree
+          └── add-file-tree
              ├── subdirectory
              │  └── example-file.txt
              └── {{ qwikstart.dynamic_directory_name }}
@@ -33,9 +33,9 @@ Within this repo, you can run an example by specifying the path to the qwikstart
 
 .. code-block:: bash
 
-    $ qwikstart run examples/operations/copy_file_tree.yml
+    $ qwikstart run examples/operations/add_file_tree.yml
 
-The `copy_file_tree.yml` is the task specification file and the parent directory is
+The `add_file_tree.yml` is the task specification file and the parent directory is
 assumed to be the repository containing files used by the task. For example, templates
 used in the copy operation are defined relative to that parent directory:
 
@@ -43,9 +43,9 @@ used in the copy operation are defined relative to that parent directory:
 
     steps:
         # ... some lines removed
-        "Add files from `templates/copy-file-tree`":
+        "Add files from `templates/add-file-tree`":
             name: add_file_tree
-            template_dir: "templates/copy-file-tree"
+            template_dir: "templates/add-file-tree"
 
 You can also call `qwikstart run` with a path to a directory, and the task specification
 file will be assumed to be `qwikstart.yml` within that directory; for example:
@@ -96,4 +96,4 @@ then the path for source files (e.g. template files) is assumed to be within the
 
 .. code-block:: bash
 
-    $ qwikstart run --repo https://github.com/tonysyu/qwikstart examples/operations/copy_file_tree.yml
+    $ qwikstart run --repo https://github.com/tonysyu/qwikstart examples/operations/add_file_tree.yml
