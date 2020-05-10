@@ -10,3 +10,16 @@ div.body h6 {
     font-family: "Roboto", "Helvetica", sans-serif;
     font-weight: 300;
 }
+
+div.code-block-caption {
+    background-color: #DDD;
+}
+
+div.code-block-caption,
+div.code-block-caption code {
+    color: gray;
+}
+
+div.literal-block-wrapper {
+    padding: 0;
+}

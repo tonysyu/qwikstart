@@ -10,12 +10,47 @@ operations available.
 See the section on :doc:`./understanding_operations`
 for more background on how operations work.
 
+For examples the in this guide, we'll be using example files from the
+`qwikstart/examples/docs`_ directory in the qwikstart repo, which looks something
+like::
+
+    qwikstart
+    └── examples
+        └── docs
+            ├── templates
+            │   ├── hello_world.txt
+            │   └── ...
+            ├── add_file.yml
+            └── ...
+
+.. _qwikstart/examples/docs:
+   https://github.com/tonysyu/qwikstart/tree/master/examples/docs
+
 add_file
 ========
 
 Operation used to add files to a project. This copies a file located in the qwikstart
 repository (`template_path`) to a path relative to the working directory
 (`target_path`).
+
+Example
+-------
+
+The following example uses the `prompt` operation to prompt the user for a name, and
+then uses it to generate a greeting message:
+
+.. literalinclude:: ../examples/docs/add_file.yml
+   :emphasize-lines: 7-9
+   :caption: `examples/docs/add_file.yml`
+
+This example uses the following template (path relative to qwikstart definition file):
+
+.. literalinclude:: ../examples/docs/templates/hello_world.txt
+   :caption: examples/docs/templates/hello_world.txt
+
+Note that template variables (in this case, `name`) default to using `qwikstart` as
+a prefix, when rendered in templates. This can be controlled using the
+`template_variable_prefix` option described below.
 
 Required context
 ----------------
