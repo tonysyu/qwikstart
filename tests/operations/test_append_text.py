@@ -2,8 +2,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+import pytest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
+from qwikstart.exceptions import OperationError
 from qwikstart.operations import append_text
 
 from .. import helpers
@@ -21,6 +23,10 @@ class TestAppendText(TestCase):
     def test_append_to_existing(self) -> None:
         self.fs.create_file(self.file_path, contents="First line")
         assert self.append("New line") == "First line\nNew line"
+
+    def test_append_fails_when_no_file_defined(self) -> None:
+        with pytest.raises(OperationError):
+            self.append("New line")
 
     def test_dry_run(self) -> None:
         self.fs.create_file(self.file_path, contents="First line")

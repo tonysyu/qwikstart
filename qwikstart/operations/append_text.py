@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 from ..base_context import BaseContext
+from ..exceptions import OperationError
 from ..utils import ensure_path
 from .base import BaseOperation
 from .utils import FILE_PATH_HELP
@@ -40,6 +41,8 @@ class Operation(BaseOperation[Context, None]):
 
     def run(self, context: Context) -> None:
         file_path = ensure_path(context.file_path)
+        if not file_path.is_file():
+            raise OperationError(f"File does not exist: {file_path}")
 
         if context.execution_context.dry_run:
             logger.info(
