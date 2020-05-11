@@ -1,0 +1,10 @@
+steps:
+    "Append text to project README":
+        name: append_text
+        file_path: "README.rst"
+        text: |
+
+            Example text
+            ============
+
+            Example of using `append_text` operation.
