@@ -7,8 +7,13 @@ functionality of qwikstart. Typically, a single operation does something quite s
 but they are combined to perform more complex tasks. This section summarizes the core
 operations available.
 
-See the section on :doc:`./understanding_operations`
-for more background on how operations work.
+See the section on :doc:`./understanding_operations` for more background on how
+operations work.
+
+.. _available-operations:
+
+Available operations
+====================
 
 For examples the in this guide, we'll be using example files from the
 `qwikstart/examples/operations`_ directory in the qwikstart project repo, which looks
@@ -22,12 +27,6 @@ something like::
             │   └── ...
             ├── add_file.yml
             └── ...
-
-.. _qwikstart/examples/operations:
-   https://github.com/tonysyu/qwikstart/tree/master/examples/operations
-
-Available operations
-====================
 
 .. toctree::
    :maxdepth: 1
@@ -47,3 +46,6 @@ Available operations
    operations/prompt
    operations/search_and_replace
    operations/shell
+
+.. _qwikstart/examples/operations:
+   https://github.com/tonysyu/qwikstart/tree/master/examples/operations
