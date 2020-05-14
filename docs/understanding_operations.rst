@@ -40,6 +40,9 @@ This task composes two different operations: :doc:`operations/prompt` and
 :doc:`operations/echo`. The `prompt` operation is used to prompt the user for a name and
 then the `echo` operation displays a greeting.
 
+Note that the `output_namespace` config isn't actually needed since that's the default
+for the `prompt` operation. It's added here to be explicit and to focus the discussion.
+
 Anatomy of an operation
 -----------------------
 
