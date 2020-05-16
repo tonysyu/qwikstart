@@ -11,8 +11,8 @@ repository (`template_path`) to a path relative to the working directory
 Example
 =======
 
-The following example uses the `prompt` operation to prompt the user for a name, and
-then uses it to generate a greeting message:
+The following example uses the :doc:`prompt` operation to prompt the user for a name,
+and then uses it to generate a greeting message:
 
 .. literalinclude:: ../../examples/operations/add_file.yml
    :emphasize-lines: 7-9
@@ -25,9 +25,9 @@ This example uses the following template (path relative to qwikstart definition 
 
 Note that template variables (in this case, `name`) default to using `qwikstart` as
 a prefix, when rendered in templates. This can be controlled using the
-`template_variable_prefix` option described below. By default, the `prompt` operation
-adds variables to the `template_variables` namespace, which is used when rendering the
-template.
+`template_variable_prefix` option described below. By default, the :doc:`prompt`
+operation adds variables to the `template_variables` namespace, which is used when
+rendering the template.
 
 Required context
 ================
@@ -50,3 +50,8 @@ Optional context
     default: `'qwikstart'`
 
     |template_variable_prefix description|
+
+See also
+========
+- :doc:`add_file_tree`
+- :doc:`prompt`

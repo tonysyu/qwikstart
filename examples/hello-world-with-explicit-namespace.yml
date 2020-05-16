@@ -1,0 +1,11 @@
+steps:
+    "Ask for name":     # Description of operation (mainly for documentation purposes)
+        name: prompt    # Name of operation (must be a known value)
+        inputs:         # Variable specific to the `prompt` operation
+            - name: "name"
+        opconfig:       # Common operation configuration
+            output_namespace: "template_variables"
+    "Display message":
+        name: echo
+        message: |
+            Hello, {{ qwikstart.name }}!

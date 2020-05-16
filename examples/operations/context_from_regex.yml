@@ -1,0 +1,11 @@
+steps:
+    "Get project name from pyproject.toml":
+        name: context_from_regex
+        file_path: "pyproject.toml"
+        regex: '^name = "(?P<project_name>[^"]+)"'
+        opconfig:
+            output_namespace: template_variables
+    "Display result":
+        name: echo
+        message: |
+            Detected project name: {{ qwikstart.project_name }}
