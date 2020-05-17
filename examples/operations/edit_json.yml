@@ -1,0 +1,8 @@
+steps:
+    "Add test script to package.json":
+        name: edit_json
+        file_path: "examples/data/package.json"
+        merge_data:
+            scripts:
+                test:
+                    "jest"

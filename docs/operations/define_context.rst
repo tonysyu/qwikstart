@@ -47,3 +47,9 @@ Output
 ======
 
 This operation can define arbitrary output values based on `context_defs`.
+
+See also
+========
+- :doc:`context_from_regex`
+- :doc:`echo`
+- :doc:`prompt`
