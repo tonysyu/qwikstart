@@ -16,6 +16,9 @@ The following example adds/updates the `test` script in a `package.json` file:
    :emphasize-lines: 3-8
    :caption: `examples/operations/edit_json.yml`
 
+Note that `merge_data` can specify arbitrarily nested data. This data will be merged
+with existing data, so other `scripts` defined in the file will be preserved.
+
 Required context
 ================
 
