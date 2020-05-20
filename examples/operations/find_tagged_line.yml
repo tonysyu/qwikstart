@@ -1,0 +1,9 @@
+steps:
+    "Find middleware tag in settings":
+        name: find_tagged_line
+        file_path: "examples/data/settings.py"
+        tag: "# qwikstart: middleware"
+    "Insert new middleware under tag":
+        name: insert_text
+        file_path: "examples/data/settings.py"
+        text: '"django.contrib.auth.middleware.AuthenticationMiddleware",'

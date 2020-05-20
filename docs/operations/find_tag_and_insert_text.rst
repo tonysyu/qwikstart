@@ -12,8 +12,8 @@ operations.
 Example
 =======
 
-The following example inserts text to a file named `settings.py` by first searching for
-a string, a.k.a "tag", matching the string `"# qwikstart: middleware"`:
+The following example inserts `text` to a file named `settings.py` by first searching
+for a string matching the `tag` `"# qwikstart: middleware"`:
 
 .. literalinclude:: ../../examples/operations/find_tag_and_insert_text.yml
    :language: yaml
@@ -22,6 +22,7 @@ a string, a.k.a "tag", matching the string `"# qwikstart: middleware"`:
 Before this operation is run, `settings.py` would have the following code:
 
 .. code-block:: python
+    :emphasize-lines: 4
 
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
@@ -32,6 +33,7 @@ Before this operation is run, `settings.py` would have the following code:
 After running the operation, the `text` is inserted below the tag:
 
 .. code-block:: python
+    :emphasize-lines: 5
 
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
