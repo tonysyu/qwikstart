@@ -37,3 +37,4 @@ Optional context
 See also
 ========
 - :doc:`edit_yaml`
+- :doc:`find_files`

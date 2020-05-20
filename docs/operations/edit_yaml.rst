@@ -31,3 +31,4 @@ Required context
 See also
 ========
 - :doc:`edit_json`
+- :doc:`find_files`

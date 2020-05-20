@@ -6,8 +6,39 @@ find_tag_and_insert_text
 
 Operation to find a tag and insert text below that tag.
 
-This is a simple combination of the `find_tagged_line` and `insert_text` operations.
+This is a simple combination of the :doc:`find_tagged_line` and :doc:`insert_text`
+operations.
 
+Example
+=======
+
+The following example inserts text to a file named `settings.py` by first searching for
+a string, a.k.a "tag", matching the string `"# qwikstart: middleware"`:
+
+.. literalinclude:: ../../examples/operations/find_tag_and_insert_text.yml
+   :language: yaml
+   :caption: `examples/operations/find_tag_and_insert_text.yml`
+
+Before this operation is run, `settings.py` would have the following code:
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        "django.middleware.security.SecurityMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        # qwikstart: middleware
+    ]
+
+After running the operation, the `text` is inserted below the tag:
+
+.. code-block:: python
+
+    MIDDLEWARE = [
+        "django.middleware.security.SecurityMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        # qwikstart: middleware
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+    ]
 
 Required context
 ================
@@ -27,9 +58,16 @@ Optional context
 ================
 
 `line_ending`
-    default: `'\n'`
+    default: `'\\n'`
 
     Text appended to the end of inserted text.
 
 `match_indent`
     default: `True`
+
+See also
+========
+- :doc:`append_text`
+- :doc:`find_tagged_line`
+- :doc:`insert_text`
+- :doc:`search_and_replace`
