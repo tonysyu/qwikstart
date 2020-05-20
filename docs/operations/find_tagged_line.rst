@@ -52,3 +52,9 @@ Output
 
 `column`
     Column where the start of the matching text was found.
+
+See also
+========
+- :doc:`find_tag_and_insert_text`
+- :doc:`insert_text`
+- :doc:`search_and_replace`
