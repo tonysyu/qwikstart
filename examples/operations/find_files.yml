@@ -1,7 +1,7 @@
 steps:
     "Find example files using shell operation":
         name: find_files
-        path_filter: "*examples/*.yml"
+        path_filter: "*/examples/*.yml"
         regex: "name: shell"
         opconfig:
             output_namespace: "template_variables"
@@ -13,5 +13,3 @@ steps:
     "Display example":
         name: shell
         cmd: "cat {{ qwikstart.example_file }}"
-        opconfig:
-            display_description: false
