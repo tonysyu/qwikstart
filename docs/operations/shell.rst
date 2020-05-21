@@ -67,3 +67,8 @@ Output
 ======
 
 This operation can define arbitrary output in a variable defined by `output_var`.
+
+See also
+========
+- :doc:`echo`
+- :doc:`find_files`

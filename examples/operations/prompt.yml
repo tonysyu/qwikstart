@@ -1,0 +1,18 @@
+steps:
+    "Prompt for name and greetings":
+        name: prompt
+        inputs:
+            - name: "name"
+              default: "World"
+              help_text: "Enter whatever name you like"
+            - name: "greeting"
+              choices:
+                - "Hello"
+                - "Hola"
+                - "Howdy"
+              default: "Howdy"
+              help_text: "How would you like to be greeted"
+    "Display message":
+        name: echo
+        message: |
+            {{ qwikstart.greeting }}, {{ qwikstart.name }}!
