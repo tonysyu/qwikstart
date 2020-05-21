@@ -3,14 +3,13 @@ steps:
         name: shell
         cmd: "grep '^__version__' `git ls-files` -ls"
         output_var: "version_file"
-        # Grep raises errors on many common operations so just ignore them.
+        # Grep raises errors on many common operations so just ignore them:
         ignore_error_code: true
-        output_mapping:
-            "version_file": "template_variables.version_file"
+        opconfig:
+            # Save to "template_variables" namespace for use when rendering message:
+            output_namespace: "template_variables"
     "Display result":
         name: shell
-        opconfig:
-            display_description: false
         cmd:
             - "echo"
             - "Version info can be found in {{ qwikstart.version_file }}"

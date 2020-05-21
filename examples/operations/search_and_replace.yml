@@ -1,0 +1,6 @@
+steps:
+    "Replace greeting in basic-hello-world example":
+        name: search_and_replace
+        file_path: "examples/basic-hello-world.yml"
+        search: "Hello"
+        replace: "Hola"
