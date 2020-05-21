@@ -29,8 +29,9 @@ This example references an `add-file-tree` directory, which looks like::
              └── {{ qwikstart.dynamic_file_name }}.txt
 
 The :doc:`prompt` operation, by default, adds variables to the `template_variables`
-namespace. The operation definition above defines additional template variables, `dynamic_directory_name` and `dynamic_file_name`, which are combined with those in
-the `template_variables` from the global context. Running the operation defined above
+namespace. The operation definition above defines additional template variables,
+`dynamic_directory_name` and `dynamic_file_name`, which are combined with those in the
+`template_variables` from the global context. Running the operation defined above
 produces the following::
 
     ./add-file-tree
