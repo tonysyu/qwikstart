@@ -6,6 +6,7 @@ import pytest
 
 from qwikstart.base_context import BaseContext
 from qwikstart.cli import utils
+from qwikstart.exceptions import OperationDefinitionError
 from qwikstart.parser import get_operations_mapping
 from qwikstart.utils import first
 
@@ -93,6 +94,11 @@ class TestGetOperationHelp:
 
         context_var = first(op_help.required_context)
         assert context_var.description == "Additional info about field."
+
+    def test_unknown_operation_name_raises(self) -> None:
+        # Sanity check to ensure `get_operation_help doesn't error out on any operations
+        with pytest.raises(OperationDefinitionError):
+            utils.get_operation_help("unknown-operation")
 
     # FIXME: Add mypy stub for pytest parametrize
     @pytest.mark.parametrize("op_name", get_operations_mapping().keys())  # type: ignore
