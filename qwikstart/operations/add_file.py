@@ -45,7 +45,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation to add a file to a project."""
+    """Operation to add a file to a project.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/add_file.html
+    """
 
     name: str = "add_file"
 

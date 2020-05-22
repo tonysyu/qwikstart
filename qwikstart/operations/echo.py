@@ -44,7 +44,14 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation to echo a message to the console."""
+    """Operation to echo a message to the console.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/echo.html
+
+    Overrides default `opconfig` with:
+
+    - `display_description`: `False`
+    """
 
     name: str = "echo"
     default_opconfig = {"display_description": False}

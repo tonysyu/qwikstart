@@ -85,22 +85,22 @@ Common operation configuration
 The `opconfig` variable is a dictionary containing optional configuration common to all
 qwikstart operations.
 
-`input_mapping`:
+`input_mapping` (default: `{}`):
     Dictionary mapping new context variable names, which will be used by the operation,
     to variable names in the global context.
-`output_mapping`:
+`output_mapping` (default: `{}`):
     Dictionary mapping new context variable names, which will be stored in the global
     context, to variable names returned by the operation.
-`input_namespace`:
+`input_namespace` (default: `None`):
     String specifying a dictionary in the global context that will be used as input
     variables by the operation *instead of* the variables in the global context.
-`output_namespace`:
+`output_namespace` (default: `None`):
     String specifying the name of the dictionary in the global context where output
     variables from the operation are stored. By default, this is `None`, which means
     output variables are added directly to the global context. Some operations, notably
     :doc:`operations/prompt`, specify the default of `"template_variables"`, which is
     a special namespace used by many operations when rendering templates.
-`display_description`:
+`display_description` (default: `True`):
     Boolean value controlling whether to display the description of an operation on
     the command line during exection. This defaults to `True` but some operations
     override this default (though it's possible to override that by when configuring an

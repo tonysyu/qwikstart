@@ -40,7 +40,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Dict[str, str]]):
-    """Operation to extract context data from a file using a regex."""
+    """Operation to extract context data from a file using a regex.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/context_from_regex.html
+    """
 
     name: str = "context_from_regex"
 

@@ -64,8 +64,12 @@ class Context(BaseContext):
 class Operation(BaseOperation[Context, Output]):
     """Operation to prompt user for input values.
 
-    The input values will be added to a dictionary in the context with a name matching
-    `output_dict_name`.
+    See https://qwikstart.readthedocs.io/en/latest/operations/prompt.html
+
+    Overrides default `opconfig` with:
+
+    - `display_description`: `False`
+    - `output_namespace`: `"template_variables"`
     """
 
     name = "prompt"

@@ -46,6 +46,13 @@ Optional context
     Name of language used for syntax highlighting using `pygments` library.
     See https://pygments.org/docs/lexers/
 
+Additional notes
+================
+
+Overrides default :ref:`opconfig <opconfig>` with:
+
+- `display_description`: `False`
+
 See also
 ========
 - :doc:`context_from_regex`

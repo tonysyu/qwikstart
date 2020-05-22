@@ -45,7 +45,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Dict[str, List[str]]]):
-    """Operation for searching for text within files and returning file paths."""
+    """Operation for searching for text within files and returning file paths.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/find_files.html
+    """
 
     name: str = "find_files"
 

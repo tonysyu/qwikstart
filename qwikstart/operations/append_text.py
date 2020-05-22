@@ -35,7 +35,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation for appending text to a given file."""
+    """Operation for appending text to a given file.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/append_text.html
+    """
 
     name: str = "append_text"
 

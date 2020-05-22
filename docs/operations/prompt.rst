@@ -86,6 +86,14 @@ Output
 This operation can define arbitrary output values based on the values of `name` defined
 in `inputs`.
 
+Additional notes
+================
+
+Overrides default :ref:`opconfig <opconfig>` with:
+
+- `display_description`: `False`
+- `output_namespace`: `"template_variables"`
+
 See also
 ========
 - :doc:`echo`

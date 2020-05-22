@@ -45,7 +45,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Dict[str, Any]]):
-    """Operation to run an arbitrary shell command."""
+    """Operation to run an arbitrary shell command.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/shell.html
+    """
 
     name: str = "shell"
 

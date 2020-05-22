@@ -39,7 +39,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation inserting text on a given line"""
+    """Operation inserting text on a given line.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/insert_text.html
+    """
 
     name: str = "insert_text"
 
