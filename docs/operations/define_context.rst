@@ -48,6 +48,13 @@ Output
 
 This operation can define arbitrary output values based on `context_defs`.
 
+Additional notes
+================
+
+Overrides default :ref:`opconfig <opconfig>` with:
+
+- `display_description`: `False`
+
 See also
 ========
 - :doc:`context_from_regex`
