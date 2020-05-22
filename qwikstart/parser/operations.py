@@ -6,6 +6,7 @@ from .. import utils
 from ..exceptions import TaskParserError
 from ..operations import BaseOperation, GenericOperation
 from ..repository import OperationSpec
+from ..utils.io import dump_yaml_string
 
 __all__ = ["OperationDefinition", "parse_operation"]
 
@@ -94,7 +95,8 @@ def parse_operation_from_step(
 
     op_name = op_spec.pop("name", None)
     if not op_name:
-        raise TaskParserError(f"Operation definition has no name: {op_spec}")
+        op_spec_string = dump_yaml_string(op_spec)
+        raise TaskParserError(f"Operation definition has no name: \n\n{op_spec_string}")
     elif op_name not in known_operations:
         raise TaskParserError(f"Could not find operation named '{op_name}'")
 
