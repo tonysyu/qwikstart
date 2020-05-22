@@ -40,6 +40,8 @@ class Operation(BaseOperation[Context, None]):
     """Operation to find a tag and insert text below that tag.
 
     This is a simple combination of the `find_tagged_line` and `insert_text` operations.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/find_tag_and_insert_text.html  # noqa
     """
 
     name: str = "find_tag_and_insert_text"

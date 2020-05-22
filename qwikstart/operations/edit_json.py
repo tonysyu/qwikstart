@@ -31,7 +31,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation to edit json by merging data into existing json data."""
+    """Operation to edit json by merging data into existing json data.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/edit_json.html
+    """
 
     name: str = "edit_json"
 

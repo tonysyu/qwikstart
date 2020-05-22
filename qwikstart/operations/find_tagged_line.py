@@ -39,7 +39,10 @@ class Output(TypedDict):
 
 
 class Operation(BaseOperation[Context, Output]):
-    """Operation for finding a line in a file containing a text "tag"."""
+    """Operation for finding a line in a file containing a text "tag".
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/find_tagged_line.html
+    """
 
     name: str = "find_tagged_line"
 

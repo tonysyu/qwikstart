@@ -34,7 +34,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation for searching for text and replacing it with new text."""
+    """Operation for searching for text and replacing it with new text.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/search_and_replace.html
+    """
 
     name: str = "search_and_replace"
 

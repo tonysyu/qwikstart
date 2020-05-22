@@ -35,7 +35,10 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Dict[str, Any]]):
-    """Operation to context variables to the operation context."""
+    """Operation to context variables to the operation context.
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/define_context.html
+    """
 
     name: str = "define_context"
     default_opconfig = {"display_description": False}

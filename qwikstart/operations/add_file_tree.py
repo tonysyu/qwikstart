@@ -52,7 +52,11 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, None]):
-    """Operation to add a file tree (a.k.a. directory) to a project."""
+    """Operation to add a file tree (a.k.a. directory) to a project.
+
+
+    See https://qwikstart.readthedocs.io/en/latest/operations/add_file_tree.html
+    """
 
     name: str = "add_file_tree"
 
