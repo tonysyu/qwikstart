@@ -13,6 +13,13 @@ from .operations import (
 )
 
 logger = logging.getLogger(__name__)
+
+EXAMPLE_TASK_DEFINITION = """
+steps:
+    "Display message":
+        name: echo
+        message: "Hello, World!"
+"""
 OPERATIONS_DEPRECATION_WARNING = (
     "Note that `operations` in task specification is deprecated and will be "
     "removed in v0.8. Use `steps` instead."
@@ -47,7 +54,10 @@ def parse_task(
             for op_def in normalize_operations_list(task_spec["operations"])
         ]
     else:
-        raise TaskParserError("Task specification file does not define `steps`.")
+        raise TaskParserError(
+            "Task specification file should define `steps` dictionary, e.g.:\n"
+            + EXAMPLE_TASK_DEFINITION
+        )
 
     return Task(context=task_spec["context"], operations=operations)
 

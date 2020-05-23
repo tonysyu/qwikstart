@@ -2,11 +2,9 @@ import abc
 from pathlib import Path
 from typing import Any, Dict, cast
 
-from ruamel.yaml import YAMLError
-
 from ..exceptions import RepoLoaderError
 from ..utils import http, io
-from . import git
+from . import git, yamllint
 from .core import QWIKSTART_TASK_SPEC_FILE
 
 
@@ -57,10 +55,8 @@ class RepoLoader(BaseRepoLoader):
             self._repo_path = local_path.parent
             spec_contents = io.read_file_contents(local_path)
 
-        try:
-            self._task_spec = io.load_yaml_string(spec_contents)
-        except YAMLError:
-            raise RepoLoaderError(f"Could not parse yaml from {url_or_path}")
+        yamllint.assert_no_errors(spec_contents)
+        self._task_spec = io.load_yaml_string(spec_contents)
 
         source = self._task_spec.get("source", {})
         git_url = source.get("url")

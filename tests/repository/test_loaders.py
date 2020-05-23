@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch
 import pytest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
-from qwikstart.exceptions import RepoLoaderError
+from qwikstart.exceptions import RepoLoaderError, TaskParserError
 from qwikstart.repository import loaders
 from qwikstart.utils import io
 
@@ -32,7 +32,7 @@ class TestRepoLoaderFS(TestCase):
 
     def test_unknown_file_type(self) -> None:
         self.fs.create_file("/path/to/file.txt", contents="this: is: invalid")
-        with pytest.raises(RepoLoaderError):
+        with pytest.raises(TaskParserError):
             loaders.RepoLoader("/path/to/file.txt")
 
     def test_repo_path_defaults_to_spec_path_parent(self) -> None:

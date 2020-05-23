@@ -47,6 +47,7 @@ jinja2-time = "^0.2.0"
 requests = "^2.23.0"
 "ruamel.yaml" = "^0.16.10"
 gitpython = "^3.1.0"
+yamllint = "^1.23.0"
 
 [tool.poetry.dev-dependencies]
 coverage = "*"
