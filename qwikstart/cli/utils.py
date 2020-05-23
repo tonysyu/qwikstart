@@ -7,6 +7,7 @@ from typing import Any, List, Optional, Type
 from jinja2 import Environment, FileSystemLoader
 from termcolor import colored
 
+from qwikstart.exceptions import OperationDefinitionError
 from qwikstart.operations import BaseOperation
 
 from ..parser import get_operations_mapping
@@ -52,6 +53,8 @@ class OperationHelp:
 
 def get_operation_help(op_name: str) -> OperationHelp:
     op_mapping = get_operations_mapping()
+    if op_name not in op_mapping:
+        raise OperationDefinitionError(f"No operation named '{op_name}'")
     operation = op_mapping[op_name]
 
     context_class = operation.get_context_class()
