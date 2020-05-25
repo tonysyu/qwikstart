@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Sequence
 from .. import base_context
 from ..exceptions import TaskParserError
 from ..operations import BaseOperation
-from ..repository import OperationsList, TaskSpec
+from ..repository import OperationsList
 from ..tasks import Task
 from .operations import (
     get_operations_mapping,
@@ -28,7 +28,7 @@ OPERATIONS_DEPRECATION_WARNING = (
 
 
 def parse_task(
-    task_spec: TaskSpec, execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
 ) -> Task:
     """Return task parsed from a task specification dictionary."""
     _initialize_context(task_spec, execution_config=execution_config)
@@ -36,7 +36,7 @@ def parse_task(
     return Task(context=task_spec["context"], operations=operations)
 
 
-def parse_task_steps(task_spec: TaskSpec) -> Sequence[BaseOperation[Any, Any]]:
+def parse_task_steps(task_spec: Dict[str, Any]) -> Sequence[BaseOperation[Any, Any]]:
     known_operations = get_operations_mapping()
 
     if task_spec.get("steps"):
@@ -73,7 +73,7 @@ def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str,
 
 
 def _initialize_context(
-    task_spec: TaskSpec, execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
 ) -> None:
     execution_config = execution_config or {}
     execution_config.setdefault("source_dir", Path("."))

@@ -5,24 +5,19 @@ import pytest
 from qwikstart.exceptions import TaskParserError
 from qwikstart.operations import insert_text
 from qwikstart.parser import tasks
-from qwikstart.repository import TaskSpec
 from qwikstart.tasks import Task
 
 
 class TestParseTask:
     def test_operation_list(self) -> None:
-        task_spec: TaskSpec = {
-            "operations": [{"insert_text": {"description": "Test operation"}}]
-        }
+        task_spec = {"operations": [{"insert_text": {"description": "Test operation"}}]}
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY},
             operations=[insert_text.Operation(description="Test operation")],
         )
 
     def test_operation_dict(self) -> None:
-        task_spec: TaskSpec = {
-            "operations": {"insert_text": {"description": "Test operation"}}
-        }
+        task_spec = {"operations": {"insert_text": {"description": "Test operation"}}}
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY},
             operations=[insert_text.Operation(description="Test operation")],
@@ -34,7 +29,7 @@ class TestParseTask:
         logger.info.assert_called_once_with(tasks.OPERATIONS_DEPRECATION_WARNING)
 
     def test_steps(self) -> None:
-        task_spec: TaskSpec = {"steps": {"Step 1": {"name": "insert_text"}}}
+        task_spec = {"steps": {"Step 1": {"name": "insert_text"}}}
         expected_operation = insert_text.Operation(description="Step 1")
         assert tasks.parse_task(task_spec) == Task(
             context={"execution_context": ANY}, operations=[expected_operation]
@@ -42,7 +37,7 @@ class TestParseTask:
 
     @patch.object(tasks, "logger")
     def test_both_steps_and_operations_defined(self, logger: Mock) -> None:
-        task_spec: TaskSpec = {
+        task_spec = {
             "steps": {"Step 1": {"name": "insert_text"}},
             "operations": {"completely_ignored": {}},
         }

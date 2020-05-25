@@ -1,4 +1,4 @@
-from .core import OperationsList, OperationSpec, TaskSpec
+from .core import OperationsList, OperationSpec
 from .loaders import BaseRepoLoader, GitRepoLoader, RepoLoader, get_repo_loader
 
 __all__ = [
@@ -7,6 +7,5 @@ __all__ = [
     "OperationSpec",
     "OperationsList",
     "RepoLoader",
-    "TaskSpec",
     "get_repo_loader",
 ]

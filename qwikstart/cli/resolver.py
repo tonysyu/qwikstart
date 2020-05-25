@@ -1,4 +1,4 @@
-from typing import Any, Dict, Optional, cast
+from typing import Any, Dict, Optional
 
 from .. import repository
 from ..exceptions import RepoLoaderError, UserFacingError
@@ -16,9 +16,6 @@ def resolve_task(
     except RepoLoaderError as error:
         raise UserFacingError(str(error)) from error
 
-    # FIXME: We should check whether the data has the required keys.
-    task_spec = cast(repository.TaskSpec, loader.task_spec)
-
     execution_config = execution_config or {}
     execution_config.setdefault("source_dir", loader.repo_path)
-    return parse_task(task_spec, execution_config=execution_config)
+    return parse_task(loader.task_spec, execution_config=execution_config)
