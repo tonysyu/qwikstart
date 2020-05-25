@@ -31,9 +31,9 @@ def parse_task(
     task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
 ) -> Task:
     """Return task parsed from a task specification dictionary."""
-    _initialize_context(task_spec, execution_config=execution_config)
+    context = _initialize_context(task_spec, execution_config=execution_config)
     operations = parse_task_steps(task_spec)
-    return Task(context=task_spec["context"], operations=operations)
+    return Task(context=context, operations=operations)
 
 
 def parse_task_steps(task_spec: Dict[str, Any]) -> Sequence[BaseOperation[Any, Any]]:
@@ -74,12 +74,12 @@ def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str,
 
 def _initialize_context(
     task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
-) -> None:
+) -> Dict[str, Any]:
     execution_config = execution_config or {}
     execution_config.setdefault("source_dir", Path("."))
     execution_config.setdefault("target_dir", Path("."))
 
-    task_spec.setdefault("context", {})
-    task_spec["context"].setdefault(
-        "execution_context", base_context.ExecutionContext(**execution_config),
-    )
+    return {
+        "execution_context": base_context.ExecutionContext(**execution_config),
+        **task_spec.get("context", {}),
+    }
