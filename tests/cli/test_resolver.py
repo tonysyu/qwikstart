@@ -33,28 +33,14 @@ class TestResolveTask:
 
     def test_loader_error(self) -> None:
         error = RepoLoaderError("fake error")
-        with patch.object(resolver, "get_repo_loader", side_effect=error):
+        with patch.object(resolver.repository, "get_repo_loader", side_effect=error):
             with pytest.raises(UserFacingError):
                 resolver.resolve_task(FAKE_PATH_STR)
 
 
-class TestGetRepoLoader:
-    def test_loader_for_local_path(self) -> None:
-        with patch.object(resolver.repository, "RepoLoader") as loader_class:
-            resolver.get_repo_loader(FAKE_PATH_STR)
-        loader_class.assert_called_once_with(FAKE_PATH_STR)
-
-    def test_git_loader(self) -> None:
-        repo_url = "http://example.com"
-        with patch.object(resolver.repository, "GitRepoLoader") as loader_class:
-            loader = resolver.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
-        assert loader is loader_class.return_value
-        loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
-
-
 @contextmanager
 def patch_resolve_task_dependencies(mock_loader: Mock) -> Mock:
-    with patch.object(resolver, "get_repo_loader", return_value=mock_loader):
+    with patch.object(resolver.repository, "get_repo_loader", return_value=mock_loader):
         with patch.object(resolver, "parse_task") as mock_parse_task:
             yield mock_parse_task
 

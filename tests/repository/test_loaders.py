@@ -11,9 +11,24 @@ from qwikstart.exceptions import RepoLoaderError, TaskParserError
 from qwikstart.repository import loaders
 from qwikstart.utils import io
 
+FAKE_PATH_STR = "/path/to/fake.yml"
 TEST_URL = "https://github.com/user/repo"
 DETACHED_TASK_SPEC = {"source": {"url": TEST_URL}}
 TASK_SPEC_PATH = "/fake/local/path/qwikstart.yml"
+
+
+class TestGetRepoLoader:
+    def test_loader_for_local_path(self) -> None:
+        with patch.object(loaders, "RepoLoader") as loader_class:
+            loaders.get_repo_loader(FAKE_PATH_STR)
+        loader_class.assert_called_once_with(FAKE_PATH_STR)
+
+    def test_git_loader(self) -> None:
+        repo_url = "http://example.com"
+        with patch.object(loaders, "GitRepoLoader") as loader_class:
+            loader = loaders.get_repo_loader(FAKE_PATH_STR, repo_url=repo_url)
+        assert loader is loader_class.return_value
+        loader_class.assert_called_once_with(repo_url, FAKE_PATH_STR)
 
 
 class TestRepoLoaderFS(TestCase):
