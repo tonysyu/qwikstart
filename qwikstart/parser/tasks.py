@@ -1,9 +1,10 @@
 import logging
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 from .. import base_context
 from ..exceptions import TaskParserError
+from ..operations import BaseOperation
 from ..repository import OperationsList, TaskSpec
 from ..tasks import Task
 from .operations import (
@@ -31,7 +32,11 @@ def parse_task(
 ) -> Task:
     """Return task parsed from a task specification dictionary."""
     _initialize_context(task_spec, execution_config=execution_config)
+    operations = parse_task_steps(task_spec)
+    return Task(context=task_spec["context"], operations=operations)
 
+
+def parse_task_steps(task_spec: TaskSpec) -> Sequence[BaseOperation[Any, Any]]:
     known_operations = get_operations_mapping()
 
     if task_spec.get("steps"):
@@ -40,7 +45,7 @@ def parse_task(
                 "Found both `steps` and `operations` in task specification. "
                 "Only `steps` will be read."
             )
-        operations = [
+        return [
             parse_operation_from_step(
                 {"description": op_desc, **op_def}, known_operations
             )
@@ -49,17 +54,15 @@ def parse_task(
     elif task_spec.get("operations"):
         # FIXME: Raise error in v0.8
         logger.info(OPERATIONS_DEPRECATION_WARNING)
-        operations = [
+        return [
             parse_operation(op_def, known_operations)
             for op_def in normalize_operations_list(task_spec["operations"])
         ]
-    else:
-        raise TaskParserError(
-            "Task specification file should define `steps` dictionary, e.g.:\n"
-            + EXAMPLE_TASK_DEFINITION
-        )
 
-    return Task(context=task_spec["context"], operations=operations)
+    raise TaskParserError(
+        "Task specification file should define `steps` dictionary, e.g.:\n"
+        + EXAMPLE_TASK_DEFINITION
+    )
 
 
 def normalize_operations_list(operations_list: OperationsList) -> List[Dict[str, Any]]:
