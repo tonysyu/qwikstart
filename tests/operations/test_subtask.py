@@ -15,7 +15,7 @@ class TestSubtask(TestCase):
         self.task_dir = Path("/path/to/task")
         self.subtask_path = self.task_dir / "subtask.yml"
 
-    def test_fake_op(self) -> None:
+    def test_return_context_from_subtask(self) -> None:
         self.fs.create_file(
             self.subtask_path,
             contents=textwrap.dedent(
@@ -30,6 +30,23 @@ class TestSubtask(TestCase):
         )
         output_context = self.execute_subtask()
         assert output_context["subtask_var"] == "Test"
+
+    def test_subcontext_used_to_render_in_subtask(self) -> None:
+        self.fs.create_file(
+            self.subtask_path,
+            contents=textwrap.dedent(
+                """
+                steps:
+                    "Fake operation":
+                        name: define_context
+                        context_defs:
+                            greeting: "Hello, {{ qwikstart.name }}!"
+                """
+            ),
+        )
+        subcontext = {"template_variables": {"name": "World"}}
+        output_context = self.execute_subtask(subcontext=subcontext)
+        assert output_context["greeting"] == "Hello, World!"
 
     def execute_subtask(self, **override_context: Any) -> Dict[str, Any]:
         execution_context = helpers.get_execution_context(source_dir=self.task_dir)

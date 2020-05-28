@@ -1,5 +1,5 @@
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
@@ -27,6 +27,7 @@ EXCLUDED_CONTEXT = {"execution_context"}
 @dataclass(frozen=True)
 class Context(BaseContext):
     file_path: Path
+    subcontext: Dict[str, Any] = field(default_factory=dict)
     repo_url: Optional[str] = None
 
     @classmethod
@@ -48,7 +49,7 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
         if not file_path.is_file():
             raise OperationError(f"File does not exist: {file_path}")
 
-        task = load_task(str(file_path), context)
+        task = load_task(file_path, context)
         output_context = task.execute()
         return {
             key: value
@@ -57,14 +58,12 @@ class Operation(BaseOperation[Context, Dict[str, Any]]):
         }
 
 
-def load_task(file_path: str, context: Context) -> "Task":
+def load_task(file_path: Path, context: Context) -> "Task":
     # Nested imports to avoid circular import:
     from ..parser import parse_task_steps
     from ..tasks import Task
 
-    loader = get_repo_loader(file_path, context.repo_url)
+    loader = get_repo_loader(str(file_path), context.repo_url)
     operations = parse_task_steps(loader.task_spec)
-    # FIXME: Switch with context that can contain arbitrary data.
-    return Task(
-        context={"execution_context": context.execution_context}, operations=operations,
-    )
+    subcontext = {"execution_context": context.execution_context, **context.subcontext}
+    return Task(context=subcontext, operations=operations)
