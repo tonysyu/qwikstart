@@ -14,6 +14,7 @@ from . import (
     prompt,
     search_and_replace,
     shell,
+    subtask,
 )
 from .base import BaseOperation, GenericOperation, OperationConfig
 
@@ -36,4 +37,5 @@ __all__ = [
     "prompt",
     "search_and_replace",
     "shell",
+    "subtask",
 ]
