@@ -1,5 +1,5 @@
 import inspect
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any, Mapping, Optional, Type, TypeVar
 
@@ -25,6 +25,9 @@ class ExecutionContext:
 
     def get_template_loader(self) -> jinja2.BaseLoader:
         return jinja2.FileSystemLoader("/")
+
+    def copy(self, **override_kwargs: Any) -> "ExecutionContext":
+        return replace(self, **override_kwargs)
 
 
 @dataclass(frozen=True)

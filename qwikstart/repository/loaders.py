@@ -1,6 +1,6 @@
 import abc
 from pathlib import Path
-from typing import Any, Dict, cast
+from typing import Any, Dict, Optional, cast
 
 from ..exceptions import RepoLoaderError
 from ..utils import http, io
@@ -20,6 +20,12 @@ class BaseRepoLoader(abc.ABC):
     @abc.abstractmethod
     def repo_path(self) -> Path:
         """Return local path to qwikstart repo."""
+
+
+def get_repo_loader(task_path: str, repo_url: Optional[str] = None) -> BaseRepoLoader:
+    if repo_url is not None:
+        return GitRepoLoader(repo_url, task_path)
+    return RepoLoader(task_path)
 
 
 class GitRepoLoader(BaseRepoLoader):

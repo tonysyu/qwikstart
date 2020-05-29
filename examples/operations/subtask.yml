@@ -1,0 +1,4 @@
+steps:
+    "Run echo example as subtask":
+        name: subtask
+        file_path: "./echo.yml"
