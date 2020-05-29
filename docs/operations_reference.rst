@@ -46,6 +46,7 @@ something like::
    operations/prompt
    operations/search_and_replace
    operations/shell
+   operations/subtask
 
 .. _qwikstart/examples/operations:
    https://github.com/tonysyu/qwikstart/tree/master/examples/operations
