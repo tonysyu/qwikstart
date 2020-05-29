@@ -11,7 +11,7 @@ from .base import BaseOperation
 from .utils import FILE_PATH_HELP
 
 if TYPE_CHECKING:
-    from ..tasks import Task
+    from ..tasks import Task  # pragma: no cover
 
 __all__ = ["Operation"]
 
@@ -28,7 +28,6 @@ EXCLUDED_CONTEXT = {"execution_context"}
 class Context(BaseContext):
     file_path: Path
     subcontext: Dict[str, Any] = field(default_factory=dict)
-    repo_url: Optional[str] = None
 
     @classmethod
     def help(cls, field_name: str) -> Optional[str]:
@@ -36,7 +35,7 @@ class Context(BaseContext):
 
 
 class Operation(BaseOperation[Context, Dict[str, Any]]):
-    """Operation for running subtask defined by file.
+    """Operation for running subtask defined by qwikstart task definition file.
 
     See https://qwikstart.readthedocs.io/en/latest/operations/subtask.html
     """
@@ -66,7 +65,7 @@ def load_task(file_path: Path, context: Context) -> "Task":
     execution_context = context.execution_context.copy(source_dir=file_path.parent)
     subcontext = {"execution_context": execution_context, **context.subcontext}
 
-    loader = get_repo_loader(str(file_path), context.repo_url)
+    loader = get_repo_loader(str(file_path))
     operations = parse_task_steps(loader.task_spec)
 
     return Task(context=subcontext, operations=operations)

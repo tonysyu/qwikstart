@@ -2,8 +2,10 @@ import textwrap
 from pathlib import Path
 from typing import Any, Dict
 
+import pytest
 from pyfakefs.fake_filesystem_unittest import TestCase
 
+from qwikstart.exceptions import OperationError
 from qwikstart.operations import subtask
 
 from .. import helpers
@@ -68,6 +70,10 @@ class TestSubtask(TestCase):
         subcontext = {"template_path": template_path, "target_path": target_path}
         self.execute_subtask(subcontext=subcontext)
         assert helpers.read_file_path(target_path) == "Hello, World!"
+
+    def test_unknown_file_raises(self) -> None:
+        with pytest.raises(OperationError):
+            self.execute_subtask()
 
     def execute_subtask(self, **override_context: Any) -> Dict[str, Any]:
         execution_context = helpers.get_execution_context(source_dir=self.task_dir)
