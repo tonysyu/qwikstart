@@ -63,7 +63,10 @@ def load_task(file_path: Path, context: Context) -> "Task":
     from ..parser import parse_task_steps
     from ..tasks import Task
 
+    execution_context = context.execution_context.copy(source_dir=file_path.parent)
+    subcontext = {"execution_context": execution_context, **context.subcontext}
+
     loader = get_repo_loader(str(file_path), context.repo_url)
     operations = parse_task_steps(loader.task_spec)
-    subcontext = {"execution_context": context.execution_context, **context.subcontext}
+
     return Task(context=subcontext, operations=operations)

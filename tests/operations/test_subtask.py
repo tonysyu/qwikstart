@@ -13,7 +13,7 @@ class TestSubtask(TestCase):
     def setUp(self) -> None:
         self.setUpPyfakefs()
         self.task_dir = Path("/path/to/task")
-        self.subtask_path = self.task_dir / "subtask.yml"
+        self.subtask_path = self.task_dir / "subdir" / "subtask.yml"
 
     def test_return_context_from_subtask(self) -> None:
         self.fs.create_file(
@@ -21,7 +21,7 @@ class TestSubtask(TestCase):
             contents=textwrap.dedent(
                 """
                 steps:
-                    "Fake operation":
+                    "Define subtask_var":
                         name: define_context
                         context_defs:
                             subtask_var: "Test"
@@ -37,7 +37,7 @@ class TestSubtask(TestCase):
             contents=textwrap.dedent(
                 """
                 steps:
-                    "Fake operation":
+                    "Define greeting":
                         name: define_context
                         context_defs:
                             greeting: "Hello, {{ qwikstart.name }}!"
@@ -47,6 +47,27 @@ class TestSubtask(TestCase):
         subcontext = {"template_variables": {"name": "World"}}
         output_context = self.execute_subtask(subcontext=subcontext)
         assert output_context["greeting"] == "Hello, World!"
+
+    def test_paths_relative_to_subtask_directory(self) -> None:
+        subdir = self.subtask_path.parent
+        # Note that "greeting.txt" is relative to subtask not task:
+        template_path = subdir / "greeting.txt"
+        self.fs.create_file(template_path, contents="Hello, World!")
+        self.fs.create_file(
+            self.subtask_path,
+            contents=textwrap.dedent(
+                """
+                steps:
+                    "Copy file":
+                        name: add_file
+                        template_path: "./greeting.txt"
+                """
+            ),
+        )
+        target_path = Path("/path/to/target.txt")
+        subcontext = {"template_path": template_path, "target_path": target_path}
+        self.execute_subtask(subcontext=subcontext)
+        assert helpers.read_file_path(target_path) == "Hello, World!"
 
     def execute_subtask(self, **override_context: Any) -> Dict[str, Any]:
         execution_context = helpers.get_execution_context(source_dir=self.task_dir)
