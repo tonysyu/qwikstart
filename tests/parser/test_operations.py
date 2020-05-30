@@ -3,7 +3,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from qwikstart.exceptions import TaskParserError
+from qwikstart.exceptions import ObsoleteError, TaskParserError
 from qwikstart.operations import find_tagged_line, insert_text
 from qwikstart.parser import operations
 from qwikstart.repository import OperationSpec
@@ -87,29 +87,15 @@ class TestParseOperationFromStep:
         assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
         logger.info.assert_not_called()
 
-    @patch.object(operations, "logger")
-    def test_old_input_mapping_logs_deprecation(self, logger: Mock) -> None:
-        mapping = {"name": "template_variables.name"}
-        op_def = {"name": "fake_op", "description": "Test", "input_mapping": mapping}
-        op = operations.parse_operation_from_step(op_def)
+    def test_old_input_mapping_raises_error(self) -> None:
+        op_def = {"name": "fake_op", "description": "Test", "input_mapping": {}}
+        with pytest.raises(ObsoleteError):
+            operations.parse_operation_from_step(op_def)
 
-        opconfig = dict(input_mapping=mapping)
-        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
-        logger.info.assert_called_once_with(
-            operations.MAPPING_DEPRECATION_WARNING.format("input_mapping")
-        )
-
-    @patch.object(operations, "logger")
-    def test_old_output_mapping_logs_deprecation(self, logger: Mock) -> None:
-        mapping = {"template_variables.name": "name"}
-        op_def = {"name": "fake_op", "description": "Test", "output_mapping": mapping}
-        op = operations.parse_operation_from_step(op_def)
-
-        opconfig = dict(output_mapping=mapping)
-        assert op == helpers.FakeOperation(description="Test", opconfig=opconfig)
-        logger.info.assert_called_once_with(
-            operations.MAPPING_DEPRECATION_WARNING.format("output_mapping")
-        )
+    def test_old_output_mapping_raises_error(self) -> None:
+        op_def = {"name": "fake_op", "description": "Test", "output_mapping": {}}
+        with pytest.raises(ObsoleteError):
+            operations.parse_operation_from_step(op_def)
 
 
 class TestParseOperation:

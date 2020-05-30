@@ -3,7 +3,7 @@ import logging
 from typing import Any, Dict, NamedTuple, Optional, Type, cast
 
 from .. import utils
-from ..exceptions import TaskParserError
+from ..exceptions import ObsoleteError, TaskParserError
 from ..operations import BaseOperation, GenericOperation
 from ..repository import OperationSpec
 from ..utils.io import dump_yaml_string
@@ -21,9 +21,9 @@ RESERVED_WORDS_OPERATION_CONFIG = {
 }
 
 
-MAPPING_DEPRECATION_WARNING = (
-    "`{0}` as a top-level config in task specifications is deprecated and will be "
-    "removed in v0.8. Use `opconfig.{0}` instead."
+MAPPING_OBSOLETE_ERROR = (
+    "Support for `{0}` as a top-level config in task definitions was removed in v0.8. "
+    "Use `opconfig.{0}` instead."
 )
 
 
@@ -58,18 +58,12 @@ class OperationDefinition(NamedTuple):
         `local_context` passed to the operation initializer.
         """
         description = self.config.get("description", "")
-
-        input_mapping = self.config.get("input_mapping")
-        output_mapping = self.config.get("output_mapping")
         opconfig = self.config.get("opconfig", {})
-        if input_mapping:
-            # FIXME: Raise error in v0.8
-            logger.info(MAPPING_DEPRECATION_WARNING.format("input_mapping"))
-            opconfig["input_mapping"] = input_mapping
-        if output_mapping:
-            # FIXME: Raise error in v0.8
-            logger.info(MAPPING_DEPRECATION_WARNING.format("output_mapping"))
-            opconfig["output_mapping"] = output_mapping
+
+        if "input_mapping" in self.config:
+            raise ObsoleteError(MAPPING_OBSOLETE_ERROR.format("input_mapping"))
+        if "output_mapping" in self.config:
+            raise ObsoleteError(MAPPING_OBSOLETE_ERROR.format("output_mapping"))
 
         local_context = self.config.get("local_context", {})
         local_context.update(
