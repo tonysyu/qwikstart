@@ -1,8 +1,8 @@
 steps:
     "Write hello-world file to disk":
-        name: add_file
-        template_path: "../templates/hello_world.txt"
+        name: echo
         template_variables:
             name: "World"
         template_variable_prefix: null
-        target_path: "./examples/output/hello_world.txt"
+        message: |
+            Hello, {{ name }}!
