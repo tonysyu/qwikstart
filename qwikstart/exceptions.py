@@ -27,6 +27,10 @@ class ConfigurationError(UserFacingError):
     """User-facing exception raised during qwikstart configuration."""
 
 
+class ObsoleteError(UserFacingError):
+    """User-facing exception raised for obsolete functionality."""
+
+
 class OperationError(UserFacingError):
     """User-facing exception raised during execution of operation."""
 

@@ -7,15 +7,15 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Type
 
 from qwikstart import utils
-from qwikstart.exceptions import UserFacingError
+from qwikstart.exceptions import ObsoleteError, UserFacingError
 
 from . import input_types
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_VALUE_DEPRECATION_WARNING = (
-    "Note that `default_value` in prompt inputs is deprecated and will be "
-    "removed in v0.8. Use `default` instead."
+DEFAULT_VALUE_OBSOLETE_ERROR = (
+    "Support for `default_value` in prompt inputs was removed in v0.8."
+    "Use `default` instead."
 )
 
 
@@ -42,9 +42,7 @@ def create_prompt_spec(**prompt_kwargs: Any) -> PromptSpec:
     This raises a UserFacingError if the PromptSpec is incorrectly defined.
     """
     if "default_value" in prompt_kwargs:
-        # FIXME: Raise error in v0.8
-        logger.warning(DEFAULT_VALUE_DEPRECATION_WARNING)
-        prompt_kwargs["default"] = prompt_kwargs.pop("default_value")
+        raise ObsoleteError(DEFAULT_VALUE_OBSOLETE_ERROR)
 
     name = prompt_kwargs.get("name")
     if not name:
