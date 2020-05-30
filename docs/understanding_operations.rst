@@ -150,8 +150,15 @@ The execution sequence starts with an operation's `execute` method, which is pas
 the global context. This global context is just a dictionary containing output from
 prior operations.
 
-For example, the `find_tagged_line` operation adds `line` and `column` variables to the
-global context. These variables then be used by the `insert_text` operation.
+The following example uses the :doc:`operations/define_context` operation to add
+a `template_variables` dictionary (containing `name`) to the global context. That
+context is injected into the :doc:`operations/echo` operation, which expects
+a `template_variables` dictionary used for rendering a `message`:
+
+.. literalinclude:: ../examples/opconfig/define_context_and_echo.yml
+   :language: yaml
+   :emphasize-lines: 5-6,10
+   :caption: `examples/opconfig/define_context_and_echo.yml`
 
 Remap variables based on `opconfig.input_mapping`
 -------------------------------------------------
