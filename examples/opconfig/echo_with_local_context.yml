@@ -1,0 +1,7 @@
+steps:
+   "Display message":
+       name: echo
+       template_variables:
+           name: "World"
+       message: |
+           Hello, {{ qwikstart.name }}!
