@@ -206,6 +206,7 @@ just data defined as part of the operation. For example, the following defines t
 `echo` operation, with a local context variable, `message`:
 
 .. code-block:: yaml
+    :emphasize-lines: 4
 
     steps:
         "Display message":
@@ -230,6 +231,16 @@ Nest output under namepace in `opconfig.output_namespace`
 
 The output from the operation (if there is any), can optionally be nested under
 a namespace. In other words, it can be placed in a subdictionary in the global context.
+
+The following example uses the :doc:`operations/define_context` operation to define
+a `name`, which is then put in a `template_variables` dictionary using the
+`output_namespace` operation config:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_output_namespace.yml
+   :language: yaml
+   :emphasize-lines: 5,7,11
+   :caption: `examples/opconfig/define_and_echo_with_output_namespace.yml`
+
 
 Remap output based on `opconfig.output_mapping`
 -----------------------------------------------
