@@ -198,6 +198,9 @@ the `context_for_echo` dictionary from the global context using `input_namespace
    :emphasize-lines: 5-7,11,13
    :caption: `examples/opconfig/define_and_echo_with_input_namespace.yml`
 
+Note that the mapping is defined using the source name as the key, and the target name
+as the value.
+
 Add variables based on local context
 ------------------------------------
 
@@ -247,6 +250,18 @@ Remap output based on `opconfig.output_mapping`
 
 The output data from an operation can be renamed using an `opconfig.output_mapping`,
 just like inputs were renamed using `opconfig.input_mapping`.
+
+The following example uses the :doc:`operations/define_context` operation to define
+a `name`, which is then put in a `template_variables` dictionary using the
+`output_mapping` operation config:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_output_mapping.yml
+   :language: yaml
+   :emphasize-lines: 5,7-8,12
+   :caption: `examples/opconfig/define_and_echo_with_output_mapping.yml`
+
+Note that the mapping is defined using the source name as the key, and the target name
+as the value.
 
 Merge output with global context
 --------------------------------
