@@ -30,18 +30,25 @@ hello-world example:
            opconfig:       # 3. Common operation configuration
                output_namespace: "template_variables"
            inputs:         # 4. Context data specific to the `prompt` operation
-               1. name: "name"
+               name: "name"
        "Display message":
            name: echo
            message: |
                Hello, {{ qwikstart.name }}!
 
 This task composes two different operations: :doc:`operations/prompt` and
-:doc:`operations/echo`. The `prompt` operation is used to prompt the user for a name and
-then the `echo` operation displays a greeting.
+:doc:`operations/echo`. The `prompt` operation is used to prompt the user for a `name`,
+and then the `echo` operation displays a greeting.
 
-Note that the `output_namespace` config isn't actually needed since that's the default
-for the `prompt` operation. It's added here to be explicit and to focus the discussion.
+The :doc:`operations/prompt` operation adds all user inputs into a `template_variables`
+dictionary, which is added to the global context. Note that the `output_namespace`
+config isn't actually needed since that's the default for the `prompt` operation. It's
+added here just for clarity.
+
+The :doc:`operations/echo` operation expects a `template_variables` dictionary as input,
+which is used to render the `message`. The :doc:`operations/echo` operation defaults to
+`template_variable_prefix = "qwikstart"`, which is why the template variable is rendered
+using `qwikstart.name` instead of just `name` as specified in the `inputs` definition.
 
 Anatomy of an operation
 -----------------------
@@ -63,19 +70,28 @@ a given operation:
 Context data
 ------------
 
-Note that the context data specified in the operation definition above (comment 4), is
-just one way to define context data. That definition is known as "local" context data,
-since those definitions only affect the operation where they're defined. An operation
-can (optionally) have outputs, which are added to the global context and can be used by
-subsequent operations.
+The context data specified in the operation definition above (comment 4), is just one
+way to define context data. That definition is known as "local" context data, since
+those definitions only affect the operation where they're defined. To make the concept
+of local context clear, we can define `template_variables` for the
+:doc:`operations/echo` operation as local context:
 
-In the example above, the :doc:`operations/prompt` operation adds all user inputs into
-`template_variables` dictionary, which is added to the global context. The
-:doc:`operations/echo` operation expects a `template_variables` dictionary as input,
-which is used to render the `message`. The
-:doc:`operations/echo` operation defaults to `template_variable_prefix = "qwikstart"`,
-which is why the template variable is rendered using `qwikstart.name` instead of just
-`name` as specified in the `inputs` definition.
+.. literalinclude:: ../examples/opconfig/echo_with_local_context.yml
+   :language: yaml
+   :caption: `examples/opconfig/echo_with_local_context.yml`
+
+Operations can have outputs, which are added to the global context for use by subsequent
+operations. The following example uses the :doc:`operations/define_context` operation to
+define `template_variables`:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo.yml
+   :language: yaml
+   :caption: `examples/opconfig/define_and_echo.yml`
+
+Using :doc:`operations/define_context` to add static values isn't that useful, but
+operations such as :doc:`operations/context_from_regex`, :doc:`operations/find_files`,
+and :doc:`operations/prompt` allow you to write tasks that define context based on the
+execution environment and the user.
 
 .. _opconfig:
 
@@ -134,8 +150,15 @@ The execution sequence starts with an operation's `execute` method, which is pas
 the global context. This global context is just a dictionary containing output from
 prior operations.
 
-For example, the `find_tagged_line` operation adds `line` and `column` variables to the
-global context. These variables then be used by the `insert_text` operation.
+The following example uses the :doc:`operations/define_context` operation to add
+a `template_variables` dictionary (containing `name`) to the global context. That
+context is injected into the :doc:`operations/echo` operation, which expects
+a `template_variables` dictionary used for rendering a `message`:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo.yml
+   :language: yaml
+   :emphasize-lines: 5-6,10
+   :caption: `examples/opconfig/define_and_echo.yml`
 
 Remap variables based on `opconfig.input_mapping`
 -------------------------------------------------
@@ -143,6 +166,18 @@ Remap variables based on `opconfig.input_mapping`
 Next, variables in the global context can be remapped to new variable names. Operations
 expect variables with specific names, so this can be used to combine operations that
 weren't initially meant to be combined.
+
+Instead of defining a `template_variables` dictionary directly, the following example
+just adds a `name` to the global context. Since the :doc:`operations/echo` operation
+expects a `template_variables` dictionary, we can use the `input_mapping` to remap the
+`name` to `template_variables.name`, below), for use when rendering the template:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_input_mapping.yml
+   :language: yaml
+   :emphasize-lines: 5,9-10,12
+   :caption: `examples/opconfig/define_and_echo_with_input_mapping.yml`
+
+Note that the period in `template_variables.name` is a namespace separator.
 
 Isolate context based on `opconfig.input_namespace`
 ---------------------------------------------------
@@ -152,6 +187,20 @@ dictionary. If an `input_namespace` is specified, then only the data within the
 sub-dictionary will continue on this journey. Otherwise, the entire global context is
 passed along.
 
+The following example uses the :doc:`operations/define_context` operation to define
+a dictionary with the key `context_for_echo` containing a `template_variables`
+dictionary with the `name` that will be rendered by the :doc:`operations/echo`
+operation. To use `template_variables` for rendering, the `echo` operation selects
+the `context_for_echo` dictionary from the global context using `input_namespace`:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_input_namespace.yml
+   :language: yaml
+   :emphasize-lines: 5-7,11,13
+   :caption: `examples/opconfig/define_and_echo_with_input_namespace.yml`
+
+Note that the mapping is defined using the source name as the key, and the target name
+as the value.
+
 Add variables based on local context
 ------------------------------------
 
@@ -160,6 +209,7 @@ just data defined as part of the operation. For example, the following defines t
 `echo` operation, with a local context variable, `message`:
 
 .. code-block:: yaml
+    :emphasize-lines: 4
 
     steps:
         "Display message":
@@ -185,11 +235,33 @@ Nest output under namepace in `opconfig.output_namespace`
 The output from the operation (if there is any), can optionally be nested under
 a namespace. In other words, it can be placed in a subdictionary in the global context.
 
+The following example uses the :doc:`operations/define_context` operation to define
+a `name`, which is then put in a `template_variables` dictionary using the
+`output_namespace` operation config:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_output_namespace.yml
+   :language: yaml
+   :emphasize-lines: 5,7,11
+   :caption: `examples/opconfig/define_and_echo_with_output_namespace.yml`
+
+
 Remap output based on `opconfig.output_mapping`
 -----------------------------------------------
 
 The output data from an operation can be renamed using an `opconfig.output_mapping`,
 just like inputs were renamed using `opconfig.input_mapping`.
+
+The following example uses the :doc:`operations/define_context` operation to define
+a `name`, which is then put in a `template_variables` dictionary using the
+`output_mapping` operation config:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_output_mapping.yml
+   :language: yaml
+   :emphasize-lines: 5,7-8,12
+   :caption: `examples/opconfig/define_and_echo_with_output_mapping.yml`
+
+Note that the mapping is defined using the source name as the key, and the target name
+as the value.
 
 Merge output with global context
 --------------------------------

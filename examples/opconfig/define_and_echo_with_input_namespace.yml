@@ -1,0 +1,13 @@
+steps:
+    "Define name to greet":
+        name: define_context
+        context_defs:
+            context_for_echo:
+                template_variables:
+                    name: "World"
+    "Display greeting":
+        name: echo
+        opconfig:
+            input_namespace: "context_for_echo"
+        message: |
+            Hello, {{ qwikstart.name }}!
