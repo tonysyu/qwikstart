@@ -187,6 +187,17 @@ dictionary. If an `input_namespace` is specified, then only the data within the
 sub-dictionary will continue on this journey. Otherwise, the entire global context is
 passed along.
 
+The following example uses the :doc:`operations/define_context` operation to define
+a dictionary with the key `context_for_echo` containing a `template_variables`
+dictionary with the `name` that will be rendered by the :doc:`operations/echo`
+operation. To use `template_variables` for rendering, the `echo` operation selects
+the `context_for_echo` dictionary from the global context using `input_namespace`:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_input_namespace.yml
+   :language: yaml
+   :emphasize-lines: 5-7,11,13
+   :caption: `examples/opconfig/define_and_echo_with_input_namespace.yml`
+
 Add variables based on local context
 ------------------------------------
 
