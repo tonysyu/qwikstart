@@ -95,11 +95,13 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
     def pre_run(self, context_dict: DictContext) -> TContext:
         context_class = self.get_context_class()
         context_dict = utils.remap_dict(context_dict, self.opconfig.input_mapping)
-        context_dict = (
-            context_dict
-            if self.opconfig.input_namespace is None
-            else context_dict[self.opconfig.input_namespace]
-        )
+
+        if self.opconfig.input_namespace is not None:
+            context_dict = {
+                **context_dict[self.opconfig.input_namespace],
+                "execution_context": context_dict["execution_context"],
+            }
+
         merged_dict = utils.merge_nested_dicts(context_dict, self.local_context)
         return context_class.from_dict(merged_dict)
 
@@ -107,11 +109,9 @@ class BaseOperation(Generic[TContext, TOutput], metaclass=abc.ABCMeta):
         if not output:
             return {}
 
-        output = (
-            output
-            if self.opconfig.output_namespace is None
-            else {self.opconfig.output_namespace: output}
-        )
+        if self.opconfig.output_namespace is not None:
+            output = cast(TOutput, {self.opconfig.output_namespace: output})
+
         # If output is not `None`, then it should be a dict; tell mypy.
         return utils.remap_dict(cast(DictContext, output), self.opconfig.output_mapping)
 
