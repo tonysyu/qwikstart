@@ -84,9 +84,9 @@ Operations can have outputs, which are added to the global context for use by su
 operations. The following example uses the :doc:`operations/define_context` operation to
 define `template_variables`:
 
-.. literalinclude:: ../examples/opconfig/define_context_and_echo.yml
+.. literalinclude:: ../examples/opconfig/define_and_echo.yml
    :language: yaml
-   :caption: `examples/opconfig/define_context_and_echo.yml`
+   :caption: `examples/opconfig/define_and_echo.yml`
 
 Using :doc:`operations/define_context` to add static values isn't that useful, but
 operations such as :doc:`operations/context_from_regex`, :doc:`operations/find_files`,
@@ -155,10 +155,10 @@ a `template_variables` dictionary (containing `name`) to the global context. Tha
 context is injected into the :doc:`operations/echo` operation, which expects
 a `template_variables` dictionary used for rendering a `message`:
 
-.. literalinclude:: ../examples/opconfig/define_context_and_echo.yml
+.. literalinclude:: ../examples/opconfig/define_and_echo.yml
    :language: yaml
    :emphasize-lines: 5-6,10
-   :caption: `examples/opconfig/define_context_and_echo.yml`
+   :caption: `examples/opconfig/define_and_echo.yml`
 
 Remap variables based on `opconfig.input_mapping`
 -------------------------------------------------
@@ -166,6 +166,18 @@ Remap variables based on `opconfig.input_mapping`
 Next, variables in the global context can be remapped to new variable names. Operations
 expect variables with specific names, so this can be used to combine operations that
 weren't initially meant to be combined.
+
+Instead of defining a `template_variables` dictionary directly, the following example
+just adds a `name` to the global context. Since the :doc:`operations/echo` operation
+expects a `template_variables` dictionary, we can use the `input_mapping` to remap the
+`name` to `template_variables.name`, below), for use when rendering the template:
+
+.. literalinclude:: ../examples/opconfig/define_and_echo_with_input_mapping.yml
+   :language: yaml
+   :emphasize-lines: 5,9-10,12
+   :caption: `examples/opconfig/define_and_echo_with_input_mapping.yml`
+
+Note that the period in `template_variables.name` is a namespace separator.
 
 Isolate context based on `opconfig.input_namespace`
 ---------------------------------------------------
