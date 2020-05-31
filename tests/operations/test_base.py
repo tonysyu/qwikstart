@@ -81,6 +81,27 @@ class TestBaseOperation(TestCase):
         )
         assert output["output_vars"] == {"some": "value"}
 
+    def test_input_namespace(self) -> None:
+        opconfig = dict(input_namespace="my-namespace")
+        operation = helpers.FakeOperation(opconfig=opconfig)
+        context = {
+            "execution_context": self.execution_context,
+            "my-namespace": {"template_variables": {"some": "value"}},
+        }
+        output = operation.execute(context)
+        assert output["template_variables"] == {"some": "value"}
+
+    def test_output_namespace(self) -> None:
+        opconfig = dict(output_namespace="my-namespace")
+        operation = helpers.FakeOperation(opconfig=opconfig)
+        output = operation.execute(
+            {
+                "execution_context": self.execution_context,
+                "template_variables": {"some": "value"},
+            }
+        )
+        assert output["my-namespace"]["template_variables"] == {"some": "value"}
+
     def test_local_context_takes_precedence(self) -> None:
         operation = helpers.FakeOperation(
             local_context={"template_variables": {"same-key": "local-context"}}
