@@ -33,6 +33,6 @@ def assert_no_errors(text: str, display_warnings: bool = True) -> None:
     problems = linter_errors(text)
     if not problems:
         return
-    logger.warning(f"Detected issues with in yaml file")
+    logger.warning("Detected issues with in yaml file")
     cli.show_problems(problems, "stdin", args_format="colored", no_warn=False)
     raise TaskParserError("Failed to read yaml file")

@@ -35,7 +35,7 @@ class TestPromptUser:
                 }
             )
         create_prompt_spec.assert_called_once_with(
-            name="name", choices=["Troy", "Abed"],
+            name="name", choices=["Troy", "Abed"]
         )
 
     def test_unknown_choices_from(self) -> None:

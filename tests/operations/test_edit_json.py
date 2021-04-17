@@ -19,7 +19,9 @@ class TestEditJsonFS(TestCase):
         self.fs.create_file(self.file_path, contents=json.dumps(data))
 
     def edit_json_and_return_parsed(
-        self, merge_data: Dict[str, Any], **override_context: Any,
+        self,
+        merge_data: Dict[str, Any],
+        **override_context: Any,
     ) -> Dict[str, Any]:
         context = {
             "execution_context": helpers.get_execution_context(),

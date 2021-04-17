@@ -1,9 +1,9 @@
 repos:
   - repo: https://github.com/python/black
-    rev: stable
+    rev: 20.8b1
     hooks:
       - id: black
-        language_version: python3.6
+        language_version: python3.7
   - repo: https://github.com/pre-commit/mirrors-isort
     rev: v4.3.21
     hooks:

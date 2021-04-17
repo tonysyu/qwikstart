@@ -19,7 +19,7 @@ class TestEditYamlFS(TestCase):
         self.fs.create_file(self.file_path, contents=dump_yaml_string(data))
 
     def edit_yaml_and_return_parsed(
-        self, merge_data: Dict[str, Any], **override_context: Any,
+        self, merge_data: Dict[str, Any], **override_context: Any
     ) -> Dict[str, Any]:
         context = {
             "execution_context": helpers.get_execution_context(),

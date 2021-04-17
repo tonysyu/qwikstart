@@ -45,9 +45,7 @@ class TemplateRenderer:
         if template_variable_prefix is None:
             self._template_context = self.template_variables
         else:
-            self._template_context = {
-                template_variable_prefix: self.template_variables
-            }
+            self._template_context = {template_variable_prefix: self.template_variables}
 
         self.source_dir = ensure_path(source_dir or Path("."))
 

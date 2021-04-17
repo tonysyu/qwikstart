@@ -22,8 +22,7 @@ def get_execution_context(**execution_context_kwargs: Any) -> ExecutionContext:
 
 
 def create_mock_file_path(string_data: str) -> Mock:
-    """Return mock `pathlib.Path` to file-like buffer containing `string_data`.
-    """
+    """Return mock `pathlib.Path` to file-like buffer containing `string_data`."""
     string_buffer = io.StringIO(dedent(string_data))
 
     @contextmanager
