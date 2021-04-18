@@ -1,11 +1,11 @@
-from typing import List
+from typing import Any, List, cast
 from unittest.mock import ANY, Mock, patch
 
 import pytest
 
 from qwikstart import parser
 from qwikstart.exceptions import ObsoleteError, TaskParserError
-from qwikstart.operations import insert_text
+from qwikstart.operations import GenericOperation, insert_text
 from qwikstart.tasks import Task
 
 from . import helpers
@@ -36,39 +36,45 @@ class TestParseTask:
             parser.parse_task({})
 
 
-# Ignore type: Mypy doesn't seem to like objects imported into a module.
-@patch.object(parser.BaseOperation, "__subclasses__")  # type: ignore
 class TestGetOperationsMapping:
-    def test_no_operations(self, mock_get_subclasses: Mock) -> None:
-        mock_get_subclasses.return_value = []
-        assert parser.get_operations_mapping() == {}
+    def test_no_operations(self) -> None:
+        assert self.get_operations_mapping([]) == {}
 
-    def test_one_operation(self, mock_get_subclasses: Mock) -> None:
+    def test_one_operation(self) -> None:
         class MockOperation:
             name = "fake_op"
             aliases: List[str] = []
 
-        mock_get_subclasses.return_value = [MockOperation]
-        assert parser.get_operations_mapping() == {"fake_op": MockOperation}
+        mapping = self.get_operations_mapping([MockOperation])
+        assert mapping == {"fake_op": MockOperation}
 
-    def test_operation_with_no_name_skipped(self, mock_get_subclasses: Mock) -> None:
+    def test_operation_with_no_name_skipped(self) -> None:
         class MockOperation:
             name = "fake_op"
             aliases: List[str] = []
 
-        mock_get_subclasses.return_value = [MockOperation]
-        assert parser.get_operations_mapping() == {"fake_op": MockOperation}
+        mapping = self.get_operations_mapping([MockOperation])
+        assert mapping == {"fake_op": MockOperation}
 
-    def test_operation_with_alias(self, mock_get_subclasses: Mock) -> None:
+    def test_operation_with_alias(self) -> None:
         class MockOperation:
             name = "fake_op"
             aliases = ["fake_alias"]
 
-        mock_get_subclasses.return_value = [MockOperation]
-        assert parser.get_operations_mapping() == {
+        mapping = self.get_operations_mapping([MockOperation])
+        assert mapping == {
             "fake_op": MockOperation,
             "fake_alias": MockOperation,
         }
+
+    def get_operations_mapping(self, operations: List[Any]) -> GenericOperation:
+        with patch.object(
+            # Ignore type: Mypy doesn't seem to like objects imported into a module.
+            parser.BaseOperation,  # type: ignore
+            "__subclasses__",
+            return_value=operations,
+        ):
+            return cast(GenericOperation, parser.get_operations_mapping())
 
 
 class TestParseOperationFromStep:
@@ -80,7 +86,9 @@ class TestParseOperationFromStep:
     def test_custom_operation_mapping(self) -> None:
         mock_operation = Mock()
         op_def = {"name": "custom"}
-        known_ops = {"custom": Mock(return_value=mock_operation)}
+        known_ops: parser.OperationMapping = {
+            "custom": Mock(return_value=mock_operation)
+        }
         op = parser.parse_operation_from_step(op_def, known_ops)
         assert op == mock_operation
 

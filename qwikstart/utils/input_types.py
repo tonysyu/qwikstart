@@ -50,7 +50,7 @@ class InputType(Generic[T]):
         # Cannot pass `default=None` for some data types due to autocompletion.
         if "default" in prompt_kwargs and prompt_kwargs["default"] is None:
             del prompt_kwargs["default"]
-        return ptk_prompt(  # type: ignore
+        return ptk_prompt(
             message + suffix,
             completer=self.completer,
             validator=self.validator,

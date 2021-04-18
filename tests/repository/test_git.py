@@ -79,7 +79,7 @@ class TestDownloadGitRepo:
         with pytest.raises(RepoLoaderError):
             git.download_git_repo("/this/is/not/a/url", CACHE_DIR.joinpath("new"))
 
-    @patch.object(git.gitlib, "Repo")
+    @patch.object(git.gitlib, "Repo")  # type: ignore
     def test_success(self, repo_class: Mock) -> None:
         output_dir = CACHE_DIR.joinpath("new")
         git.download_git_repo("/fake/repo", output_dir)
@@ -87,7 +87,7 @@ class TestDownloadGitRepo:
 
 
 class TestUpdateGitRepo:
-    @patch.object(git.gitlib, "Repo")
+    @patch.object(git.gitlib, "Repo")  # type: ignore
     def test_repo_initialized_with_string(self, repo_class: Mock) -> None:
         git.update_git_repo(Path("/path/to/local/repo"))
         repo_class.assert_called_once_with("/path/to/local/repo")

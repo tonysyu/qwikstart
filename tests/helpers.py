@@ -35,10 +35,15 @@ def create_mock_file_path(string_data: str) -> Mock:
     return mock_file_path
 
 
-def read_file_path(file_path: Path) -> str:
+def read_file_path(file_path: Any) -> str:
     """Return text read from `file_path`."""
+    if not hasattr(file_path, "open"):
+        raise RuntimeError(
+            "Cannot read `file_path` that doesn't implement `open` method"
+        )
+
     with file_path.open() as f:
-        return f.read()
+        return str(f.read())
 
 
 def filemode(filename: Path) -> int:
