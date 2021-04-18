@@ -79,7 +79,7 @@ class OperationDefinition(NamedTuple):
 
 
 def parse_task(
-    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None
 ) -> Task:
     """Return task parsed from a task specification dictionary."""
     context = _initialize_context(task_spec, execution_config=execution_config)
@@ -143,7 +143,7 @@ def parse_operation_from_step(
 
 
 def _initialize_context(
-    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None,
+    task_spec: Dict[str, Any], execution_config: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     execution_config = execution_config or {}
     execution_config.setdefault("source_dir", Path("."))

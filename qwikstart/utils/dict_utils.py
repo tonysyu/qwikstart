@@ -34,7 +34,7 @@ def merge_nested_dicts(
 def get_nested_dict_value(
     nested_dict: Dict[str, Any], nested_key: str, separator: str = "."
 ) -> Any:
-    final_key, sub_dict, = _get_final_nested_dict_and_key(
+    final_key, sub_dict = _get_final_nested_dict_and_key(
         nested_dict, nested_key, separator=separator
     )
     return sub_dict[final_key]
@@ -43,7 +43,7 @@ def get_nested_dict_value(
 def pop_nested_dict_value(
     nested_dict: Dict[str, Any], nested_key: str, separator: str = "."
 ) -> Any:
-    final_key, sub_dict, = _get_final_nested_dict_and_key(
+    final_key, sub_dict = _get_final_nested_dict_and_key(
         nested_dict, nested_key, separator=separator
     )
     return sub_dict.pop(final_key)

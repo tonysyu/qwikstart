@@ -1,6 +1,6 @@
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
 from unittest.mock import Mock, patch
 
 import pytest
@@ -39,7 +39,7 @@ class TestResolveTask:
 
 
 @contextmanager
-def patch_resolve_task_dependencies(mock_loader: Mock) -> Mock:
+def patch_resolve_task_dependencies(mock_loader: Mock) -> Iterator[Mock]:
     with patch.object(resolver.repository, "get_repo_loader", return_value=mock_loader):
         with patch.object(resolver, "parse_task") as mock_parse_task:
             yield mock_parse_task
