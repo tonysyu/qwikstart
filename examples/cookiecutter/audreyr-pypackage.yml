@@ -18,6 +18,8 @@ steps:
               default: "{{ cookiecutter.github_username }}"
             - name: "version"
               default: "0.1.0"
+            - name: "use_black"
+              default: True
             - name: "use_pytest"
               default: False
             - name: "use_pypi_deployment_with_travis"
