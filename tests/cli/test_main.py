@@ -11,7 +11,9 @@ from qwikstart.parser import get_operations_mapping
 def test_run() -> None:
     runner = CliRunner()
     with patch.object(main, "resolve_task") as mock_resolve_task:
-        result = runner.invoke(main.run, "fake/path")
+        # FIXME: Patch logging config which breaks pyfakefs for some reason.
+        with patch.object(main.logging.logging.config, "dictConfig"):
+            result = runner.invoke(main.run, "fake/path")
     assert result.exit_code == 0
     mock_resolve_task.assert_called_once_with(
         "fake/path", repo_url=None, execution_config={"dry_run": False}
