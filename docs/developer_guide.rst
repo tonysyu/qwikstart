@@ -5,7 +5,7 @@ Developer's Guide
 Prerequisites
 =============
 
-The `qwikstart` package uses `poetry <https://github.com/sdispater/poetry>`_ for
+The `qwikstart` package uses `poetry <https://python-poetry.org/docs/>`_ for
 dependency management and distribution. You call install `poetry` using::
 
     curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
