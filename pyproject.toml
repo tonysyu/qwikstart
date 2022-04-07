@@ -7,7 +7,7 @@ line_length = 88
 
 [tool.poetry]
 name = "qwikstart"
-version = "0.8.0-dev0"
+version = "0.8.0"
 description = "Code generator for automating configuration, setup, and yak shaving."
 readme = "README.rst"
 repository = "https://github.com/tonysyu/qwikstart"
